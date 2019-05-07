@@ -1,4 +1,4 @@
-# Fusion
+Fusion
 ===================
 
 Everything a Fusion app needs to communicate with the core.
