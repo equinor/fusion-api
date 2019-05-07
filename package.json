@@ -16,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/equinor/fusion/issues"
   },
-  "homepage": "https://github.com/equinor/fusion#readme"
+  "homepage": "https://github.com/equinor/fusion#readme",
+  "dependencies": {
+    "@types/uuid": "^3.4.4",
+    "uuid": "^3.3.2"
+  }
 }
