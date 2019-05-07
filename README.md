@@ -12,12 +12,12 @@ Everything a Fusion app needs to communicate with the core.
 
 # Install
 
-## Yarn
+### Yarn
 ```sh-session
 $ yarn add @equinor/fusion
 ```
 
-## NPM
+### NPM
 ```sh-session
 $ npm install @equinor/fusion --save
 ```
