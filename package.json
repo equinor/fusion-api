@@ -1,31 +1,42 @@
 {
-  "name": "fusion-api",
-  "version": "0.0.1",
-  "description": "",
-  "main": "src/index.js",
-  "types": "lib/index.d.ts",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/equinor/fusion.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/equinor/fusion/issues"
-  },
-  "homepage": "https://github.com/equinor/fusion#readme",
-  "dependencies": {
-    "@types/react": "^16.8.17",
-    "@types/uuid": "^3.4.4",
-    "react": "^16.8.6",
-    "uuid": "^3.3.2"
-  },
-  "devDependencies": {
-    "tslib": "^1.9.3",
-    "tslint-config-prettier": "^1.18.0"
-  }
+    "name": "@equinor/fusion",
+    "version": "0.0.1",
+    "description": "Everything a Fusion app needs to communicate with the core",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "scripts": {
+        "prepack": "tsc"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/equinor/fusion.git"
+    },
+    "keywords": [
+        "fusion"
+    ],
+    "author": "Fusion Core",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/equinor/fusion/issues"
+    },
+    "homepage": "https://github.com/equinor/fusion#readme",
+    "dependencies": {
+        "@types/react": "^16.8.17",
+        "@types/uuid": "^3.4.4",
+        "react": "^16.8.6",
+        "uuid": "^3.3.2"
+    },
+    "devDependencies": {
+        "tslib": "^1.9.3",
+        "tslint-config-prettier": "^1.18.0"
+    },
+    "peerDependencies": {
+        "react": "^16.8.6"
+    },
+    "files": [
+        "/lib"
+    ],
+    "publishConfig": {
+        "access": "public"
+    }
 }
