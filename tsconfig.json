@@ -10,6 +10,7 @@
         "target": "es2017",
         "composite": false,
         "moduleResolution": "node",
+        "jsx": "react",
         "typeRoots": [
             "./src/typings/@equinor",
             "./node_modules/@types"
