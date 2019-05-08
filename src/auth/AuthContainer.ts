@@ -64,7 +64,7 @@ export default class AuthContainer implements IAuthContainer {
 
     private static buildLoginUrl(app: AuthApp, nonce: AuthNonce, customParams: object = {}) {
         const base =
-        "https://login.microsoftonline.com/3aa4a235-b6e2-48d5-9195-7fcf05b459b0/oauth2/authorize";
+            "https://login.microsoftonline.com/3aa4a235-b6e2-48d5-9195-7fcf05b459b0/oauth2/authorize";
         const params: any = {
             ...customParams,
             client_id: app.clientId,
@@ -93,7 +93,7 @@ export default class AuthContainer implements IAuthContainer {
             app => app.resources.indexOf(resourceOrigin) > 0 || app.clientId === resourceOrigin
         );
 
-        if(typeof app === "undefined") {
+        if (typeof app === "undefined") {
             return null;
         }
 
@@ -103,7 +103,7 @@ export default class AuthContainer implements IAuthContainer {
     handleWindowCallback(): void {
         const token = AuthContainer.getTokenFromHash(window.location.hash);
 
-        if(token === null) {
+        if (token === null) {
             return;
         }
 
@@ -116,7 +116,7 @@ export default class AuthContainer implements IAuthContainer {
             this.apps.push(app);
 
             AuthTokenCache.storeToken(app, parsedToken);
-        } catch(e) {
+        } catch (e) {
             // Log?
         }
     }
@@ -124,13 +124,13 @@ export default class AuthContainer implements IAuthContainer {
     acquireToken(resource: string): string | null {
         const app = this.resolveApp(resource);
 
-        if(app === null) {
+        if (app === null) {
             throw new FusionAuthAppNotFoundError(resource);
         }
 
         const cachedToken = AuthTokenCache.getToken(app);
 
-        if(cachedToken !== null && cachedToken.isValid()) {
+        if (cachedToken !== null && cachedToken.isValid()) {
             return cachedToken.toString();
         }
 
@@ -144,7 +144,7 @@ export default class AuthContainer implements IAuthContainer {
     registerApp(clientId: string, resources: string[]): boolean {
         const existingApp = this.resolveApp(clientId);
 
-        if(existingApp !== null) {
+        if (existingApp !== null) {
             existingApp.updateResources(resources);
             return AuthTokenCache.getToken(existingApp) !== null;
         }
@@ -154,7 +154,7 @@ export default class AuthContainer implements IAuthContainer {
 
         const cachedToken = AuthTokenCache.getToken(newApp);
 
-        if(cachedToken !== null) {
+        if (cachedToken !== null) {
             return true;
         }
 
@@ -164,7 +164,7 @@ export default class AuthContainer implements IAuthContainer {
     login(clientId: string): void {
         const app = this.resolveApp(clientId);
 
-        if(app === null) {
+        if (app === null) {
             throw new FusionAuthAppNotFoundError(clientId);
         }
 

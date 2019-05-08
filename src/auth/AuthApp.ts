@@ -9,7 +9,7 @@ export default class AuthApp {
 
     updateResources(resources: string[]): void {
         resources.forEach(resource => {
-            if(this.resources.indexOf(resource) === -1) {
+            if (this.resources.indexOf(resource) === -1) {
                 this.resources.push(resource);
             }
         });

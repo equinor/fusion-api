@@ -26,7 +26,7 @@ export default class AuthNonce {
         const cacheKey = AuthNonce.createCacheKey(key);
         const value = sessionStorage.getItem(cacheKey);
 
-        if(!value) {
+        if (!value) {
             throw new FusionNonceNotFoundError(key);
         }
 
