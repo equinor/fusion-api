@@ -19,7 +19,13 @@
   },
   "homepage": "https://github.com/equinor/fusion#readme",
   "dependencies": {
+    "@types/react": "^16.8.17",
     "@types/uuid": "^3.4.4",
+    "react": "^16.8.6",
     "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "tslib": "^1.9.3",
+    "tslint-config-prettier": "^1.18.0"
   }
 }
