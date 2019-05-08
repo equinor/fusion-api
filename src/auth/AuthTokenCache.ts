@@ -3,8 +3,8 @@ import AuthToken from "./AuthToken";
 
 enum TokenCacheKey {
     TOKEN,
-    EXPIRATION
-};
+    EXPIRATION,
+}
 
 export default class AuthTokenCache {
     private static createCacheKey(app: AuthApp, key: TokenCacheKey): string {
@@ -12,13 +12,18 @@ export default class AuthTokenCache {
     }
 
     static storeToken(app: AuthApp, token: AuthToken): void {
-        localStorage.setItem(AuthTokenCache.createCacheKey(app, TokenCacheKey.TOKEN), token.toString());
+        localStorage.setItem(
+            AuthTokenCache.createCacheKey(app, TokenCacheKey.TOKEN),
+            token.toString()
+        );
     }
 
     static getToken(app: AuthApp): AuthToken | null {
-        const originalToken = localStorage.getItem(AuthTokenCache.createCacheKey(app, TokenCacheKey.TOKEN));
+        const originalToken = localStorage.getItem(
+            AuthTokenCache.createCacheKey(app, TokenCacheKey.TOKEN)
+        );
 
-        if(!originalToken) {
+        if (!originalToken) {
             return null;
         }
 

@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "allowSyntheticDefaultImports": true,
         "declaration": true,
         "importHelpers": true,
         "module": "esnext",
@@ -7,9 +8,18 @@
         "rootDir": "src",
         "strict": true,
         "target": "es2017",
-        "composite": false
+        "composite": false,
+        "moduleResolution": "node",
+        "typeRoots": [
+            "./src/typings/@equinor",
+            "./node_modules/@types"
+        ]
     },
     "include": [
         "src/**/*"
+    ],
+    "exclude": [
+        // "src/typings/@equinor",
+        "./node_modules/@types"
     ]
 }

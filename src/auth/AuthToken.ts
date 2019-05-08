@@ -16,7 +16,7 @@ export default class AuthToken {
         const userPart = token.split(".")[1];
         const parsedToken = JSON.parse(b64DecodeUnicode(userPart));
 
-        if(!parsedToken) {
+        if (!parsedToken) {
             throw new FusionAuthTokenParseError(token);
         }
 
