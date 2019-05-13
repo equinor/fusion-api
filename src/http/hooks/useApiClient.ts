@@ -18,6 +18,7 @@ export default <T>(invoke: InvokeApiClient<T>, dependencies?: any[]): [HttpClien
         try {
             const result = await invoke(fusionContext.http.apiClients);
             setData(result);
+            setError(null);
         } catch (error) {
             setError(error as HttpClientError);
         }
