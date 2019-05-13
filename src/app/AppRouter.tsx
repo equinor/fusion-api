@@ -19,7 +19,7 @@ const createLocationDescriptorFromContext = (appContext: IAppContext): Location<
 /**
  * Create a route scoped to the current app
  * E.g <AppRoute path="/foo" /> will match the url /apps/current-app/foo
- * @param props 
+ * @param props
  */
 const AppRoute: FC<RouteProps> = props => {
     const appContext = useContext(AppContext);
@@ -41,7 +41,7 @@ const AppRoute: FC<RouteProps> = props => {
 /**
  * Create a link scoped to the current app
  * E.g <AppLink to="/foo" /> will match the url /apps/current-app/foo
- * @param props 
+ * @param props
  */
 const AppLink: FC<LinkProps> = props => {
     const appContext = useContext(AppContext);
@@ -60,7 +60,7 @@ const AppLink: FC<LinkProps> = props => {
 /**
  * Create a route switch scoped to the current app
  * E.g <AppSwitch><AppRoute path="foo" /></AppSwitch> will scope to the path /apps/current-app/*
- * @param props 
+ * @param props
  */
 const AppSwitch: FC<SwitchProps> = props => {
     const appContext = useContext(AppContext);
