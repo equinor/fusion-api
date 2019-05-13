@@ -1,24 +1,29 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import useEffectAsync from "../../hooks/useEffectAsync";
-import FusionContext from "../../core/FusionContext";
+import { useFusionContext } from "../../core/FusionContext";
 import ApiClients from "../apiClients";
+import { HttpClientError } from "../HttpClient";
 
 type InvokeApiClient<T> = (apiClients: ApiClients) => Promise<T>;
 
-export default <T>(
-    invoke: InvokeApiClient<T>,
-    dependencies?: any[]
-): [boolean, T | null] => {
+export default <T>(invoke: InvokeApiClient<T>, dependencies?: any[]): [HttpClientError | null, boolean, T | null] => {
+    const [error, setError] = useState<HttpClientError | null>(null);
     const [isFeching, setIsFetching] = useState(false);
     const [data, setData] = useState<T | null>(null);
-    const fusionContext = useContext(FusionContext);
+    const fusionContext = useFusionContext();
 
     useEffectAsync(async () => {
         setIsFetching(true);
-        const result = await invoke(fusionContext.http.apiClients);
-        setData(result);
+
+        try {
+            const result = await invoke(fusionContext.http.apiClients);
+            setData(result);
+        } catch (error) {
+            setError(error as HttpClientError);
+        }
+
         setIsFetching(false);
     }, dependencies);
 
-    return [isFeching, data];
+    return [error, isFeching, data];
 };

@@ -1,25 +1,17 @@
-import { IHttpClient, HttpResponse } from "../HttpClient";
-import DataProxyResources from "../resources/dataProxy";
+import { HttpResponse } from "../HttpClient";
+import BaseApiClient from "./BaseApiClient";
 import { FusionApiHttpErrorResponse } from "./models/common/FusionApiHttpErrorResponse";
 import { HandoverItem } from "./models/dataProxy";
 
 // Export models
 export { HandoverItem };
 
-export default class DataProxyClient {
-    private httpClient: IHttpClient;
-    private dataProxyResources: DataProxyResources;
-
-    constructor(httpClient: IHttpClient, dataProxyResources: DataProxyResources) {
-        this.httpClient = httpClient;
-        this.dataProxyResources = dataProxyResources;
-    }
-
+export default class DataProxyClient extends BaseApiClient {
     async getHandoverAsync(
         siteCode: string,
         projectIdentifier: string
     ): Promise<HttpResponse<HandoverItem[]>> {
-        const url = this.dataProxyResources.handover(siteCode, projectIdentifier);
+        const url = this.resourceCollections.dataProxy.handover(siteCode, projectIdentifier);
         return await this.httpClient.getAsync<HandoverItem[], FusionApiHttpErrorResponse>(url);
     }
 }

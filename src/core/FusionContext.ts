@@ -1,6 +1,6 @@
-import { createContext } from "react";
+import { createContext, useContext } from "react";
 import { IAuthContainer } from "../auth/AuthContainer";
-import Resources from "../http/resources";
+import ResourceCollections from "../http/resourceCollections";
 import ApiClients from "../http/apiClients";
 
 type Auth = {
@@ -8,13 +8,17 @@ type Auth = {
 };
 
 type Http = {
-    resources: Resources;
+    resourceCollections: ResourceCollections;
     apiClients: ApiClients;
-}
+};
 
 export interface IFusionContext {
     auth: Auth;
     http: Http;
-};
+}
 
-export default createContext<IFusionContext | null>(null);
+const FusionContext = createContext<IFusionContext>({} as IFusionContext);
+
+export const useFusionContext = () => useContext(FusionContext);
+
+export default FusionContext;
