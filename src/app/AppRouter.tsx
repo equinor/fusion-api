@@ -1,4 +1,4 @@
-import React, { useContext, FunctionComponent } from "react";
+import React, { useContext, FC } from "react";
 import { Route, RouteProps, Link, LinkProps, Switch, SwitchProps } from "react-router-dom";
 import { Location, LocationDescriptor } from "history";
 import AppContext, { IAppContext } from "./AppContext";
@@ -21,7 +21,7 @@ const createLocationDescriptorFromContext = (appContext: IAppContext): Location<
  * E.g <AppRoute path="/foo" /> will match the url /apps/current-app/foo
  * @param props 
  */
-const AppRoute: FunctionComponent<RouteProps> = props => {
+const AppRoute: FC<RouteProps> = props => {
     const appContext = useContext(AppContext);
 
     if (!appContext || !appContext.appKey) {
@@ -43,7 +43,7 @@ const AppRoute: FunctionComponent<RouteProps> = props => {
  * E.g <AppLink to="/foo" /> will match the url /apps/current-app/foo
  * @param props 
  */
-const AppLink: FunctionComponent<LinkProps> = props => {
+const AppLink: FC<LinkProps> = props => {
     const appContext = useContext(AppContext);
 
     if (!appContext || !appContext.appKey) {
@@ -62,7 +62,7 @@ const AppLink: FunctionComponent<LinkProps> = props => {
  * E.g <AppSwitch><AppRoute path="foo" /></AppSwitch> will scope to the path /apps/current-app/*
  * @param props 
  */
-const AppSwitch: FunctionComponent<SwitchProps> = props => {
+const AppSwitch: FC<SwitchProps> = props => {
     const appContext = useContext(AppContext);
 
     if (!appContext || !appContext.appKey) {
