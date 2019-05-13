@@ -3,7 +3,7 @@ import AuthToken from "./AuthToken";
 import AuthNonce from "./AuthNonce";
 import AuthTokenCache from "./AuthTokenCache";
 
-class FusionAuthAppNotFoundError extends Error {
+export class FusionAuthAppNotFoundError extends Error {
     constructor(clientId: string) {
         super(`Unable to find app for client id [${clientId}]`);
     }
@@ -19,9 +19,8 @@ export interface IAuthContainer {
      * Acquire token for specified resource
      * @param resource Either clientId or a resource url used to resolve a registered app and token
      * @throws {FusionAuthAppNotFoundError} When unable to match specified resource to a registered app
-     * @todo Make async
      */
-    acquireToken(resource: string): string | null;
+    acquireTokenAsync(resource: string): Promise<string | null>;
 
     /**
      * Register an AAD app for authentication.
@@ -41,6 +40,85 @@ export interface IAuthContainer {
 
 export default class AuthContainer implements IAuthContainer {
     private apps: AuthApp[];
+
+    constructor() {
+        this.apps = [];
+    }
+
+    handleWindowCallback(): void {
+        const token = AuthContainer.getTokenFromHash(window.location.hash);
+
+        if (token === null) {
+            return;
+        }
+
+        try {
+            const parsedToken = AuthToken.parse(token);
+            const nonce = AuthNonce.resolve(parsedToken.nonce);
+            const clientId = nonce.toString();
+
+            const app = new AuthApp(clientId, []);
+            this.apps.push(app);
+
+            AuthTokenCache.storeToken(app, parsedToken);
+        } catch (e) {
+            // Log?
+        }
+    }
+
+    async acquireTokenAsync(resource: string): Promise<string | null> {
+        const app = this.resolveApp(resource);
+
+        if (app === null) {
+            throw new FusionAuthAppNotFoundError(resource);
+        }
+        
+        return new Promise(resolve => {
+            const cachedToken = AuthTokenCache.getToken(app);
+    
+            if (cachedToken !== null && cachedToken.isValid()) {
+                return resolve(cachedToken.toString());
+            }
+    
+            // TODO: This should refresh the token instead of logging in
+            // For now this is not possible because of iframes and crazy stuff
+            this.login(resource);
+    
+            return resolve(null);
+        });        
+    }
+
+    registerApp(clientId: string, resources: string[]): boolean {
+        const existingApp = this.resolveApp(clientId);
+
+        if (existingApp !== null) {
+            existingApp.updateResources(resources);
+            return AuthTokenCache.getToken(existingApp) !== null;
+        }
+
+        const newApp = new AuthApp(clientId, resources);
+        this.apps.push(newApp);
+
+        const cachedToken = AuthTokenCache.getToken(newApp);
+
+        if (cachedToken !== null) {
+            return true;
+        }
+
+        return false;
+    }
+
+    login(clientId: string): void {
+        const app = this.resolveApp(clientId);
+
+        if (app === null) {
+            throw new FusionAuthAppNotFoundError(clientId);
+        }
+
+        const nonce = AuthNonce.createNew(app);
+        // Store redirect url
+        window.location.href = AuthContainer.buildLoginUrl(app, nonce);
+    }
 
     private static getResourceOrigin(resource: string): string {
         try {
@@ -83,10 +161,6 @@ export default class AuthContainer implements IAuthContainer {
         return base + "?" + queryString;
     }
 
-    constructor() {
-        this.apps = [];
-    }
-
     private resolveApp(resource: string): AuthApp | null {
         const resourceOrigin = AuthContainer.getResourceOrigin(resource);
         const app = this.apps.find(
@@ -98,78 +172,5 @@ export default class AuthContainer implements IAuthContainer {
         }
 
         return app;
-    }
-
-    handleWindowCallback(): void {
-        const token = AuthContainer.getTokenFromHash(window.location.hash);
-
-        if (token === null) {
-            return;
-        }
-
-        try {
-            const parsedToken = AuthToken.parse(token);
-            const nonce = AuthNonce.resolve(parsedToken.nonce);
-            const clientId = nonce.toString();
-
-            const app = new AuthApp(clientId, []);
-            this.apps.push(app);
-
-            AuthTokenCache.storeToken(app, parsedToken);
-        } catch (e) {
-            // Log?
-        }
-    }
-
-    acquireToken(resource: string): string | null {
-        const app = this.resolveApp(resource);
-
-        if (app === null) {
-            throw new FusionAuthAppNotFoundError(resource);
-        }
-
-        const cachedToken = AuthTokenCache.getToken(app);
-
-        if (cachedToken !== null && cachedToken.isValid()) {
-            return cachedToken.toString();
-        }
-
-        // TODO: This should refresh the token instead of logging in
-        // For now this is not possible because of iframes and crazy stuff
-        this.login(resource);
-
-        return null;
-    }
-
-    registerApp(clientId: string, resources: string[]): boolean {
-        const existingApp = this.resolveApp(clientId);
-
-        if (existingApp !== null) {
-            existingApp.updateResources(resources);
-            return AuthTokenCache.getToken(existingApp) !== null;
-        }
-
-        const newApp = new AuthApp(clientId, resources);
-        this.apps.push(newApp);
-
-        const cachedToken = AuthTokenCache.getToken(newApp);
-
-        if (cachedToken !== null) {
-            return true;
-        }
-
-        return false;
-    }
-
-    login(clientId: string): void {
-        const app = this.resolveApp(clientId);
-
-        if (app === null) {
-            throw new FusionAuthAppNotFoundError(clientId);
-        }
-
-        const nonce = AuthNonce.createNew(app);
-        // Store redirect url
-        window.location.href = AuthContainer.buildLoginUrl(app, nonce);
     }
 }
