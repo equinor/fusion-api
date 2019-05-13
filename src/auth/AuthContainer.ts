@@ -72,20 +72,20 @@ export default class AuthContainer implements IAuthContainer {
         if (app === null) {
             throw new FusionAuthAppNotFoundError(resource);
         }
-        
+
         return new Promise(resolve => {
             const cachedToken = AuthTokenCache.getToken(app);
-    
+
             if (cachedToken !== null && cachedToken.isValid()) {
                 return resolve(cachedToken.toString());
             }
-    
+
             // TODO: This should refresh the token instead of logging in
             // For now this is not possible because of iframes and crazy stuff
             this.login(resource);
-    
+
             return resolve(null);
-        });        
+        });
     }
 
     registerApp(clientId: string, resources: string[]): boolean {

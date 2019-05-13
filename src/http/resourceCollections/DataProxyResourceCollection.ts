@@ -10,8 +10,19 @@ export default class DataProxyResourceCollection extends BaseResourceCollection 
         this.baseUrl = serviceResolver.getDataProxyBaseUrl();
     }
 
-    private getSiteAndProjectUrl(siteCode: string, projectIdentifier: string, action: string): string {
-        return combineUrls(this.baseUrl, "/api/sites", siteCode, "projects", projectIdentifier, action);
+    private getSiteAndProjectUrl(
+        siteCode: string,
+        projectIdentifier: string,
+        action: string
+    ): string {
+        return combineUrls(
+            this.baseUrl,
+            "/api/sites",
+            siteCode,
+            "projects",
+            projectIdentifier,
+            action
+        );
     }
 
     handover(siteCode: string, projectIdentifier: string): string {

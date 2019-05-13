@@ -6,7 +6,10 @@ import { HttpClientError } from "../HttpClient";
 
 type InvokeApiClient<T> = (apiClients: ApiClients) => Promise<T>;
 
-export default <T>(invoke: InvokeApiClient<T>, dependencies?: any[]): [HttpClientError | null, boolean, T | null] => {
+export default <T>(
+    invoke: InvokeApiClient<T>,
+    dependencies?: any[]
+): [HttpClientError | null, boolean, T | null] => {
     const [error, setError] = useState<HttpClientError | null>(null);
     const [isFeching, setIsFetching] = useState(false);
     const [data, setData] = useState<T | null>(null);
