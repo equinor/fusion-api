@@ -17,9 +17,7 @@ export default (): AppSettingsHook => {
         settings.apps[appKey] = appSettings;
     }
 
-    const [localAppSettings, setLocalAppsettings] = useState(
-        appSettings.toObject()
-    );
+    const [localAppSettings, setLocalAppsettings] = useState(appSettings.toObject());
 
     const setAppSetting: SetAppSetting = <T>(key: string, value: T): void => {
         appSettings.set(key, value);

@@ -32,7 +32,7 @@ type Settings = {
      * App settings will be populated on demand when using useAppSettings()
      */
     apps: AppSettings;
-}
+};
 
 export interface IFusionContext {
     auth: Auth;
@@ -74,7 +74,7 @@ export const createFusionContext = (
         settings: {
             core: coreSettings,
             apps: {},
-        }
+        },
     };
 };
 
