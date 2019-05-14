@@ -4,12 +4,11 @@ import { useFusionContext } from "../../core/FusionContext";
 import ApiClients from "../apiClients";
 import { HttpClientError } from "../HttpClient";
 
+export type ApiClientHookResult<T> = [HttpClientError | null, boolean, T | null];
+
 type InvokeApiClient<T> = (apiClients: ApiClients) => Promise<T>;
 
-export default <T>(
-    invoke: InvokeApiClient<T>,
-    dependencies?: any[]
-): [HttpClientError | null, boolean, T | null] => {
+export default <T>(invoke: InvokeApiClient<T>, dependencies?: any[]): ApiClientHookResult<T> => {
     const [error, setError] = useState<HttpClientError | null>(null);
     const [isFeching, setIsFetching] = useState(false);
     const [data, setData] = useState<T | null>(null);
