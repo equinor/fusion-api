@@ -35,6 +35,10 @@
         "tslint-config-prettier": "^1.18.0"
     },
     "peerDependencies": {
+        "@types/history": "^4.7.2",
+        "@types/react": "^16.8.17",
+        "@types/react-router-dom": "^4.3.3",
+        "@types/uuid": "^3.4.4",
         "react": "^16.8.6"
     },
     "files": [
