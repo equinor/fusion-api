@@ -12,13 +12,13 @@ export default <T>(invoke: InvokeApiClient<T>, dependencies?: any[]): ApiClientH
     const [error, setError] = useState<HttpClientError | null>(null);
     const [isFeching, setIsFetching] = useState(false);
     const [data, setData] = useState<T | null>(null);
-    const fusionContext = useFusionContext();
+    const { http } = useFusionContext();
 
     useEffectAsync(async () => {
         setIsFetching(true);
 
         try {
-            const result = await invoke(fusionContext.http.apiClients);
+            const result = await invoke(http.apiClients);
             setData(result);
             setError(null);
         } catch (error) {

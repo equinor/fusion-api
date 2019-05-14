@@ -5,6 +5,7 @@ import ResourceCollections, { createResourceCollections } from "../http/resource
 import ApiClients, { createApiClients } from "../http/apiClients";
 import HttpClient from "../http/HttpClient";
 import ServiceResolver from "../http/resourceCollections/ServiceResolver";
+import SettingsContainer from "../settings/SettingsContainer";
 
 type Auth = {
     container: IAuthContainer;
@@ -20,11 +21,25 @@ type Refs = {
     overlay: MutableRefObject<HTMLElement | null>;
 };
 
+type AppSettings = {
+    [key: string]: SettingsContainer;
+};
+
+type Settings = {
+    core: SettingsContainer;
+
+    /**
+     * App settings will be populated on demand when using useAppSettings()
+     */
+    apps: AppSettings;
+}
+
 export interface IFusionContext {
     auth: Auth;
     http: Http;
     refs: Refs;
     history: History;
+    settings: Settings;
 }
 
 const FusionContext = createContext<IFusionContext>({} as IFusionContext);
@@ -43,6 +58,8 @@ export const createFusionContext = (
 
     const history = createBrowserHistory();
 
+    const coreSettings = SettingsContainer.createFromCache("core");
+
     return {
         auth: { container: authContainer },
         http: {
@@ -54,6 +71,10 @@ export const createFusionContext = (
             overlay: overlayRef,
         },
         history,
+        settings: {
+            core: coreSettings,
+            apps: {},
+        }
     };
 };
 
