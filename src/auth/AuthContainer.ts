@@ -1,13 +1,16 @@
 import AuthApp from "./AuthApp";
 import AuthToken from "./AuthToken";
 import AuthNonce from "./AuthNonce";
-import AuthTokenCache from "./AuthTokenCache";
+import AuthCache from "./AuthCache";
+import AuthUser from "./AuthUser";
 
 export class FusionAuthAppNotFoundError extends Error {
     constructor(clientId: string) {
         super(`Unable to find app for client id [${clientId}]`);
     }
 }
+
+export class FusionAuthLoginError extends Error {}
 
 export interface IAuthContainer {
     /**
@@ -36,10 +39,16 @@ export interface IAuthContainer {
      * @throws {FusionAuthAppNotFoundError} When unable to match specified resource to a registered app
      */
     login(clientId: string): void;
+
+    /**
+     * Get the current cached user
+     */
+    getCachedUser(): AuthUser | null;
 }
 
 export default class AuthContainer implements IAuthContainer {
     private apps: AuthApp[];
+    private cachedUser: AuthUser | null = null;
 
     constructor() {
         this.apps = [];
@@ -60,8 +69,13 @@ export default class AuthContainer implements IAuthContainer {
             const app = new AuthApp(clientId, []);
             this.apps.push(app);
 
-            AuthTokenCache.storeToken(app, parsedToken);
+            AuthCache.storeToken(app, parsedToken);
+
+            const cachedUser = this.getCachedUser() || AuthUser.createFromToken(parsedToken);
+            cachedUser.mergeWithToken(parsedToken);
+            this.cacheUser(cachedUser);
         } catch (e) {
+            throw new FusionAuthLoginError();
             // Log?
         }
     }
@@ -74,7 +88,7 @@ export default class AuthContainer implements IAuthContainer {
         }
 
         return new Promise(resolve => {
-            const cachedToken = AuthTokenCache.getToken(app);
+            const cachedToken = AuthCache.getToken(app);
 
             if (cachedToken !== null && cachedToken.isValid()) {
                 return resolve(cachedToken.toString());
@@ -93,13 +107,13 @@ export default class AuthContainer implements IAuthContainer {
 
         if (existingApp !== null) {
             existingApp.updateResources(resources);
-            return AuthTokenCache.getToken(existingApp) !== null;
+            return AuthCache.getToken(existingApp) !== null;
         }
 
         const newApp = new AuthApp(clientId, resources);
         this.apps.push(newApp);
 
-        const cachedToken = AuthTokenCache.getToken(newApp);
+        const cachedToken = AuthCache.getToken(newApp);
 
         if (cachedToken !== null) {
             return true;
@@ -118,6 +132,19 @@ export default class AuthContainer implements IAuthContainer {
         const nonce = AuthNonce.createNew(app);
         // Store redirect url
         window.location.href = AuthContainer.buildLoginUrl(app, nonce);
+    }
+
+    getCachedUser(): AuthUser | null {
+        if (!this.cachedUser) {
+            this.cachedUser = AuthCache.getUser();
+        }
+
+        return this.cachedUser;
+    }
+
+    private cacheUser(user: AuthUser): void {
+        this.cachedUser = user;
+        AuthCache.storeUser(user);
     }
 
     private static getResourceOrigin(resource: string): string {
