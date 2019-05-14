@@ -27,7 +27,14 @@ $ npm install @equinor/fusion --save
 ```javascript
 import React, { useRef } from "react";
 import { render } from "react-dom";
-import { AuthContainer, ServiceResolver, HttpClient, createResourceCollections, createApiClients } from "@equinor/fusion";
+import {
+    AuthContainer,
+    createApiClients
+    createResourceCollections,
+    FusionContext,
+    HttpClient,
+    ServiceResolver,
+} from "@equinor/fusion";
 
 const authContainer = new AuthContainer();
 if(!authContainer.registerApp("{client-id}", ["http://api.url.com"])) {
