@@ -6,7 +6,7 @@ type ApiClients = {
     dataProxy: DataProxyClient;
 };
 
-export const createClients = (
+export const createApiClients = (
     httpClient: IHttpClient,
     resources: ResourceCollections
 ): ApiClients => ({

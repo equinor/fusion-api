@@ -27,7 +27,7 @@ $ npm install @equinor/fusion --save
 ```javascript
 import React, { useRef } from "react";
 import { render } from "react-dom";
-import { AuthContainer, ServiceResolver, HttpClient, createResourceCollections, createClients } from "@equinor/fusion";
+import { AuthContainer, ServiceResolver, HttpClient, createResourceCollections, createApiClients } from "@equinor/fusion";
 
 const authContainer = new AuthContainer();
 if(!authContainer.registerApp("{client-id}", ["http://api.url.com"])) {
@@ -42,7 +42,7 @@ const serviceResolver: ServiceResolver = {
 const resourceCollections = createResourceCollections(serviceResolver);
 
 const httpClient = new HttpClient(authContainer);
-const apiClients = createClients(httpClient, resourceCollections);
+const apiClients = createApiClients(httpClient, resourceCollections);
 
 const rootRef = useRef(null);
 const overlayRef = useRef(null);
