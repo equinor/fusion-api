@@ -22,6 +22,25 @@ $ yarn add @equinor/fusion
 $ npm install @equinor/fusion --save
 ```
 
+
+# Usage as App Developer
+
+```javascript
+import React from "react";
+import { useCurrentUser } from "@equinor/fusion";
+
+const MyComponent = () => {
+    const currentUser = useCurrentUser();
+    
+    return (
+        <h1>Hi {currentUser.name}!</h1>
+    );
+};
+
+export default MyComponent;
+
+```
+
 # Usage as Core
 
 ```javascript
@@ -39,41 +58,40 @@ import {
 const authContainer = new AuthContainer();
 if(!authContainer.registerApp("{client-id}", ["http://api.url.com"])) {
     authContainer.login("{client-id}");
-    return;
+} else {
+    const serviceResolver: ServiceResolver = {
+        getDataProxyUrl: () => "http://api.url.com",
+    };
+
+    const resourceCollections = createResourceCollections(serviceResolver);
+
+    const httpClient = new HttpClient(authContainer);
+    const apiClients = createApiClients(httpClient, resourceCollections);
+
+    const rootRef = useRef(null);
+    const overlayRef = useRef(null);
+
+    const Root = () => (
+        <FusionContext.Provider value={{
+            auth: { container: authContainer },
+            http: {
+                resourceCollections,
+                apiClients,
+            },
+            refs: {
+                root: rootRef,
+                overlay: overlayRef,
+            }
+        }}>
+            <div id="fusion-root" ref={rootRef}>
+
+            </div>
+            <div id="overlay-container" ref={overlayRef}>
+
+            </div>
+        </FusionContext.Provider>
+    );
+
+    render(<Root />, document.getElementById("app"));
 }
-
-const serviceResolver: ServiceResolver = {
-    getDataProxyUrl: () => "http://api.url.com",
-};
-
-const resourceCollections = createResourceCollections(serviceResolver);
-
-const httpClient = new HttpClient(authContainer);
-const apiClients = createApiClients(httpClient, resourceCollections);
-
-const rootRef = useRef(null);
-const overlayRef = useRef(null);
-
-const Root = () => (
-    <FusionContext.Provider value={{
-        auth: { container: authContainer },
-        http: {
-            resourceCollections,
-            apiClients,
-        },
-        refs: {
-            root: rootRef,
-            overlay: overlayRef,
-        }
-    }}>
-        <div id="fusion-root" ref={rootRef}>
-
-        </div>
-        <div id="overlay-container" ref={overlayRef}>
-
-        </div>
-    </FusionContext.Provider>
-);
-
-render(<Root />, document.getElementById("app"));
 ```

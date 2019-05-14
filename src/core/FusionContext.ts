@@ -13,8 +13,8 @@ type Http = {
 };
 
 type Refs = {
-    root: MutableRefObject<HTMLElement>;
-    overlay: MutableRefObject<HTMLElement>;
+    root: MutableRefObject<HTMLElement | null>;
+    overlay: MutableRefObject<HTMLElement | null>;
 };
 
 export interface IFusionContext {
