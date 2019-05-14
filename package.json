@@ -1,6 +1,6 @@
 {
     "name": "@equinor/fusion",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "description": "Everything a Fusion app needs to communicate with the core",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -21,16 +21,16 @@
     },
     "homepage": "https://github.com/equinor/fusion#readme",
     "dependencies": {
-        "@types/history": "^4.7.2",
-        "@types/react": "^16.8.17",
-        "@types/react-router-dom": "^4.3.3",
-        "@types/uuid": "^3.4.4",
         "history": "^4.9.0",
         "react": "^16.8.6",
         "react-router-dom": "^5.0.0",
         "uuid": "^3.3.2"
     },
     "devDependencies": {
+        "@types/history": "^4.7.2",
+        "@types/react": "^16.8.17",
+        "@types/react-router-dom": "^4.3.3",
+        "@types/uuid": "^3.4.4",
         "tslib": "^1.9.3",
         "tslint-config-prettier": "^1.18.0"
     },

@@ -1,14 +1,6 @@
-import ServiceResolver from "./ServiceResolver";
 import BaseResourceCollection from "./BaseResourceCollection";
 
 export default class DataProxyResourceCollection extends BaseResourceCollection {
-    private baseUrl: string;
-
-    constructor(serviceResolver: ServiceResolver) {
-        super(serviceResolver);
-        this.baseUrl = serviceResolver.getDataProxyBaseUrl();
-    }
-
     protected getBaseUrl(): string {
         return this.serviceResolver.getDataProxyBaseUrl();
     }
