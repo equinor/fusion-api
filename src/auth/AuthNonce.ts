@@ -1,7 +1,7 @@
 import * as uuid from "uuid/v1";
 import AuthApp from "./AuthApp";
 
-class FusionNonceNotFoundError extends Error {
+export class FusionNonceNotFoundError extends Error {
     constructor(key: string) {
         super(`Unable to find nonce [${key}]`);
     }

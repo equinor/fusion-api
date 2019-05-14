@@ -5,7 +5,7 @@ const b64DecodeUnicode = (str: string) =>
             .join("")
     );
 
-class FusionAuthTokenParseError extends Error {
+export class FusionAuthTokenParseError extends Error {
     constructor(token: string) {
         super(`Unable to parse token [${token}]`);
     }
