@@ -1,7 +1,10 @@
-import { createContext, useContext, MutableRefObject } from "react";
+import { createContext, useContext, useRef, MutableRefObject } from "react";
+import { History, createBrowserHistory } from "history";
 import { IAuthContainer } from "../auth/AuthContainer";
-import ResourceCollections from "../http/resourceCollections";
-import ApiClients from "../http/apiClients";
+import ResourceCollections, { createResourceCollections } from "../http/resourceCollections";
+import ApiClients, { createApiClients } from "../http/apiClients";
+import HttpClient from "../http/HttpClient";
+import ServiceResolver from "../http/resourceCollections/ServiceResolver";
 
 type Auth = {
     container: IAuthContainer;
@@ -21,9 +24,38 @@ export interface IFusionContext {
     auth: Auth;
     http: Http;
     refs: Refs;
+    history: History;
 }
 
 const FusionContext = createContext<IFusionContext>({} as IFusionContext);
+
+export const createFusionContext = (
+    authContainer: IAuthContainer,
+    serviceResolver: ServiceResolver
+): IFusionContext => {
+    const resourceCollections = createResourceCollections(serviceResolver);
+
+    const httpClient = new HttpClient(authContainer);
+    const apiClients = createApiClients(httpClient, resourceCollections);
+
+    const rootRef = useRef(null);
+    const overlayRef = useRef(null);
+
+    const history = createBrowserHistory();
+
+    return {
+        auth: { container: authContainer },
+        http: {
+            resourceCollections,
+            apiClients,
+        },
+        refs: {
+            root: rootRef,
+            overlay: overlayRef,
+        },
+        history,
+    };
+};
 
 export const useFusionContext = () => useContext(FusionContext);
 
