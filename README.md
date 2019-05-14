@@ -37,7 +37,7 @@ const MyComponent = () => {
     );
 };
 
-export default MyComponent;
+export default MyComponent; 
 
 ```
 
@@ -46,12 +46,12 @@ export default MyComponent;
 ```javascript
 import React, { useRef } from "react";
 import { render } from "react-dom";
+import { Router } from "react-router";
+import { createBrowserHistory } from "history";
 import {
     AuthContainer,
-    createApiClients
-    createResourceCollections,
+    createFusionContext,
     FusionContext,
-    HttpClient,
     ServiceResolver,
 } from "@equinor/fusion";
 
@@ -63,33 +63,19 @@ if(!authContainer.registerApp("{client-id}", ["http://api.url.com"])) {
         getDataProxyUrl: () => "http://api.url.com",
     };
 
-    const resourceCollections = createResourceCollections(serviceResolver);
-
-    const httpClient = new HttpClient(authContainer);
-    const apiClients = createApiClients(httpClient, resourceCollections);
-
-    const rootRef = useRef(null);
-    const overlayRef = useRef(null);
+    const fusionContext = createFusionContext(authContainer, serviceResolver);
 
     const Root = () => (
-        <FusionContext.Provider value={{
-            auth: { container: authContainer },
-            http: {
-                resourceCollections,
-                apiClients,
-            },
-            refs: {
-                root: rootRef,
-                overlay: overlayRef,
-            }
-        }}>
-            <div id="fusion-root" ref={rootRef}>
+        <Router history={fusionContext.history}>
+            <FusionContext.Provider value={fusionContext}>
+                <div id="fusion-root" ref={rootRef}>
 
-            </div>
-            <div id="overlay-container" ref={overlayRef}>
+                </div>
+                <div id="overlay-container" ref={overlayRef}>
 
-            </div>
-        </FusionContext.Provider>
+                </div>
+            </FusionContext.Provider>
+        </Router>
     );
 
     render(<Root />, document.getElementById("app"));
