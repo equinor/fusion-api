@@ -22,10 +22,51 @@ $ yarn add @equinor/fusion
 $ npm install @equinor/fusion --save
 ```
 
-# Usage
+# Usage as Core
 
 ```javascript
-import { AuthContainer } from "@equinor/fusion";
+import React, { useRef } from "react";
+import { render } from "react-dom";
+import { AuthContainer, ServiceResolver, HttpClient, createResourceCollections, createClients } from "@equinor/fusion";
 
 const authContainer = new AuthContainer();
+if(!authContainer.registerApp("{client-id}", ["http://api.url.com"])) {
+    authContainer.login("{client-id}");
+    return;
+}
+
+const serviceResolver: ServiceResolver = {
+    getDataProxyUrl: () => "http://api.url.com",
+};
+
+const resourceCollections = createResourceCollections(serviceResolver);
+
+const httpClient = new HttpClient(authContainer);
+const apiClients = createClients(httpClient, resourceCollections);
+
+const rootRef = useRef(null);
+const overlayRef = useRef(null);
+
+const Root = () => (
+    <FusionContext.Provider value={{
+        auth: { container: authContainer },
+        http: {
+            resourceCollections,
+            apiClients,
+        },
+        refs: {
+            root: rootRef,
+            overlay: overlayRef,
+        }
+    }}>
+        <div id="fusion-root" ref={rootRef}>
+
+        </div>
+        <div id="overlay-container" ref={overlayRef}>
+
+        </div>
+    </FusionContext.Provider>
+);
+
+render(<Root />, document.getElementById("app"));
 ```
