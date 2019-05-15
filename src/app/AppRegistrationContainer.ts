@@ -7,6 +7,12 @@ type RegisteredApp = {
     manifest: AppManifest;
 };
 
+type RegisterAppMessage = {
+    type: string;
+    appKey: string;
+    tempManifestKey: string;
+}
+
 const REGISTER_FUSION_APP = "REGISTER_FUSION_APP";
 
 export default class AppRegistrationContainer {
@@ -17,12 +23,13 @@ export default class AppRegistrationContainer {
         const tempManifestKey = uuid();
         (window as any)[tempManifestKey] = manifest;
 
-        window.postMessage(
-            {
-                type: REGISTER_FUSION_APP,
-                appKey,
-                tempManifestKey,
-            },
+        const message: RegisterAppMessage = {
+            type: REGISTER_FUSION_APP,
+            appKey,
+            tempManifestKey,
+        };
+
+        window.postMessage(message,
             window.location.href
         );
     }
@@ -47,10 +54,10 @@ const singleton = new AppRegistrationContainer();
 
 window.addEventListener("message", e => {
     if (e.data && e.data.type === REGISTER_FUSION_APP && e.origin === window.location.origin) {
-        const { appKey, manifestKey } = e.data;
-        const manifest = (window as any)[manifestKey];
+        const { appKey, tempManifestKey } = e.data as RegisterAppMessage;
+        const manifest = (window as any)[tempManifestKey];
 
-        delete (window as any)[manifestKey];
+        delete (window as any)[tempManifestKey];
 
         singleton.notifyListeners(appKey, manifest);
     }
