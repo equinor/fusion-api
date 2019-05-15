@@ -57,9 +57,13 @@ window.addEventListener("message", e => {
         const { appKey, tempManifestKey } = e.data as RegisterAppMessage;
         const manifest = (window as any)[tempManifestKey];
 
+        if(typeof manifest === "undefined" || !manifest) {
+            return;
+        }
+
         delete (window as any)[tempManifestKey];
 
-        singleton.notifyListeners(appKey, manifest);
+        singleton.notifyListeners(appKey, manifest as AppManifest);
     }
 });
 

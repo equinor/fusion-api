@@ -55,28 +55,36 @@ import {
     ServiceResolver,
 } from "@equinor/fusion";
 
+const serviceResolver: ServiceResolver = {
+    getDataProxyUrl: () => "http://api.url.com",
+};
+
 const authContainer = new AuthContainer();
-if(!authContainer.registerApp("{client-id}", ["http://api.url.com"])) {
+authContainer.handleWindowCallback();
+
+// Register the main fusion AAD app (get the client id from config)
+if(!authContainer.registerApp("{client-id}", [serviceResolver.getDataProxyUrl()])) {
     authContainer.login("{client-id}");
 } else {
-    const serviceResolver: ServiceResolver = {
-        getDataProxyUrl: () => "http://api.url.com",
+
+    const Root = () => {
+        const root = useRef();
+        const overlay = useRef();
+        const fusionContext = createFusionContext(authContainer, serviceResolver, { root, overlay });
+
+        return (
+            <Router history={fusionContext.history}>
+                <FusionContext.Provider value={fusionContext}>
+                    <div id="fusion-root" ref={rootRef}>
+                        {/* The app component goes here */}
+                    </div>
+                    <div id="overlay-container" ref={overlayRef}>
+                        {/* Leave this empty. Used for dialogs, popovers, tooltips etc. */}
+                    </div>
+                </FusionContext.Provider>
+            </Router>
+        );
     };
-
-    const fusionContext = createFusionContext(authContainer, serviceResolver);
-
-    const Root = () => (
-        <Router history={fusionContext.history}>
-            <FusionContext.Provider value={fusionContext}>
-                <div id="fusion-root" ref={rootRef}>
-
-                </div>
-                <div id="overlay-container" ref={overlayRef}>
-
-                </div>
-            </FusionContext.Provider>
-        </Router>
-    );
 
     render(<Root />, document.getElementById("app"));
 }

@@ -31,15 +31,13 @@ const FusionContext = createContext<IFusionContext>({} as IFusionContext);
 
 export const createFusionContext = (
     authContainer: IAuthContainer,
-    serviceResolver: ServiceResolver
+    serviceResolver: ServiceResolver,
+    refs: Refs
 ): IFusionContext => {
     const resourceCollections = createResourceCollections(serviceResolver);
 
     const httpClient = new HttpClient(authContainer);
     const apiClients = createApiClients(httpClient, resourceCollections);
-
-    const rootRef = useRef(null);
-    const overlayRef = useRef(null);
 
     const history = createBrowserHistory();
 
@@ -49,10 +47,7 @@ export const createFusionContext = (
             resourceCollections,
             apiClients,
         },
-        refs: {
-            root: rootRef,
-            overlay: overlayRef,
-        },
+        refs,
         history,
     };
 };
