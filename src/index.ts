@@ -18,4 +18,7 @@ export { default as ResourceCollections, createResourceCollections } from "./htt
 
 export { default as ApiClients, createApiClients } from "./http/apiClients";
 
+export { default as useCoreSettings } from "./settings/useCoreSettings";
+export { default as useAppSettings } from "./settings/useAppSettings";
+
 export * from "./http/hooks/dataProxy/useHandover";

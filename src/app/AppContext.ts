@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, useContext } from "react";
 import { AppManifest } from "./AppManifest";
 
 export interface IAppContext {
@@ -7,8 +7,12 @@ export interface IAppContext {
     manifest: AppManifest | null;
 }
 
-export default createContext<IAppContext>({
+const AppContext = createContext<IAppContext>({
     appKey: "",
     appPath: "/",
     manifest: null,
 });
+
+export const useAppContext = () => useContext(AppContext);
+
+export default AppContext;
