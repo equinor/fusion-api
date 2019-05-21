@@ -1,6 +1,7 @@
 import DataProxyClient from "./DataProxyClient";
 import ResourceCollections from "../resourceCollections";
 import { IHttpClient } from "../HttpClient";
+export { FusionApiHttpErrorResponse } from "./models/common/FusionApiHttpErrorResponse";
 
 type ApiClients = {
     dataProxy: DataProxyClient;

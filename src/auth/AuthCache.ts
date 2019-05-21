@@ -1,28 +1,32 @@
 import AuthApp from "./AuthApp";
 import AuthToken from "./AuthToken";
 import AuthUser, { AuthUserJSON } from "./AuthUser";
+import ReliableDirctionary, { LocalStorageProvider } from "../utils/ReliableDictionary";
 
 enum TokenCacheKey {
-    TOKEN,
-    EXPIRATION,
+    TOKEN = "TOKEN",
+    USER = "USER"
 }
 
-export default class AuthCache {
-    private static createCacheKey(app: AuthApp, key: TokenCacheKey): string {
+export default class AuthCache extends ReliableDirctionary {
+    constructor() {
+        super(new LocalStorageProvider("FUSION_AUTH_CACHE"));
+    }
+
+    private static createAppCacheKey(app: AuthApp, key: TokenCacheKey): string {
         return `FUSION_AUTH_CACHE:${app.clientId}:${key}`;
     }
 
-    private static createUserCacheKey(): string {
-        return "FUSION_AUTH_USER";
+    async storeTokenAsync(app: AuthApp, token: AuthToken): Promise<void> {
+        await this.setAsync(
+            AuthCache.createAppCacheKey(app, TokenCacheKey.TOKEN),
+            token.toString()
+        );
     }
 
-    static storeToken(app: AuthApp, token: AuthToken): void {
-        localStorage.setItem(AuthCache.createCacheKey(app, TokenCacheKey.TOKEN), token.toString());
-    }
-
-    static getToken(app: AuthApp): AuthToken | null {
-        const originalToken = localStorage.getItem(
-            AuthCache.createCacheKey(app, TokenCacheKey.TOKEN)
+    async getTokenAsync(app: AuthApp): Promise<AuthToken | null> {
+        const originalToken = await this.getAsync<string>(
+            AuthCache.createAppCacheKey(app, TokenCacheKey.TOKEN)
         );
 
         if (!originalToken) {
@@ -32,18 +36,17 @@ export default class AuthCache {
         return AuthToken.parse(originalToken);
     }
 
-    static storeUser(user: AuthUser) {
-        localStorage.setItem(AuthCache.createUserCacheKey(), user.toJSON());
+    async storeUserAsync(user: AuthUser) {
+        await this.setAsync(TokenCacheKey.USER, user.toObject());
     }
 
-    static getUser(): AuthUser | null {
-        const cachedUser = localStorage.getItem(AuthCache.createUserCacheKey());
+    async getUserAsync(): Promise<AuthUser | null> {
+        const cachedUser = await this.getAsync<AuthUserJSON>(TokenCacheKey.USER);
 
         if (cachedUser === null) {
             return null;
         }
 
-        const parsed = JSON.parse(cachedUser) as AuthUserJSON;
-        return AuthUser.fromJSON(parsed);
+        return AuthUser.fromJSON(cachedUser);
     }
 }

@@ -67,5 +67,7 @@ window.addEventListener("message", e => {
     }
 });
 
-const { registerApp, registerAppListener } = singleton;
+const registerApp = singleton.registerApp.bind(singleton);
+const registerAppListener = singleton.registerAppListener.bind(singleton);
+
 export { registerApp, registerAppListener };

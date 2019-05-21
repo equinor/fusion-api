@@ -1,18 +1,11 @@
 import { useEffect } from "react";
 
-type AsyncEffectCallback = () => Promise<(() => void) | void>;
+export type AsyncEffectCallback<T> = (signal: AbortSignal) => Promise<T>;
 
-export default (effect: AsyncEffectCallback, dependencies?: any[]): void => {
-    const invoke = (promise: Promise<(() => void) | void>): void => {
-        promise.then(result => {
-            if (typeof result === "function") {
-                result();
-            }
-        });
-    };
-
+export default <T>(effect: AsyncEffectCallback<T>, dependencies?: readonly any[]): void => {
     useEffect(() => {
-        const promise = effect();
-        return () => invoke(promise);
+        const abortController = new AbortController();
+        effect(abortController.signal);
+        return abortController.abort;
     }, dependencies);
 };

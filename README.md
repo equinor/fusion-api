@@ -8,7 +8,13 @@ Everything a Fusion app needs to communicate with the core.
 [![License](https://img.shields.io/npm/l/@equinor/fusion.svg)](https://github.com/equinor/fusion/blob/master/package.json)
 
 * [Install](#install)
-* [Usage](#usage)
+* [Usage as App developer](#usage-as-app-developer)
+    * [Current user](#current-user)
+    * [Core resources](#core-resources)
+    * [Core settings](#core-settings)
+    * [App settings](#app-settings)
+* [Usage as Core developer](#usage-as-core-developer)
+    * [Bootstrap the fusion core](#bootstrap-the-fusion-core)
 
 # Install
 
@@ -23,14 +29,23 @@ $ npm install @equinor/fusion --save
 ```
 
 
-# Usage as App Developer
+# Usage as App developer
+
+## Current user
 
 ```javascript
 import React from "react";
+import { Spinner } from "@equinor/fusion-components";
 import { useCurrentUser } from "@equinor/fusion";
 
 const MyComponent = () => {
     const currentUser = useCurrentUser();
+
+    // Current user might not be retrieved from the cache when the component loads,
+    // So check for nulL!
+    if(currentUser == null) {
+        return <Spinner />;
+    }
     
     return (
         <h1>Hi {currentUser.name}!</h1>
@@ -41,8 +56,103 @@ export default MyComponent;
 
 ```
 
-# Usage as Core
+## Core resources
 
+```javascript
+import React from "react";
+import { Spinner } from "@equinor/fusion-components";
+import { useCurrentContext, ContextTypes, useHandover, useHandoverMcpkgs } from "@equinor/fusion";
+
+const MyHandoverCommpkgDetails = ({ id }) => {
+    const currentProject = useCurrentContext(ContextTypes.PDP);
+    const [isFetching, handoverMcpkgs] = useHandoverMcpkgs(currentProject, id);
+    
+    if(isFetching) {
+        return <Spinner />;
+    }
+
+    return (
+        <ul>
+            {handoverMcpkgs.map(mcpkg => (
+                <li>
+                    {mcpkg.mcPkgNo}
+                </li>
+            ))}
+        </ul>
+    );
+};
+
+const MyHandoverComponent = () => {
+    const currentProject = useCurrentContext(ContextTypes.PDP);
+    const [isFetching, handoverData] = useHandover(currentProject);
+    
+    if(isFetching) {
+        return <Spinner />;
+    }
+
+    return (
+        <ul>
+            {handoverData.map(handoverItem => (
+                <li>
+                    <h2>{handoverItem.commpkgNo}</h2>
+                    <MyHandoverCommpkgDetails id={handoverItem.id}  />
+                </li>
+            ))}
+        </ul>
+    );
+};
+
+export default MyComponent; 
+
+```
+
+## Core settings
+Core settings are read-only for apps
+```javascript
+import React from "react";
+import { useCoreSettings, ComponentDisplayTypes } from "@equinor/fusion";
+
+const MyComponent = () => {
+    const coreSettings = useCoreSettings();
+
+    if(coreSettings.componentDisplayType === ComponentDisplayTypes.Compact) {
+        return (<span>Looks like you prefere compact mode!</span>);
+    } else {
+        return (<h2>Some more spacing for you!</h2>)
+    }
+};
+
+export default MyComponent; 
+
+```
+
+## App settings
+App settings are automatically scoped to the current app
+```javascript
+import React from "react";
+import { Button } from "@equinor/fusion-components";
+import { useAppSettings } from "@equinor/fusion";
+
+const MyComponent = () => {
+    const [appSettings, setAppSettings] = useAppSettings();
+
+    return (
+        <Button
+            primary contained
+            onClick={() => setAppSettings("toggle", !appSettings.toggle)}
+        >
+            Click to toggle {appSettings.toggle ? "On" : "Off"}
+        </Button>
+    );
+};
+
+export default MyComponent; 
+
+```
+
+# Usage as Core developer
+
+## Bootstrap the fusion core
 ```javascript
 import React, { useRef } from "react";
 import { render } from "react-dom";
@@ -57,35 +167,52 @@ import {
 
 const serviceResolver: ServiceResolver = {
     getDataProxyUrl: () => "http://api.url.com",
+    getOrgUrl: () => "http://api.url.com",
 };
 
-const authContainer = new AuthContainer();
-authContainer.handleWindowCallback();
+const start = async () => {
+    const authContainer = new AuthContainer();
 
-// Register the main fusion AAD app (get the client id from config)
-if(!authContainer.registerApp("{client-id}", [serviceResolver.getDataProxyUrl()])) {
-    authContainer.login("{client-id}");
-} else {
+    // Handle redirect from login
+    await authContainer.handleWindowCallbackAsync();
 
-    const Root = () => {
-        const root = useRef();
-        const overlay = useRef();
-        const fusionContext = createFusionContext(authContainer, serviceResolver, { root, overlay });
+    // Register the main fusion AAD app (get the client id from config)
+    const coreAppClientId = "{client-id}";
+    const coreAppRegistered = await authContainer.registerAppAsync(
+        coreAppClientId,
+        [serviceResolver.getDataProxyUrl(), serviceResolver.getOrgUrl()]
+    );
 
-        return (
-            <Router history={fusionContext.history}>
-                <FusionContext.Provider value={fusionContext}>
-                    <div id="fusion-root" ref={rootRef}>
-                        {/* The app component goes here */}
-                    </div>
-                    <div id="overlay-container" ref={overlayRef}>
-                        {/* Leave this empty. Used for dialogs, popovers, tooltips etc. */}
-                    </div>
-                </FusionContext.Provider>
-            </Router>
-        );
-    };
+    if(!coreAppRegistered) {
+        authContainer.login(coreAppClientId);
+    } else {
 
-    render(<Root />, document.getElementById("app"));
-}
+        const Root = () => {
+            const root = useRef();
+            const overlay = useRef();
+            const fusionContext = createFusionContext(
+                authContainer,
+                serviceResolver,
+                { root, overlay, }
+            );
+
+            return (
+                <Router history={fusionContext.history}>
+                    <FusionContext.Provider value={fusionContext}>
+                        <div id="fusion-root" ref={rootRef}>
+                            {/* The app component goes here */}
+                        </div>
+                        <div id="overlay-container" ref={overlayRef}>
+                            {/* Leave this empty. Used for dialogs, popovers, tooltips etc. */}
+                        </div>
+                    </FusionContext.Provider>
+                </Router>
+            );
+        };
+
+        render(<Root />, document.getElementById("app"));
+    }
+};
+
+start();
 ```
