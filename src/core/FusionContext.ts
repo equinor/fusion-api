@@ -7,25 +7,25 @@ import HttpClient from "../http/HttpClient";
 import ServiceResolver from "../http/resourceCollections/ServiceResolver";
 import SettingsContainer from "../settings/SettingsContainer";
 
-type Auth = {
+export type Auth = {
     container: IAuthContainer;
 };
 
-type Http = {
+export type Http = {
     resourceCollections: ResourceCollections;
     apiClients: ApiClients;
 };
 
-type Refs = {
+export type Refs = {
     root: MutableRefObject<HTMLElement | null>;
     overlay: MutableRefObject<HTMLElement | null>;
 };
 
-type AppSettings = {
+export type AppSettings = {
     [key: string]: SettingsContainer;
 };
 
-type Settings = {
+export type Settings = {
     core: SettingsContainer;
 
     /**
@@ -56,7 +56,7 @@ export const createFusionContext = (
 
     const history = createBrowserHistory();
 
-    const coreSettings = SettingsContainer.createFromCache("core");
+    const coreSettings = new SettingsContainer("core");
 
     return {
         auth: { container: authContainer },

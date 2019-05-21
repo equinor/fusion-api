@@ -1,28 +1,40 @@
-import { useState } from "react";
-import { useFusionContext } from "../core/FusionContext";
+import { useState, useEffect } from "react";
+import { useFusionContext, Settings } from "../core/FusionContext";
 import { useAppContext } from "../app/AppContext";
-import SettingsContainer, { ReadOnlySettings } from "./SettingsContainer";
+import SettingsContainer, { ReadonlySettings } from "./SettingsContainer";
 
 type SetAppSetting = <T>(key: string, value: T) => void;
-type AppSettingsHook = [ReadOnlySettings, SetAppSetting];
+type AppSettingsHook = [ReadonlySettings, SetAppSetting];
+
+const ensureAppSettings = (settings: Settings, appKey: string) => {
+    if (typeof settings.apps[appKey] === "undefined") {
+        const appSettings = new SettingsContainer(appKey);
+        settings.apps[appKey] = appSettings;
+        return appSettings;
+    }
+
+    return settings.apps[appKey];
+};
 
 export default (): AppSettingsHook => {
     const { settings } = useFusionContext();
     const { appKey } = useAppContext();
 
-    let appSettings = settings.apps[appKey];
+    let appSettings = ensureAppSettings(settings, appKey);
 
-    if (typeof appSettings === "undefined") {
-        appSettings = SettingsContainer.createFromCache(appKey);
-        settings.apps[appKey] = appSettings;
-    }
+    const [localAppSettings, setLocalAppsettings] = useState<ReadonlySettings>({});
 
-    const [localAppSettings, setLocalAppsettings] = useState(appSettings.toObject());
+    useEffect(() => {
+        appSettings.toObjectAsync().then(setLocalAppsettings);
 
-    const setAppSetting: SetAppSetting = <T>(key: string, value: T): void => {
-        appSettings.set(key, value);
-        setLocalAppsettings(appSettings.toObject());
+        return appSettings.on("change", setLocalAppsettings);
+    }, []);
+
+    const setAppSettingAsync: SetAppSetting = async <T>(key: string, value: T): Promise<void> => {
+        await appSettings.setAsync(key, value);
+        const obj = await appSettings.toObjectAsync();
+        setLocalAppsettings(obj);
     };
 
-    return [localAppSettings, setAppSetting];
+    return [localAppSettings, setAppSettingAsync];
 };

@@ -82,8 +82,8 @@ export default class AuthUser {
         });
     }
 
-    toJSON(): string {
-        const json: AuthUserJSON = {
+    toObject(): AuthUserJSON {
+        return {
             id: this.id,
             familyName: this.familyName,
             fullName: this.fullName,
@@ -91,7 +91,9 @@ export default class AuthUser {
             roles: this.roles,
             upn: this.upn,
         };
+    }
 
-        return JSON.stringify(json);
+    toString(): string {
+        return JSON.stringify(this.toObject());
     }
 }

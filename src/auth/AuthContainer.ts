@@ -16,7 +16,7 @@ export interface IAuthContainer {
     /**
      * Handle redirect back from login. Should not be called by apps or tiles
      */
-    handleWindowCallback(): void;
+    handleWindowCallbackAsync(): Promise<void>;
 
     /**
      * Acquire token for specified resource
@@ -31,7 +31,7 @@ export interface IAuthContainer {
      * @param clientId The AAD app client id
      * @param resources An array of resources that uses the specified client id
      */
-    registerApp(clientId: string, resources: string[]): boolean;
+    registerAppAsync(clientId: string, resources: string[]): Promise<boolean>;
 
     /**
      * Initiates the login process
@@ -43,18 +43,20 @@ export interface IAuthContainer {
     /**
      * Get the current cached user
      */
-    getCachedUser(): AuthUser | null;
+    getCachedUserAsync(): Promise<AuthUser | null>;
 }
 
 export default class AuthContainer implements IAuthContainer {
     private apps: AuthApp[];
+    private cache: AuthCache;
     private cachedUser: AuthUser | null = null;
 
     constructor() {
         this.apps = [];
+        this.cache = new AuthCache();
     }
 
-    handleWindowCallback(): void {
+    async handleWindowCallbackAsync(): Promise<void> {
         const token = AuthContainer.getTokenFromHash(window.location.hash);
 
         if (token === null) {
@@ -69,11 +71,12 @@ export default class AuthContainer implements IAuthContainer {
             const app = new AuthApp(clientId, []);
             this.apps.push(app);
 
-            AuthCache.storeToken(app, parsedToken);
+            await this.cache.storeTokenAsync(app, parsedToken);
 
-            const cachedUser = this.getCachedUser() || AuthUser.createFromToken(parsedToken);
+            const cachedUser =
+                (await this.getCachedUserAsync()) || AuthUser.createFromToken(parsedToken);
             cachedUser.mergeWithToken(parsedToken);
-            this.cacheUser(cachedUser);
+            await this.cacheUserAsync(cachedUser);
         } catch (e) {
             throw new FusionAuthLoginError();
             // Log?
@@ -87,8 +90,8 @@ export default class AuthContainer implements IAuthContainer {
             throw new FusionAuthAppNotFoundError(resource);
         }
 
-        return new Promise(resolve => {
-            const cachedToken = AuthCache.getToken(app);
+        return new Promise(async resolve => {
+            const cachedToken = await this.cache.getTokenAsync(app);
 
             if (cachedToken !== null && cachedToken.isValid()) {
                 return resolve(cachedToken.toString());
@@ -102,18 +105,18 @@ export default class AuthContainer implements IAuthContainer {
         });
     }
 
-    registerApp(clientId: string, resources: string[]): boolean {
+    async registerAppAsync(clientId: string, resources: string[]): Promise<boolean> {
         const existingApp = this.resolveApp(clientId);
 
         if (existingApp !== null) {
             existingApp.updateResources(resources);
-            return AuthCache.getToken(existingApp) !== null;
+            return (await this.cache.getTokenAsync(existingApp)) !== null;
         }
 
         const newApp = new AuthApp(clientId, resources);
         this.apps.push(newApp);
 
-        const cachedToken = AuthCache.getToken(newApp);
+        const cachedToken = await this.cache.getTokenAsync(newApp);
 
         if (cachedToken !== null) {
             return true;
@@ -134,17 +137,17 @@ export default class AuthContainer implements IAuthContainer {
         window.location.href = AuthContainer.buildLoginUrl(app, nonce);
     }
 
-    getCachedUser(): AuthUser | null {
+    async getCachedUserAsync(): Promise<AuthUser | null> {
         if (!this.cachedUser) {
-            this.cachedUser = AuthCache.getUser();
+            this.cachedUser = await this.cache.getUserAsync();
         }
 
         return this.cachedUser;
     }
 
-    private cacheUser(user: AuthUser): void {
+    private async cacheUserAsync(user: AuthUser): Promise<void> {
         this.cachedUser = user;
-        AuthCache.storeUser(user);
+        await this.cache.storeUserAsync(user);
     }
 
     private static getResourceOrigin(resource: string): string {
