@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { AppManifest } from "./AppManifest";
+import AppManifest from "./AppManifest";
 
 export interface IAppContext {
     appKey: string;

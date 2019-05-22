@@ -1,11 +1,14 @@
-import { createContext, useContext, useRef, MutableRefObject } from "react";
+import { createContext, useContext, MutableRefObject } from "react";
 import { History, createBrowserHistory } from "history";
 import { IAuthContainer } from "../auth/AuthContainer";
 import ResourceCollections, { createResourceCollections } from "../http/resourceCollections";
 import ApiClients, { createApiClients } from "../http/apiClients";
 import HttpClient from "../http/HttpClient";
+import ResourceCache from "../http/ResourceCache";
 import ServiceResolver from "../http/resourceCollections/ServiceResolver";
 import SettingsContainer from "../settings/SettingsContainer";
+import AppContainer, { appContainer } from "../app/AppContainer";
+import AppManifest from "../app/AppManifest";
 
 export type Auth = {
     container: IAuthContainer;
@@ -14,6 +17,7 @@ export type Auth = {
 export type Http = {
     resourceCollections: ResourceCollections;
     apiClients: ApiClients;
+    resourceCache: ResourceCache;
 };
 
 export type Refs = {
@@ -34,12 +38,22 @@ export type Settings = {
     apps: AppSettings;
 };
 
+export type App = {
+    container: AppContainer;
+    currentApp: {
+        appKey: string;
+        appPath: string;
+        manifest: AppManifest | null;
+    };
+};
+
 export interface IFusionContext {
     auth: Auth;
     http: Http;
     refs: Refs;
     history: History;
     settings: Settings;
+    app: App;
 }
 
 const FusionContext = createContext<IFusionContext>({} as IFusionContext);
@@ -51,7 +65,8 @@ export const createFusionContext = (
 ): IFusionContext => {
     const resourceCollections = createResourceCollections(serviceResolver);
 
-    const httpClient = new HttpClient(authContainer);
+    const resourceCache = new ResourceCache();
+    const httpClient = new HttpClient(authContainer, resourceCache);
     const apiClients = createApiClients(httpClient, resourceCollections);
 
     const history = createBrowserHistory();
@@ -63,12 +78,21 @@ export const createFusionContext = (
         http: {
             resourceCollections,
             apiClients,
+            resourceCache,
         },
         refs,
         history,
         settings: {
             core: coreSettings,
             apps: {},
+        },
+        app: {
+            container: appContainer,
+            currentApp: {
+                appKey: "",
+                appPath: "/",
+                manifest: null,
+            },
         },
     };
 };

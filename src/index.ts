@@ -2,7 +2,7 @@ export { IAuthContainer, default as AuthContainer } from "./auth/AuthContainer";
 
 export { default as useCurrentUser } from "./auth/useCurrentUser";
 
-export { registerApp, registerAppListener } from "./app/AppRegistrationContainer";
+export { registerApp, appContainer } from "./app/AppContainer";
 
 export { default as AppContext, IAppContext } from "./app/AppContext";
 
