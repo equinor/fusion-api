@@ -1,4 +1,5 @@
 import { HttpResponse } from "../HttpClient";
+import EventEmitter from "../../utils/EventEmitter";
 
 type CacheStatus = {
     age: Date | null;
@@ -13,7 +14,13 @@ type CachedResource<T> = {
     cacheStatus: CacheStatus;
 };
 
-type ReadonlyCachedResource<T> = Readonly<CachedResource<T>>;
+export type ReadonlyCachedResource<T> = Readonly<CachedResource<T>> & {
+    data: Readonly<T> | null;
+};
+
+type ResourceCacheEvents = {
+    update: <T>(changedResource: ReadonlyCachedResource<T>) => void;
+}
 
 export interface IResourceCache {
     setIsFetchingAsync<T>(resource: string): Promise<void>;
@@ -21,7 +28,7 @@ export interface IResourceCache {
     getAsync<T>(resource: string): Promise<ReadonlyCachedResource<T>>;
 }
 
-export default class ResourceCache implements IResourceCache {
+export default class ResourceCache extends EventEmitter<ResourceCacheEvents> implements IResourceCache {
     private cachedResources: { [key: string]: CachedResource<any> } = {};
 
     async setIsFetchingAsync<T>(resource: string): Promise<void> {
@@ -76,5 +83,6 @@ export default class ResourceCache implements IResourceCache {
         updatedResource: CachedResource<T>
     ): Promise<void> {
         this.cachedResources[resource] = updatedResource;
+        this.emit("update", updatedResource);
     }
 }

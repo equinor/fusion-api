@@ -2,6 +2,7 @@ import uuid from "uuid/v1";
 import { IAuthContainer } from "../../auth/AuthContainer";
 import IHttpClient from "./IHttpClient";
 import { HttpResponse } from "./HttpResponse";
+import ResourceCache from "../ResourceCache";
 import {
     HttpClientError,
     HttpClientParseError,
@@ -20,11 +21,13 @@ export {
 
 export default class HttpClient implements IHttpClient {
     private authContainer: IAuthContainer;
+    private resourceCache: ResourceCache;
     private requestsInProgress: { [key: string]: Promise<HttpResponse<any>> } = {};
     private sessionId = uuid();
 
-    constructor(authContainer: IAuthContainer) {
+    constructor(authContainer: IAuthContainer, resourceCache: ResourceCache) {
         this.authContainer = authContainer;
+        this.resourceCache = resourceCache;
     }
 
     async getAsync<T, TExpectedErrorResponse>(
@@ -37,6 +40,8 @@ export default class HttpClient implements IHttpClient {
             return await requestInProgress;
         }
 
+        await this.resourceCache.setIsFetchingAsync(url);
+
         init = ensureRequestInit(init, init => ({ ...init, method: "GET" }));
 
         const request = this.performFetchAsync<T, TExpectedErrorResponse>(url, init);
@@ -44,6 +49,8 @@ export default class HttpClient implements IHttpClient {
 
         const response = await request;
         delete this.requestsInProgress[url];
+
+        await this.resourceCache.updateAsync(url, response);
 
         return response;
     }
@@ -76,52 +83,42 @@ export default class HttpClient implements IHttpClient {
         return await this.performFetchAsync<TResponse, TExpectedErrorResponse>(url, init);
     }
 
-    private getRequestInProgress<T>(url: string): Promise<HttpResponse<T>> {
-        return this.requestsInProgress[url] as Promise<HttpResponse<T>>;
-    }
-
-    private addSessionIdHeader(init: RequestInit): RequestInit {
-        return {
-            ...init,
-            headers: new Headers({
-                ...init.headers,
-                "X-Session-Id": this.sessionId,
-            }),
-        };
-    }
-
-    private addAcceptJsonHeader(init: RequestInit): RequestInit {
-        return {
-            ...init,
-            headers: new Headers({
-                ...init.headers,
-                Accept: "application/json",
-            }),
-        };
-    }
-
-    private addRefreshHeader(init: RequestInit): RequestInit {
-        return {
-            ...init,
-            headers: new Headers({
-                ...init.headers,
-                "x-pp-refresh": "application/json",
-            }),
-        };
-    }
-
-    private async addAuthHeaderAsync(url: string, init: RequestInit): Promise<RequestInit> {
-        const token = await this.authContainer.acquireTokenAsync(url);
-
-        const headers = new Headers({
-            ...init.headers,
-            Authorization: "Bearer " + token,
-        });
+    private transformHeaders(
+        init: RequestInit,
+        transform: (headers: Headers) => void
+    ): RequestInit {
+        const headers = new Headers(init.headers);
+        transform(headers);
 
         return {
             ...init,
             headers,
         };
+    }
+
+    private getRequestInProgress<T>(url: string): Promise<HttpResponse<T>> {
+        return this.requestsInProgress[url] as Promise<HttpResponse<T>>;
+    }
+
+    private addSessionIdHeader(init: RequestInit): RequestInit {
+        return this.transformHeaders(init, headers =>
+            headers.append("X-Session-Id", this.sessionId)
+        );
+    }
+
+    private addAcceptJsonHeader(init: RequestInit): RequestInit {
+        return this.transformHeaders(init, headers => headers.append("Accept", "application/json"));
+    }
+
+    private addRefreshHeader(init: RequestInit): RequestInit {
+        return this.transformHeaders(init, headers => headers.append("x-pp-refresh", "true"));
+    }
+
+    private async addAuthHeaderAsync(url: string, init: RequestInit): Promise<RequestInit> {
+        const token = await this.authContainer.acquireTokenAsync(url);
+        return this.transformHeaders(init, headers =>
+            headers.append("Authorization", "Bearer " + token)
+        );
     }
 
     private async transformRequestAsync(url: string, init: RequestInit): Promise<RequestInit> {
@@ -190,7 +187,7 @@ export default class HttpClient implements IHttpClient {
             }
 
             // Add more info
-            throw new HttpClientError();
+            throw error as HttpClientError;
         }
     }
 }

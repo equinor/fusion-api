@@ -12,7 +12,7 @@ import {
     HandoverUnsignedTask,
 } from "../../apiClients/DataProxyClient";
 
-export default (
+export const useHandover = (
     siteCode: string,
     projectIdentifier: string
 ): ApiClientHookResult<HandoverItem[]> => {
