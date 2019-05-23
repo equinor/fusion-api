@@ -6,9 +6,9 @@ import SettingsContainer, { ReadonlySettings } from "./SettingsContainer";
 type SetAppSetting = <T>(key: string, value: T) => void;
 type AppSettingsHook = [ReadonlySettings, SetAppSetting];
 
-const ensureAppSettings = (settings: Settings, appKey: string) => {
+const ensureAppSettings = (settings: Settings, appKey: string, defaultSettings?: ReadonlySettings) => {
     if (typeof settings.apps[appKey] === "undefined") {
-        const appSettings = new SettingsContainer(appKey);
+        const appSettings = new SettingsContainer(appKey, defaultSettings);
         settings.apps[appKey] = appSettings;
         return appSettings;
     }
@@ -16,13 +16,13 @@ const ensureAppSettings = (settings: Settings, appKey: string) => {
     return settings.apps[appKey];
 };
 
-export default (): AppSettingsHook => {
+export default (defaultSettings?: ReadonlySettings): AppSettingsHook => {
     const { settings } = useFusionContext();
     const { appKey } = useAppContext();
 
     let appSettings = ensureAppSettings(settings, appKey);
 
-    const [localAppSettings, setLocalAppsettings] = useState<ReadonlySettings>({});
+    const [localAppSettings, setLocalAppsettings] = useState<ReadonlySettings>(appSettings.toObject() || {});
 
     useEffect(() => {
         appSettings.toObjectAsync().then(setLocalAppsettings);

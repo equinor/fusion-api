@@ -7,6 +7,7 @@ export { default as LocalStorageProvider } from "./LocalStorageProvider";
 export interface IReadonlyReliableDictionary {
     getAsync<T>(key: string): Promise<T | null>;
     toObjectAsync(): Promise<ReadonlyDictionary>;
+    toObject(): ReadonlyDictionary | null;
 }
 
 export default abstract class ReadonlyReliableDictionary {

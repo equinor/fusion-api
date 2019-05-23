@@ -50,6 +50,10 @@ export default abstract class ReliableDictionary extends EventEmitter<ReliableDi
         return await this.provider.toObjectAsync();
     }
 
+    toObject(): ReadonlyDictionary | null {
+        return this.provider.toObject();
+    }
+
     private async emitChangesAsync(): Promise<void> {
         const dictionary = await this.toObjectAsync();
         this.emit("change", dictionary);

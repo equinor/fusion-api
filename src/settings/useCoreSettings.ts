@@ -1,19 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
-import { useFusionContext } from "../core/FusionContext";
+import { useFusionContext, CoreSettings, defaultSettings } from "../core/FusionContext";
 import { ReadonlySettings } from "./SettingsContainer";
-import { ComponentDisplayType } from "../core/ComponentDisplayType";
 
-type CoreSettings = {
-    componentDisplayType: ComponentDisplayType;
-};
-
-const defaultSettings: CoreSettings = {
-    componentDisplayType: ComponentDisplayType.Comforable,
-};
 
 export default (): CoreSettings => {
-    const [coreSettings, setCoreSettings] = useState<CoreSettings>(defaultSettings);
     const { settings } = useFusionContext();
+    const [coreSettings, setCoreSettings] = useState<CoreSettings>((settings.core.toObject() as CoreSettings) || defaultSettings);
 
     const setSettings = useCallback((settings: ReadonlySettings) => {
         setCoreSettings(settings as CoreSettings);
