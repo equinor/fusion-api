@@ -9,6 +9,7 @@ import ServiceResolver from "../http/resourceCollections/ServiceResolver";
 import SettingsContainer from "../settings/SettingsContainer";
 import AppContainer, { appContainer } from "../app/AppContainer";
 import AppManifest from "../app/AppManifest";
+import { ComponentDisplayType } from "../core/ComponentDisplayType";
 
 export type Auth = {
     container: IAuthContainer;
@@ -56,6 +57,14 @@ export interface IFusionContext {
     app: App;
 }
 
+export type CoreSettings = Readonly<{
+    componentDisplayType: ComponentDisplayType;
+}>;
+
+export const defaultSettings: CoreSettings = {
+    componentDisplayType: ComponentDisplayType.Comforable,
+};
+
 const FusionContext = createContext<IFusionContext>({} as IFusionContext);
 
 export const createFusionContext = (
@@ -71,7 +80,7 @@ export const createFusionContext = (
 
     const history = createBrowserHistory();
 
-    const coreSettings = new SettingsContainer("core");
+    const coreSettings = new SettingsContainer("core", defaultSettings);
 
     return {
         auth: { container: authContainer },

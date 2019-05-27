@@ -7,4 +7,5 @@ export default interface IReliableDictionaryStorageProvider {
     removeItemAsync(key: string): Promise<void>;
     clearAsync(): Promise<void>;
     toObjectAsync(): Promise<ReadonlyDictionary>;
+    toObject(): ReadonlyDictionary | null;
 }

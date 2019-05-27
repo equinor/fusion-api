@@ -17,8 +17,8 @@ export interface IReadonlySettingsContainer extends IReadonlyReliableDictionary 
 export interface ISettingsContainer extends IReadonlySettingsContainer, IReliableDictionary {}
 
 export default class SettingsContainer extends ReliableDictionary implements ISettingsContainer {
-    constructor(baseKey: string) {
-        super(new LocalStorageProvider(`FUSION_SETTINGS_CACHE:${baseKey}`));
+    constructor(baseKey: string, defaultSettings?: Settings) {
+        super(new LocalStorageProvider(`FUSION_SETTINGS_CACHE:${baseKey}`, defaultSettings));
     }
 
     async toObjectAsync(): Promise<ReadonlySettings> {

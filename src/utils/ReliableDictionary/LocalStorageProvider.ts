@@ -6,8 +6,12 @@ export default class LocalStorageProvider implements IReliableDictionaryStorageP
     private baseKey: string;
     private localCache: LocalCache | null = null;
 
-    constructor(baseKey: string) {
+    constructor(baseKey: string, defaultValue?: LocalCache) {
         this.baseKey = baseKey;
+        
+        if(defaultValue) {
+            this.localCache = defaultValue;
+        }
     }
 
     async getItemAsync<T>(key: string): Promise<T | null> {
@@ -45,6 +49,10 @@ export default class LocalStorageProvider implements IReliableDictionaryStorageP
         }
 
         return this.localCache as LocalCache;
+    }
+
+    toObject(): LocalCache | null {
+        return this.localCache;
     }
 
     private async persistAsync() {
