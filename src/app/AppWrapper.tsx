@@ -13,8 +13,15 @@ const AppWrapper: React.FC<AppWrapperProps> = ({ appKey }: AppWrapperProps) => {
     } = useFusionContext();
     const [isFetching, setIsFetching] = useState(false);
 
+    const currentApp = appContainer.get(appKey);
+
     const [, forceUpdate] = useState();
     useEffect(() => {
+        // If the app has been registered between rendering the app and useEffect
+        if(appKey && currentApp && appContainer.get(appKey)) {
+            forceUpdate(null);
+        }
+
         return appContainer.on("update", app => {
             if (app.appKey === appKey) {
                 forceUpdate(null);
@@ -42,8 +49,6 @@ const AppWrapper: React.FC<AppWrapperProps> = ({ appKey }: AppWrapperProps) => {
     useEffect(() => {
         loadAppAsync();
     }, [appKey]);
-
-    const currentApp = appContainer.get(appKey);
 
     if (currentApp === null && isFetching) {
         return <div>Is fetching</div>;
