@@ -3,7 +3,7 @@ import combineUrls from "../../utils/combineUrls";
 
 export default class FusionResourceCollection extends BaseResourceCollection {
     protected getBaseUrl(): string {
-        return this.serviceResolver.getDataProxyBaseUrl();
+        return this.serviceResolver.getFusionBaseUrl();
     }
 
     apps(): string {
