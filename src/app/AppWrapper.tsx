@@ -18,7 +18,7 @@ const AppWrapper: React.FC<AppWrapperProps> = ({ appKey }: AppWrapperProps) => {
     const [, forceUpdate] = useState();
     useEffect(() => {
         // If the app has been registered between rendering the app and useEffect
-        if(appKey && currentApp && appContainer.get(appKey)) {
+        if(appKey && !currentApp && appContainer.get(appKey)) {
             forceUpdate(null);
         }
 
