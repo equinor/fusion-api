@@ -10,19 +10,15 @@ type Settings = {
 
 export type ReadonlySettings = Readonly<Settings>;
 
-export interface IReadonlySettingsContainer extends IReadonlyReliableDictionary {
-    toObjectAsync(): Promise<ReadonlySettings>;
+export interface IReadonlySettingsContainer<T> extends IReadonlyReliableDictionary<T> {
+    toObjectAsync(): Promise<T>;
 }
 
-export interface ISettingsContainer extends IReadonlySettingsContainer, IReliableDictionary {}
+export interface ISettingsContainer<T = ReadonlySettings>  extends IReadonlySettingsContainer<T>, IReliableDictionary<T> {}
 
-export default class SettingsContainer extends ReliableDictionary implements ISettingsContainer {
+export default class SettingsContainer<T = ReadonlySettings> extends ReliableDictionary<T>
+    implements ISettingsContainer<T> {
     constructor(baseKey: string, defaultSettings?: Settings) {
         super(new LocalStorageProvider(`FUSION_SETTINGS_CACHE:${baseKey}`, defaultSettings));
-    }
-
-    async toObjectAsync(): Promise<ReadonlySettings> {
-        const value = await this.provider.toObjectAsync();
-        return value;
     }
 }

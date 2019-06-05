@@ -1,5 +1,6 @@
 import uuid from "uuid/v1";
 import { IAuthContainer } from "../../auth/AuthContainer";
+import AbortControllerManager from "../../utils/AbortControllerManager";
 import IHttpClient from "./IHttpClient";
 import { HttpResponse } from "./HttpResponse";
 import ResourceCache from "../ResourceCache";
@@ -9,6 +10,7 @@ import {
     HttpClientRequestFailedError,
 } from "./HttpClientError";
 import ensureRequestInit from "./ensureRequestInit";
+import { useFusionContext } from "../../core/FusionContext";
 
 // Export interface, response and error types
 export {
@@ -22,18 +24,22 @@ export {
 export default class HttpClient implements IHttpClient {
     private authContainer: IAuthContainer;
     private resourceCache: ResourceCache;
+    private abortControllerManager: AbortControllerManager;
+
     private requestsInProgress: { [key: string]: Promise<HttpResponse<any>> } = {};
     private sessionId = uuid();
 
-    constructor(authContainer: IAuthContainer, resourceCache: ResourceCache) {
+    constructor(
+        authContainer: IAuthContainer,
+        resourceCache: ResourceCache,
+        abortControllerManager: AbortControllerManager
+    ) {
         this.authContainer = authContainer;
         this.resourceCache = resourceCache;
+        this.abortControllerManager = abortControllerManager;
     }
 
-    async getAsync<T, TExpectedErrorResponse>(
-        url: string,
-        init?: RequestInit
-    ): Promise<HttpResponse<T>> {
+    async getAsync<T, TExpectedErrorResponse>(url: string, init?: RequestInit) {
         // Reuse GET requests in progress
         const requestInProgress = this.getRequestInProgress<T>(url);
         if (requestInProgress) {
@@ -59,7 +65,7 @@ export default class HttpClient implements IHttpClient {
         url: string,
         body: TBody,
         init?: RequestInit
-    ): Promise<HttpResponse<TResponse>> {
+    ) {
         init = ensureRequestInit(init, init => ({
             ...init,
             method: "POST",
@@ -73,7 +79,7 @@ export default class HttpClient implements IHttpClient {
         url: string,
         body: TBody,
         init?: RequestInit
-    ): Promise<HttpResponse<TResponse>> {
+    ) {
         init = ensureRequestInit(init, init => ({
             ...init,
             method: "PUT",
@@ -96,40 +102,51 @@ export default class HttpClient implements IHttpClient {
         };
     }
 
-    private getRequestInProgress<T>(url: string): Promise<HttpResponse<T>> {
+    private getRequestInProgress<T>(url: string) {
         return this.requestsInProgress[url] as Promise<HttpResponse<T>>;
     }
 
-    private addSessionIdHeader(init: RequestInit): RequestInit {
+    private addSessionIdHeader(init: RequestInit) {
         return this.transformHeaders(init, headers =>
             headers.append("X-Session-Id", this.sessionId)
         );
     }
 
-    private addAcceptJsonHeader(init: RequestInit): RequestInit {
+    private addAcceptJsonHeader(init: RequestInit) {
         return this.transformHeaders(init, headers => headers.append("Accept", "application/json"));
     }
 
-    private addRefreshHeader(init: RequestInit): RequestInit {
+    private addRefreshHeader(init: RequestInit) {
         return this.transformHeaders(init, headers => headers.append("x-pp-refresh", "true"));
     }
 
-    private async addAuthHeaderAsync(url: string, init: RequestInit): Promise<RequestInit> {
+    private async addAuthHeaderAsync(url: string, init: RequestInit) {
         const token = await this.authContainer.acquireTokenAsync(url);
         return this.transformHeaders(init, headers =>
             headers.append("Authorization", "Bearer " + token)
         );
     }
 
-    private async transformRequestAsync(url: string, init: RequestInit): Promise<RequestInit> {
+    private addAbortSignal(init: RequestInit) {
+        const signal = this.abortControllerManager.getCurrentSignal();
+
+        if (signal !== null) {
+            init.signal = signal;
+        }
+
+        return init;
+    }
+
+    private async transformRequestAsync(url: string, init: RequestInit) {
         const requestWithSessionId = this.addSessionIdHeader(init);
         const requestWithAcceptJson = this.addAcceptJsonHeader(requestWithSessionId);
         const requestWithAuthToken = await this.addAuthHeaderAsync(url, requestWithAcceptJson);
+        const requestWithAbortSignal = this.addAbortSignal(requestWithAuthToken);
 
-        return requestWithAuthToken;
+        return requestWithAbortSignal;
     }
 
-    private async parseResponseAsync<T>(response: Response): Promise<T> {
+    private async parseResponseAsync<T>(response: Response) {
         try {
             const json = await response.json();
             return json as T;
@@ -139,7 +156,7 @@ export default class HttpClient implements IHttpClient {
         }
     }
 
-    private responseIsRefreshable(response: Response): boolean {
+    private responseIsRefreshable(response: Response) {
         return response.headers.get("x-pp-is-refreshable") !== null;
     }
 
@@ -191,3 +208,8 @@ export default class HttpClient implements IHttpClient {
         }
     }
 }
+
+export const useHttpClient = () => {
+    const { http } = useFusionContext();
+    return http.client;
+};
