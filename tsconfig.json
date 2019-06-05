@@ -1,5 +1,7 @@
 {
     "compilerOptions": {
+        "baseUrl": ".",
+        "paths": { "*": ["src/types/*"] },
         "allowSyntheticDefaultImports": true,
         "declaration": true,
         "importHelpers": true,

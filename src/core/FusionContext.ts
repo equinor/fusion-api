@@ -3,19 +3,22 @@ import { History, createBrowserHistory } from "history";
 import { IAuthContainer } from "../auth/AuthContainer";
 import ResourceCollections, { createResourceCollections } from "../http/resourceCollections";
 import ApiClients, { createApiClients } from "../http/apiClients";
-import HttpClient from "../http/HttpClient";
+import HttpClient, { IHttpClient } from "../http/HttpClient";
 import ResourceCache from "../http/ResourceCache";
 import ServiceResolver from "../http/resourceCollections/ServiceResolver";
 import SettingsContainer from "../settings/SettingsContainer";
 import AppContainer, { appContainer } from "../app/AppContainer";
 import AppManifest from "../app/AppManifest";
 import { ComponentDisplayType } from "../core/ComponentDisplayType";
+import ContextManager from "./ContextManager";
+import AbortControllerManager from "../utils/AbortControllerManager";
 
 export type Auth = {
     container: IAuthContainer;
 };
 
 export type Http = {
+    client: IHttpClient,
     resourceCollections: ResourceCollections;
     apiClients: ApiClients;
     resourceCache: ResourceCache;
@@ -55,6 +58,8 @@ export interface IFusionContext {
     history: History;
     settings: Settings;
     app: App;
+    contextManager: ContextManager;
+    abortControllerManager: AbortControllerManager;
 }
 
 export type CoreSettings = Readonly<{
@@ -72,19 +77,23 @@ export const createFusionContext = (
     serviceResolver: ServiceResolver,
     refs: Refs
 ): IFusionContext => {
+    const abortControllerManager = new AbortControllerManager();
     const resourceCollections = createResourceCollections(serviceResolver);
 
     const resourceCache = new ResourceCache();
-    const httpClient = new HttpClient(authContainer, resourceCache);
+    const httpClient = new HttpClient(authContainer, resourceCache, abortControllerManager);
     const apiClients = createApiClients(httpClient, resourceCollections);
 
     const history = createBrowserHistory();
 
     const coreSettings = new SettingsContainer("core", defaultSettings);
 
+    const contextManager = new ContextManager(apiClients);
+
     return {
         auth: { container: authContainer },
         http: {
+            client: httpClient,
             resourceCollections,
             apiClients,
             resourceCache,
@@ -103,6 +112,8 @@ export const createFusionContext = (
                 manifest: null,
             },
         },
+        contextManager,
+        abortControllerManager,
     };
 };
 
