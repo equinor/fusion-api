@@ -3,7 +3,7 @@ import { useFusionContext } from "../core/FusionContext";
 export default class AbortControllerManager {
     private currentAbortController: AbortController | null = null;
 
-    withAbortController<T>(abortableAction: () => Promise<T>) : () => void {
+    withAbortController(abortableAction: () => Promise<void>) : () => void {
         this.currentAbortController = new AbortController();
 
         abortableAction().then(() => {
@@ -26,7 +26,7 @@ export default class AbortControllerManager {
  * Returns a function to be called if the request(s) performed within the passed function should be aborted
  * @param abortableAction A function that performs requests using the HttpClient somehow
  */
-export const withAbortController = <T>(abortableAction: () => Promise<T>)  : () => void => {
+export const withAbortController = (abortableAction: () => Promise<void>)  : () => void => {
     const fusionContext = useFusionContext();
     return fusionContext.abortControllerManager.withAbortController(abortableAction);
 };
