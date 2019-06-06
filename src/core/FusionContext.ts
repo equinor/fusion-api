@@ -34,7 +34,7 @@ export type AppSettings = {
 };
 
 export type Settings = {
-    core: SettingsContainer;
+    core: SettingsContainer<CoreSettings>;
 
     /**
      * App settings will be populated on demand when using useAppSettings()
@@ -62,9 +62,9 @@ export interface IFusionContext {
     abortControllerManager: AbortControllerManager;
 }
 
-export type CoreSettings = Readonly<{
-    componentDisplayType: ComponentDisplayType;
-}>;
+export type CoreSettings = {
+    readonly componentDisplayType: ComponentDisplayType;
+};
 
 export const defaultSettings: CoreSettings = {
     componentDisplayType: ComponentDisplayType.Comforable,
@@ -86,7 +86,7 @@ export const createFusionContext = (
 
     const history = createBrowserHistory();
 
-    const coreSettings = new SettingsContainer("core", defaultSettings);
+    const coreSettings = new SettingsContainer<CoreSettings>("core", defaultSettings);
 
     const contextManager = new ContextManager(apiClients);
 
