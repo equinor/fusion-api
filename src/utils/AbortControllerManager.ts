@@ -11,7 +11,7 @@ export default class AbortControllerManager {
             this.currentAbortController = null;
         });
 
-        return abortController.abort;
+        return () => abortController.abort();
     }
 
     getCurrentSignal() {
