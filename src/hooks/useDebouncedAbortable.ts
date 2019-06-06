@@ -8,7 +8,7 @@ export default <T>(abortableAction: (value: T) => Promise<void>, value: T, delay
         let abort: (() => void) | null = null;
         const timer = setTimeout(() => {
             abort = abortable(async () => await abortableAction(value));
-        });
+        }, delay);
 
         return () => {
             if(abort !== null) {

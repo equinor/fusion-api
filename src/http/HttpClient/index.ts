@@ -50,15 +50,20 @@ export default class HttpClient implements IHttpClient {
 
         init = ensureRequestInit(init, init => ({ ...init, method: "GET" }));
 
-        const request = this.performFetchAsync<T, TExpectedErrorResponse>(url, init);
-        this.requestsInProgress[url] = request;
+        try {
+            const request = this.performFetchAsync<T, TExpectedErrorResponse>(url, init);
+            this.requestsInProgress[url] = request;
 
-        const response = await request;
-        delete this.requestsInProgress[url];
+            const response = await request;
+            delete this.requestsInProgress[url];
 
-        await this.resourceCache.updateAsync(url, response);
+            await this.resourceCache.updateAsync(url, response);
 
-        return response;
+            return response;
+        } catch (error) {
+            delete this.requestsInProgress[url];
+            throw error;
+        }
     }
 
     async postAsync<TBody, TResponse, TExpectedErrorResponse>(

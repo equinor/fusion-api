@@ -96,8 +96,10 @@ const useContextQuery = (type: ContextType): [Context[], (query: string) => void
     const apiClients = useApiClients();
 
     useDebouncedAbortable(async query => {
-        var response = await apiClients.context.queryContextsAsync(query, type);
-        setContexts(response.data);
+        if(query && query.length > 2) {
+            var response = await apiClients.context.queryContextsAsync(query, type);
+            setContexts(response.data);
+        }
     }, queryText);
 
     return [contexts, setQueryText];
