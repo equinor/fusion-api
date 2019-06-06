@@ -30,11 +30,13 @@ const useAbortControllerManager = () => {
 
 /**
  * Returns a function to be called if the request(s) performed within the passed function should be aborted
- * @param abortableAction A function that performs requests using the HttpClient somehow
  */
-const withAbortController = (abortableAction: () => Promise<void>): (() => void) => {
+const withAbortController = (): (abortableAction: () => Promise<void>) => (() => void) => {
     const abortControllerManager = useAbortControllerManager();
-    return abortControllerManager.withAbortController(abortableAction);
-};
+
+    return (abortableAction: () => Promise<void>): (() => void) => {
+        return abortControllerManager.withAbortController(abortableAction);
+    };
+}
 
 export { useAbortControllerManager, withAbortController };
