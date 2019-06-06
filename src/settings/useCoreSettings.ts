@@ -1,14 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { useFusionContext, CoreSettings, defaultSettings } from "../core/FusionContext";
-import { ReadonlySettings } from "./SettingsContainer";
 
 
 export default (): CoreSettings => {
     const { settings } = useFusionContext();
-    const [coreSettings, setCoreSettings] = useState<CoreSettings>((settings.core.toObject() as CoreSettings) || defaultSettings);
+    const [coreSettings, setCoreSettings] = useState<CoreSettings>(settings.core.toObject() || defaultSettings);
 
-    const setSettings = useCallback((settings: ReadonlySettings) => {
-        setCoreSettings(settings as CoreSettings);
+    const setSettings = useCallback((settings: CoreSettings) => {
+        setCoreSettings(settings);
     }, []);
 
     useEffect(() => {

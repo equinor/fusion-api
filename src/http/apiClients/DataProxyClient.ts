@@ -29,19 +29,12 @@ export {
 };
 
 export default class DataProxyClient extends BaseApiClient {
-    async getHandoverAsync(
-        siteCode: string,
-        projectIdentifier: string
-    ): Promise<HttpResponse<HandoverItem[]>> {
+    async getHandoverAsync(siteCode: string, projectIdentifier: string) {
         const url = this.resourceCollections.dataProxy.handover(siteCode, projectIdentifier);
         return await this.httpClient.getAsync<HandoverItem[], FusionApiHttpErrorResponse>(url);
     }
 
-    async getHandoverMcpkgAsync(
-        siteCode: string,
-        projectIdentifier: string,
-        commpkgId: string
-    ): Promise<HttpResponse<HandoverMcpkg[]>> {
+    async getHandoverMcpkgAsync(siteCode: string, projectIdentifier: string, commpkgId: string) {
         const url = this.resourceCollections.dataProxy.handoverMcpkgs(
             siteCode,
             projectIdentifier,
@@ -54,7 +47,7 @@ export default class DataProxyClient extends BaseApiClient {
         siteCode: string,
         projectIdentifier: string,
         commpkgId: string
-    ): Promise<HttpResponse<HandoverWorkOrder[]>> {
+    ) {
         const url = this.resourceCollections.dataProxy.handoverWorkOrders(
             siteCode,
             projectIdentifier,
@@ -67,7 +60,7 @@ export default class DataProxyClient extends BaseApiClient {
         siteCode: string,
         projectIdentifier: string,
         commpkgId: string
-    ): Promise<HttpResponse<HandoverUnsignedTask[]>> {
+    ) {
         const url = this.resourceCollections.dataProxy.handoverUnsignedTasks(
             siteCode,
             projectIdentifier,
@@ -82,7 +75,7 @@ export default class DataProxyClient extends BaseApiClient {
         siteCode: string,
         projectIdentifier: string,
         commpkgId: string
-    ): Promise<HttpResponse<HandoverUnsignedAction[]>> {
+    ) {
         const url = this.resourceCollections.dataProxy.handoverUnsignedActions(
             siteCode,
             projectIdentifier,
@@ -93,11 +86,7 @@ export default class DataProxyClient extends BaseApiClient {
         );
     }
 
-    async getHandoverPunchAsync(
-        siteCode: string,
-        projectIdentifier: string,
-        commpkgId: string
-    ): Promise<HttpResponse<HandoverPunch[]>> {
+    async getHandoverPunchAsync(siteCode: string, projectIdentifier: string, commpkgId: string) {
         const url = this.resourceCollections.dataProxy.handoverPunch(
             siteCode,
             projectIdentifier,
@@ -106,11 +95,7 @@ export default class DataProxyClient extends BaseApiClient {
         return await this.httpClient.getAsync<HandoverPunch[], FusionApiHttpErrorResponse>(url);
     }
 
-    async getHandoverSWCRAsync(
-        siteCode: string,
-        projectIdentifier: string,
-        commpkgId: string
-    ): Promise<HttpResponse<HandoverSWCR[]>> {
+    async getHandoverSWCRAsync(siteCode: string, projectIdentifier: string, commpkgId: string) {
         const url = this.resourceCollections.dataProxy.handoverSWCR(
             siteCode,
             projectIdentifier,
@@ -119,11 +104,7 @@ export default class DataProxyClient extends BaseApiClient {
         return await this.httpClient.getAsync<HandoverSWCR[], FusionApiHttpErrorResponse>(url);
     }
 
-    async getHandoverDetailsAsync(
-        siteCode: string,
-        projectIdentifier: string,
-        commpkgId: string
-    ): Promise<HttpResponse<HandoverDetails[]>> {
+    async getHandoverDetailsAsync(siteCode: string, projectIdentifier: string, commpkgId: string) {
         const url = this.resourceCollections.dataProxy.handoverDetails(
             siteCode,
             projectIdentifier,
@@ -132,11 +113,7 @@ export default class DataProxyClient extends BaseApiClient {
         return await this.httpClient.getAsync<HandoverDetails[], FusionApiHttpErrorResponse>(url);
     }
 
-    async getHandoverNCRAsync(
-        siteCode: string,
-        projectIdentifier: string,
-        commpkgId: string
-    ): Promise<HttpResponse<HandoverNCR[]>> {
+    async getHandoverNCRAsync(siteCode: string, projectIdentifier: string, commpkgId: string) {
         const url = this.resourceCollections.dataProxy.handoverNCR(
             siteCode,
             projectIdentifier,
@@ -145,11 +122,7 @@ export default class DataProxyClient extends BaseApiClient {
         return await this.httpClient.getAsync<HandoverNCR[], FusionApiHttpErrorResponse>(url);
     }
 
-    async getHandoverQueryAsync(
-        siteCode: string,
-        projectIdentifier: string,
-        commpkgId: string
-    ): Promise<HttpResponse<HandoverQuery[]>> {
+    async getHandoverQueryAsync(siteCode: string, projectIdentifier: string, commpkgId: string) {
         const url = this.resourceCollections.dataProxy.handoverQuery(
             siteCode,
             projectIdentifier,

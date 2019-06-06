@@ -6,7 +6,7 @@ import ReliableDirctionary, { LocalStorageProvider } from "../utils/ReliableDict
 enum TokenCacheKey {
     TOKEN = "TOKEN",
     USER = "USER"
-}
+};
 
 export default class AuthCache extends ReliableDirctionary {
     constructor() {
@@ -25,7 +25,7 @@ export default class AuthCache extends ReliableDirctionary {
     }
 
     async getTokenAsync(app: AuthApp): Promise<AuthToken | null> {
-        const originalToken = await this.getAsync<string>(
+        const originalToken = await this.getAsync<string, string>(
             AuthCache.createAppCacheKey(app, TokenCacheKey.TOKEN)
         );
 
@@ -41,7 +41,7 @@ export default class AuthCache extends ReliableDirctionary {
     }
 
     async getUserAsync(): Promise<AuthUser | null> {
-        const cachedUser = await this.getAsync<AuthUserJSON>(TokenCacheKey.USER);
+        const cachedUser = await this.getAsync<string, AuthUserJSON>(TokenCacheKey.USER);
 
         if (cachedUser === null) {
             return null;

@@ -20,4 +20,8 @@ export { default as ApiClients, createApiClients } from "./http/apiClients";
 export { default as useCoreSettings } from "./settings/useCoreSettings";
 export { default as useAppSettings } from "./settings/useAppSettings";
 
+export { useContextManager, useCurrentContext, useContextQuery } from "./core/ContextManager";
+
+export { withAbortController, useAbortControllerManager } from "./utils/AbortControllerManager";
+
 export * from "./http/hooks/dataProxy/useHandover";
