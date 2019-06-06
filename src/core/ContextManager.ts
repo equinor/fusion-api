@@ -90,7 +90,7 @@ const useCurrentContext = () => {
     return currentContext;
 };
 
-const useContextQuery = (type: ContextType) => {
+const useContextQuery = (type: ContextType): [Context[], (query: string) => void] => {
     const [contexts, setContexts] = useState<Context[]>([]);
     const [queryText, setQueryText] = useState("");
     const apiClients = useApiClients();
