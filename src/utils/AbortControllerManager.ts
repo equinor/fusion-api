@@ -3,18 +3,19 @@ import { useFusionContext } from "../core/FusionContext";
 export default class AbortControllerManager {
     private currentAbortController: AbortController | null = null;
 
-    withAbortController(abortableAction: () => Promise<void>) : () => void {
-        this.currentAbortController = new AbortController();
+    withAbortController(abortableAction: () => Promise<void>): () => void {
+        var abortController = new AbortController();
+        this.currentAbortController = abortController;
 
         abortableAction().then(() => {
             this.currentAbortController = null;
         });
 
-        return this.currentAbortController.abort;
+        return abortController.abort;
     }
 
     getCurrentSignal() {
-        if(this.currentAbortController === null) {
+        if (this.currentAbortController === null) {
             return null;
         }
 
@@ -22,11 +23,18 @@ export default class AbortControllerManager {
     }
 }
 
+const useAbortControllerManager = () => {
+    const { abortControllerManager } = useFusionContext();
+    return abortControllerManager;
+};
+
 /**
  * Returns a function to be called if the request(s) performed within the passed function should be aborted
  * @param abortableAction A function that performs requests using the HttpClient somehow
  */
-export const withAbortController = (abortableAction: () => Promise<void>)  : () => void => {
-    const fusionContext = useFusionContext();
-    return fusionContext.abortControllerManager.withAbortController(abortableAction);
+const withAbortController = (abortableAction: () => Promise<void>): (() => void) => {
+    const abortControllerManager = useAbortControllerManager();
+    return abortControllerManager.withAbortController(abortableAction);
 };
+
+export { useAbortControllerManager, withAbortController };

@@ -22,4 +22,6 @@ export { default as useAppSettings } from "./settings/useAppSettings";
 
 export { useCurrentContext, useContextManager } from "./core/ContextManager";
 
+export { withAbortController, useAbortControllerManager } from "./utils/AbortControllerManager";
+
 export * from "./http/hooks/dataProxy/useHandover";
