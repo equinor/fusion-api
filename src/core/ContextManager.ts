@@ -4,6 +4,8 @@ import ContextClient from "../http/apiClients/ContextClient";
 import { useFusionContext } from "./FusionContext";
 import { Context, ContextType } from "../http/apiClients/models/context";
 import ReliableDictionary, { LocalStorageProvider } from "../utils/ReliableDictionary";
+import useDebouncedAbortable from "../hooks/useDebouncedAbortable";
+import useApiClients from "../http/hooks/useApiClients";
 
 type ContextCache = {
     current: Context | null;
@@ -88,4 +90,17 @@ const useCurrentContext = () => {
     return currentContext;
 };
 
-export { useContextManager, useCurrentContext };
+const useContextQuery = (type: ContextType) => {
+    const [contexts, setContexts] = useState<Context[]>([]);
+    const [queryText, setQueryText] = useState("");
+    const apiClients = useApiClients();
+
+    useDebouncedAbortable(async query => {
+        var response = await apiClients.context.queryContextsAsync(query, type);
+        setContexts(response.data);
+    }, queryText);
+
+    return [contexts, setQueryText];
+};
+
+export { useContextManager, useCurrentContext, useContextQuery };
