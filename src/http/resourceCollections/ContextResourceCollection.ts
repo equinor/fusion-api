@@ -1,7 +1,7 @@
 import buildQuery from "odata-query";
 import BaseResourceCollection from "./BaseResourceCollection";
 import combineUrls from "../../utils/combineUrls";
-import { ContextType } from "../apiClients/models/context";
+import { ContextTypes } from "../apiClients/models/context";
 
 export default class ContextResourceCollection extends BaseResourceCollection {
     protected getBaseUrl(): string {
@@ -16,7 +16,7 @@ export default class ContextResourceCollection extends BaseResourceCollection {
         return combineUrls(this.contexts(), id);
     }
 
-    queryContexts(query: string, type: ContextType | null = null) {
+    queryContexts(query: string, type: ContextTypes | null = null) {
         const baseUrl = this.contexts();
 
         const oDataQuery = buildQuery({
@@ -29,10 +29,10 @@ export default class ContextResourceCollection extends BaseResourceCollection {
         return `${baseUrl}${oDataQuery}`;
     }
 
-    relatedContexts(id: string, type: ContextType | null = null) {
+    relatedContexts(id: string, type: ContextTypes | null = null) {
         const oDataQuery = buildQuery({
             filter: {
-                type,
+                "type.id": type,
             },
         });
 

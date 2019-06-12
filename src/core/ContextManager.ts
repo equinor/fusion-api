@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import ApiClients from "../http/apiClients";
 import ContextClient from "../http/apiClients/ContextClient";
 import { useFusionContext } from "./FusionContext";
-import { Context, ContextType } from "../http/apiClients/models/context";
+import { Context, ContextTypes } from "../http/apiClients/models/context";
 import ReliableDictionary, { LocalStorageProvider } from "../utils/ReliableDictionary";
 import useDebouncedAbortable from "../hooks/useDebouncedAbortable";
 import useApiClients from "../http/hooks/useApiClients";
@@ -43,7 +43,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         return contextResponse.data;
     }
 
-    async exchangeContextAsync(currentContext: Context, requiredType: ContextType) {
+    async exchangeContextAsync(currentContext: Context, requiredType: ContextTypes) {
         try {
             const result = await this.contextClient.getRelatedContexts(
                 currentContext.id,
@@ -55,7 +55,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         }
     }
 
-    async exchangeCurrentContextAsync(requiredType: ContextType) {
+    async exchangeCurrentContextAsync(requiredType: ContextTypes) {
         const currentContext = await this.getCurrentContextAsync();
 
         if (currentContext === null) {
@@ -90,17 +90,19 @@ const useCurrentContext = () => {
     return currentContext;
 };
 
-const useContextQuery = (type: ContextType): [Context[], (query: string) => void] => {
+const useContextQuery = (type: ContextTypes): [Context[], (query: string) => void] => {
     const [contexts, setContexts] = useState<Context[]>([]);
     const [queryText, setQueryText] = useState("");
     const apiClients = useApiClients();
 
-    useDebouncedAbortable(async query => {
+    const fetchContexts = useCallback(async (query: string) => {
         if(query && query.length > 2) {
             var response = await apiClients.context.queryContextsAsync(query, type);
             setContexts(response.data);
         }
-    }, queryText);
+    }, []);
+
+    useDebouncedAbortable(fetchContexts, queryText);
 
     return [contexts, setQueryText];
 };

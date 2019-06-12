@@ -20,7 +20,7 @@ export { default as ApiClients, createApiClients } from "./http/apiClients";
 export { default as useCoreSettings } from "./settings/useCoreSettings";
 export { default as useAppSettings } from "./settings/useAppSettings";
 
-export { Context, ContextType } from "./http/apiClients/models/context";
+export { Context, ContextType, ContextTypes } from "./http/apiClients/models/context";
 export { useContextManager, useCurrentContext, useContextQuery } from "./core/ContextManager";
 
 export { withAbortController, useAbortControllerManager } from "./utils/AbortControllerManager";

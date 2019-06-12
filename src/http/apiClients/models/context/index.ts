@@ -1,2 +1,2 @@
 export { Context } from "./Context";
-export { ContextType } from "./ContextTypes";
+export { ContextType, ContextTypes } from "./ContextTypes";

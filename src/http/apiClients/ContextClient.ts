@@ -1,6 +1,6 @@
 import BaseApiClient from "./BaseApiClient";
 import { FusionApiHttpErrorResponse } from "./models/common/FusionApiHttpErrorResponse";
-import { Context, ContextType } from "./models/context";
+import { Context, ContextTypes } from "./models/context";
 
 export default class ContextClient extends BaseApiClient {
     async getContextsAsync() {
@@ -13,12 +13,12 @@ export default class ContextClient extends BaseApiClient {
         return await this.httpClient.getAsync<Context, FusionApiHttpErrorResponse>(url);
     }
 
-    async queryContextsAsync(query: string, type: ContextType | null = null) {
+    async queryContextsAsync(query: string, type: ContextTypes | null = null) {
         const url = this.resourceCollections.context.queryContexts(query, type);
         return await this.httpClient.getAsync<Context[], FusionApiHttpErrorResponse>(url);
     }
 
-    async getRelatedContexts(id: string, type: ContextType | null = null) {
+    async getRelatedContexts(id: string, type: ContextTypes | null = null) {
         const url = this.resourceCollections.context.relatedContexts(id, type);
         return await this.httpClient.getAsync<Context[], FusionApiHttpErrorResponse>(url);
     }
