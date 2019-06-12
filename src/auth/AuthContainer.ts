@@ -46,6 +46,14 @@ export interface IAuthContainer {
     getCachedUserAsync(): Promise<AuthUser | null>;
 }
 
+const getTopLevelWindow = (win: Window): Window => {
+    if(win === win.parent) {
+        return win;
+    }
+
+    return getTopLevelWindow(win.parent);
+};
+
 export default class AuthContainer implements IAuthContainer {
     private apps: AuthApp[];
     private cache: AuthCache;
@@ -134,7 +142,10 @@ export default class AuthContainer implements IAuthContainer {
 
         const nonce = AuthNonce.createNew(app);
         // Store redirect url
-        window.location.href = AuthContainer.buildLoginUrl(app, nonce);
+
+        // Login page cannot be displayed within a frame
+        // Get the top level window and redirect there
+        getTopLevelWindow(window).location.href = AuthContainer.buildLoginUrl(app, nonce);
     }
 
     async getCachedUserAsync(): Promise<AuthUser | null> {
@@ -177,7 +188,7 @@ export default class AuthContainer implements IAuthContainer {
             ...customParams,
             client_id: app.clientId,
             response_type: "id_token",
-            redirect_uri: window.location.origin,
+            redirect_uri: getTopLevelWindow(window).location.origin,
             // login_hint: window["currentUpn"], // Get current user profile mail
             domain_hint: "@equinor.com",
             nonce: nonce.getKey(),
