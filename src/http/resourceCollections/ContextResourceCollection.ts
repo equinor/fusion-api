@@ -9,7 +9,7 @@ export default class ContextResourceCollection extends BaseResourceCollection {
     }
 
     contexts() {
-        return this.getBaseUrl();
+        return combineUrls(this.getBaseUrl(), "contexts");
     }
 
     context(id: string) {
@@ -21,9 +21,9 @@ export default class ContextResourceCollection extends BaseResourceCollection {
 
         const oDataQuery = buildQuery({
             filter: {
-                type,
+                "type.id": type,
             },
-            query,
+            search: query,
         });
 
         return `${baseUrl}${oDataQuery}`;
