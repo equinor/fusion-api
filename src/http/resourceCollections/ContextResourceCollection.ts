@@ -36,6 +36,6 @@ export default class ContextResourceCollection extends BaseResourceCollection {
             },
         });
 
-        return combineUrls(this.context(id), `related${oDataQuery}`);
+        return combineUrls(this.context(id), `relations${oDataQuery}`);
     }
 }

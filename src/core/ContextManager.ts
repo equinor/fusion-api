@@ -71,7 +71,7 @@ const useContextManager = () => {
     return fusionContext.contextManager;
 };
 
-const useCurrentContext = () => {
+const useCurrentContext = (type?: ContextTypes) => {
     const contextManager = useContextManager();
     const [currentContext, setCurrentContext] = useState(contextManager.getCurrentContext());
 
@@ -86,6 +86,10 @@ const useCurrentContext = () => {
 
         return contextManager.on("change", setContext);
     }, []);
+
+    if(type && currentContext && currentContext.type.id !== type) {
+        return null;
+    }
 
     return currentContext;
 };
