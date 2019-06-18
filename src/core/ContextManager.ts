@@ -26,11 +26,22 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
 
         await this.setAsync("current", context);
 
-        if (!history) {
-            await this.setAsync("history", [currentContext]);
-        } else {
-            await this.setAsync("history", [currentContext, ...history]);
+        if (!currentContext) {
+            return;
         }
+
+        const newHistory = [currentContext];
+
+        if (history) {
+            history
+                // Remove the current context from the previous history (it's added to the start of the history)
+                .filter(c => c.id !== currentContext.id)
+                // Remove historical contexts after the last 10 (currentContext + 9)
+                .slice(0, 9)
+                .forEach(c => newHistory.push(c));
+        }
+
+        await this.setAsync("history", newHistory);
     }
 
     getCurrentContext() {
