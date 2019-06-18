@@ -64,6 +64,14 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
 
         return await this.exchangeContextAsync(currentContext, requiredType);
     }
+
+    async createContext(context: Context) {
+        return await this.contextClient.createContext(context);
+    }
+
+    async updateContext(context: Context) {
+        return await this.contextClient.updateContext(context);
+    }
 }
 
 const useContextManager = () => {
@@ -71,7 +79,7 @@ const useContextManager = () => {
     return fusionContext.contextManager;
 };
 
-const useCurrentContext = () => {
+const useCurrentContext = (type?: ContextTypes) => {
     const contextManager = useContextManager();
     const [currentContext, setCurrentContext] = useState(contextManager.getCurrentContext());
 
@@ -87,24 +95,41 @@ const useCurrentContext = () => {
         return contextManager.on("change", setContext);
     }, []);
 
+    if(type && currentContext && currentContext.type.id !== type) {
+        return null;
+    }
+
     return currentContext;
 };
 
-const useContextQuery = (type: ContextTypes): [Context[], (query: string) => void] => {
+const useContextQuery = (type: ContextTypes): [Error | null, boolean, Context[], (query: string) => void] => {
     const [contexts, setContexts] = useState<Context[]>([]);
     const [queryText, setQueryText] = useState("");
+    const [isQuerying, setIsQuerying] = useState(false);
+    const [error, setError] = useState<Error | null>(null);
     const apiClients = useApiClients();
 
     const fetchContexts = useCallback(async (query: string) => {
         if(query && query.length > 2) {
-            var response = await apiClients.context.queryContextsAsync(query, type);
-            setContexts(response.data);
+            try {
+                var response = await apiClients.context.queryContextsAsync(query, type);
+                setContexts(response.data);
+                setIsQuerying(false);
+            } catch(e) {
+                setError(e);
+                setIsQuerying(false);
+            }
         }
     }, []);
 
     useDebouncedAbortable(fetchContexts, queryText);
 
-    return [contexts, setQueryText];
+    const search = (query: string) => {
+        setIsQuerying(true);
+        setQueryText(query);
+    };
+
+    return [error, isQuerying, contexts, search];
 };
 
 export { useContextManager, useCurrentContext, useContextQuery };
