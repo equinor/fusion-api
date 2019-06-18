@@ -22,4 +22,14 @@ export default class ContextClient extends BaseApiClient {
         const url = this.resourceCollections.context.relatedContexts(id, type);
         return await this.httpClient.getAsync<Context[], FusionApiHttpErrorResponse>(url);
     }
+
+    async updateContext(context: Context) {
+        const url = this.resourceCollections.context.context(context.id);
+        return await this.httpClient.putAsync<Context, Context, FusionApiHttpErrorResponse>(url, context);
+    }
+
+    async createContext(context: Context) {
+        const url = this.resourceCollections.context.contexts();
+        return await this.httpClient.postAsync<Context, Context, FusionApiHttpErrorResponse>(url, context);
+    }
 }
