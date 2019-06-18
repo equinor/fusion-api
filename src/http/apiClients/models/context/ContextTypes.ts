@@ -1,7 +1,11 @@
 export enum ContextTypes {
-    Project = "Project",
+    Contract = "Contract",
+    OrgChart = "OrgChart",
     PDP = "PDP",
-};
+    PimsDomain = "PimsDomain",
+    Portfolio = "Portfolio",
+    Project = "Project",
+}
 
 export class ContextType {
     readonly id: ContextTypes;
@@ -14,4 +18,3 @@ export class ContextType {
         this.parentTypeIds = parentTypeIds;
     }
 }
-
