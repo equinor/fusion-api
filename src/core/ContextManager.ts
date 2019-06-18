@@ -64,6 +64,14 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
 
         return await this.exchangeContextAsync(currentContext, requiredType);
     }
+
+    async createContext(context: Context) {
+        return await this.contextClient.createContext(context);
+    }
+
+    async updateContext(context: Context) {
+        return await this.contextClient.updateContext(context);
+    }
 }
 
 const useContextManager = () => {
