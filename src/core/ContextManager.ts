@@ -9,7 +9,7 @@ import useApiClients from "../http/hooks/useApiClients";
 
 type ContextCache = {
     current: Context | null;
-    previous: Context | null;
+    history: Context[] | null;
 };
 
 export default class ContextManager extends ReliableDictionary<ContextCache> {
@@ -22,9 +22,15 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
 
     async setCurrentContextAsync(context: Context): Promise<void> {
         const currentContext = await this.getCurrentContextAsync();
+        const history = await this.getAsync("history");
 
         await this.setAsync("current", context);
-        await this.setAsync("previous", currentContext);
+
+        if (!history) {
+            await this.setAsync("history", [currentContext]);
+        } else {
+            await this.setAsync("history", [currentContext, ...history]);
+        }
     }
 
     getCurrentContext() {
@@ -35,7 +41,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
     async getCurrentContextAsync() {
         const value = await this.toObjectAsync();
 
-        if(value === null || !value.current) {
+        if (value === null || !value.current) {
             return null;
         }
 
@@ -95,14 +101,16 @@ const useCurrentContext = (type?: ContextTypes) => {
         return contextManager.on("change", setContext);
     }, []);
 
-    if(type && currentContext && currentContext.type.id !== type) {
+    if (type && currentContext && currentContext.type.id !== type) {
         return null;
     }
 
     return currentContext;
 };
 
-const useContextQuery = (type: ContextTypes): [Error | null, boolean, Context[], (query: string) => void] => {
+const useContextQuery = (
+    type: ContextTypes
+): [Error | null, boolean, Context[], (query: string) => void] => {
     const [contexts, setContexts] = useState<Context[]>([]);
     const [queryText, setQueryText] = useState("");
     const [isQuerying, setIsQuerying] = useState(false);
@@ -110,12 +118,12 @@ const useContextQuery = (type: ContextTypes): [Error | null, boolean, Context[],
     const apiClients = useApiClients();
 
     const fetchContexts = useCallback(async (query: string) => {
-        if(query && query.length > 2) {
+        if (query && query.length > 2) {
             try {
                 var response = await apiClients.context.queryContextsAsync(query, type);
                 setContexts(response.data);
                 setIsQuerying(false);
-            } catch(e) {
+            } catch (e) {
                 setError(e);
                 setIsQuerying(false);
             }
