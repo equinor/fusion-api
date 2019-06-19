@@ -81,14 +81,6 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
 
         return await this.exchangeContextAsync(currentContext, requiredType);
     }
-
-    async createContext(context: Context) {
-        return await this.contextClient.createContext(context);
-    }
-
-    async updateContext(context: Context) {
-        return await this.contextClient.updateContext(context);
-    }
 }
 
 const useContextManager = () => {
@@ -120,7 +112,7 @@ const useCurrentContext = (type?: ContextTypes) => {
 };
 
 const useContextQuery = (
-    type: ContextTypes
+    ...types: ContextTypes[]
 ): [Error | null, boolean, Context[], (query: string) => void] => {
     const [contexts, setContexts] = useState<Context[]>([]);
     const [queryText, setQueryText] = useState("");
@@ -131,7 +123,7 @@ const useContextQuery = (
     const fetchContexts = useCallback(async (query: string) => {
         if (query && query.length > 2) {
             try {
-                var response = await apiClients.context.queryContextsAsync(query, type);
+                var response = await apiClients.context.queryContextsAsync(query, ...types);
                 setContexts(response.data);
                 setIsQuerying(false);
             } catch (e) {

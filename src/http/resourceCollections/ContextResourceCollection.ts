@@ -16,12 +16,12 @@ export default class ContextResourceCollection extends BaseResourceCollection {
         return combineUrls(this.contexts(), id);
     }
 
-    queryContexts(query: string, type: ContextTypes | null = null) {
+    queryContexts(query: string, ...types: ContextTypes[]) {
         const baseUrl = this.contexts();
 
         const oDataQuery = buildQuery({
             filter: {
-                "type.id": type,
+                "type.id": { in: types },
             },
             search: query,
         });
@@ -29,10 +29,10 @@ export default class ContextResourceCollection extends BaseResourceCollection {
         return `${baseUrl}${oDataQuery}`;
     }
 
-    relatedContexts(id: string, type: ContextTypes | null = null) {
+    relatedContexts(id: string, ...types: ContextTypes[]) {
         const oDataQuery = buildQuery({
             filter: {
-                "type.id": type,
+                "type.id": { in: types }
             },
         });
 

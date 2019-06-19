@@ -13,13 +13,13 @@ export default class ContextClient extends BaseApiClient {
         return await this.httpClient.getAsync<Context, FusionApiHttpErrorResponse>(url);
     }
 
-    async queryContextsAsync(query: string, type: ContextTypes | null = null) {
-        const url = this.resourceCollections.context.queryContexts(query, type);
+    async queryContextsAsync(query: string, ...types: ContextTypes[]) {
+        const url = this.resourceCollections.context.queryContexts(query, ...types);
         return await this.httpClient.getAsync<Context[], FusionApiHttpErrorResponse>(url);
     }
 
-    async getRelatedContexts(id: string, type: ContextTypes | null = null) {
-        const url = this.resourceCollections.context.relatedContexts(id, type);
+    async getRelatedContexts(id: string, ...types: ContextTypes[]) {
+        const url = this.resourceCollections.context.relatedContexts(id, ...types);
         return await this.httpClient.getAsync<Context[], FusionApiHttpErrorResponse>(url);
     }
 
