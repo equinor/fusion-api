@@ -9,7 +9,11 @@ export default class LocalStorageProvider implements IReliableDictionaryStorageP
     constructor(baseKey: string, defaultValue?: LocalCache) {
         this.baseKey = baseKey;
         
-        if(defaultValue) {
+        const cachedJson = localStorage.getItem(this.baseKey);
+        const cachedValue = cachedJson ? JSON.parse(cachedJson) : {};
+        this.localCache = cachedValue;
+
+        if(!cachedValue && defaultValue) {
             this.localCache = defaultValue;
         }
     }
