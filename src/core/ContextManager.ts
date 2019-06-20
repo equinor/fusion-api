@@ -56,12 +56,12 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         }
 
         const value = this.toObject();
-        return value !== null ? value.current : null;
+        return value ? value.current : null;
     }
 
     getHistory(): Context[] {
         const value = this.toObject();
-        return value !== null && value.history !== null ? value.history : [];
+        return value && value.history ? value.history : [];
     }
 
     async getCurrentContextAsync() {
