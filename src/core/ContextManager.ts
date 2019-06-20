@@ -10,6 +10,7 @@ import useApiClients from "../http/hooks/useApiClients";
 type ContextCache = {
     current: Context | null;
     history: Context[] | null;
+    links: { [key: string]: string };
 };
 
 export default class ContextManager extends ReliableDictionary<ContextCache> {
@@ -27,7 +28,6 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
 
     async setCurrentContextAsync(context: Context) {
         const currentContext = await this.getCurrentContextAsync();
-        const history = await this.getAsync("history");
 
         await this.setAsync("current", context);
 
@@ -35,8 +35,14 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
             return;
         }
 
+        this.updateHistoryAsync(currentContext);
+        this.updateLinksAsync(currentContext, context);
+    }
+
+    private async updateHistoryAsync(currentContext: Context) {
         const newHistory = [currentContext];
 
+        const history = await this.getAsync("history");
         if (history) {
             history
                 // Remove the current context from the previous history (it's added to the start of the history)
@@ -47,6 +53,36 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         }
 
         await this.setAsync("history", newHistory);
+    }
+
+    private async updateLinksAsync(currentContext: Context, newContext: Context) {
+        const links = await this.getAsync("links");
+
+        await this.setAsync("links", {
+            ...(links || {}),
+            [currentContext.id]: newContext.id,
+        });
+    }
+
+    async getLinkedContext(context: Context) {
+        const links = await this.getAsync("links");
+
+        if(!links || !links[context.id]) {
+            return null;
+        }
+
+        const linkedContextId = links[context.id];
+
+        const history = await this.getAsync("history");
+        const contextFromHistory = history ? history.find(c => c.id === linkedContextId) : null;
+
+        if(contextFromHistory) {
+            return contextFromHistory;
+        }
+
+        const response = await this.contextClient.getContextAsync(linkedContextId);
+
+        return response.data || null;
     }
 
     getCurrentContext() {
