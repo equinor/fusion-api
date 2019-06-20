@@ -193,8 +193,8 @@ const useContextQuery = (
     const apiClients = useApiClients();
 
     const fetchContexts = useCallback(async (query: string) => {
-        setIsQuerying(true);
         if (query && query.length > 2) {
+            setIsQuerying(true);
             try {
                 var response = await apiClients.context.queryContextsAsync(query, ...types);
                 setContexts(response.data);
