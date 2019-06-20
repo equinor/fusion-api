@@ -192,15 +192,18 @@ const useContextQuery = (
     const [error, setError] = useState<Error | null>(null);
     const apiClients = useApiClients();
 
+    const canQueryWithText = (text: string) => !!text && text.length > 2;
+
     const fetchContexts = useCallback(async (query: string) => {
-        if (query && query.length > 2) {
-            setIsQuerying(true);
+        if (canQueryWithText(query)) {
+            setContexts([]);
             try {
                 var response = await apiClients.context.queryContextsAsync(query, ...types);
                 setContexts(response.data);
                 setIsQuerying(false);
             } catch (e) {
                 setError(e);
+                setContexts([]);
                 setIsQuerying(false);
             }
         }
@@ -209,6 +212,7 @@ const useContextQuery = (
     useDebouncedAbortable(fetchContexts, queryText);
 
     const search = (query: string) => {
+        setIsQuerying(canQueryWithText(query));
         setQueryText(query);
     };
 
