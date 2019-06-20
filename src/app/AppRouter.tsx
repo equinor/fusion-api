@@ -1,7 +1,7 @@
-import React, { useContext, FC } from "react";
+import React, { FC } from "react";
 import { Route, RouteProps, Link, LinkProps, Switch, SwitchProps } from "react-router-dom";
 import { Location, LocationDescriptor } from "history";
-import AppContext, { IAppContext } from "./AppContext";
+import { IAppContext, useAppContext } from "./AppContext";
 import combineUrls from "../utils/combineUrls";
 
 const createAppPath = (appContext: IAppContext, location: LocationDescriptor<any>): string => {
@@ -22,7 +22,7 @@ const createLocationDescriptorFromContext = (appContext: IAppContext): Location<
  * @param props
  */
 const AppRoute: FC<RouteProps> = props => {
-    const appContext = useContext(AppContext);
+    const appContext = useAppContext();
 
     if (!appContext || !appContext.appKey) {
         return null;
@@ -44,7 +44,7 @@ const AppRoute: FC<RouteProps> = props => {
  * @param props
  */
 const AppLink: FC<LinkProps> = props => {
-    const appContext = useContext(AppContext);
+    const appContext = useAppContext();
 
     if (!appContext || !appContext.appKey) {
         return null;
@@ -63,7 +63,7 @@ const AppLink: FC<LinkProps> = props => {
  * @param props
  */
 const AppSwitch: FC<SwitchProps> = props => {
-    const appContext = useContext(AppContext);
+    const appContext = useAppContext();
 
     if (!appContext || !appContext.appKey) {
         return null;
