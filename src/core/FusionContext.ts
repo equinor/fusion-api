@@ -1,6 +1,7 @@
 import { createContext, useContext, MutableRefObject } from "react";
 import { History, createBrowserHistory } from "history";
 import { IAuthContainer } from "../auth/AuthContainer";
+import { matchPath } from "react-router";
 import ResourceCollections, { createResourceCollections } from "../http/resourceCollections";
 import ApiClients, { createApiClients } from "../http/apiClients";
 import HttpClient, { IHttpClient } from "../http/HttpClient";
@@ -18,7 +19,7 @@ export type Auth = {
 };
 
 export type Http = {
-    client: IHttpClient,
+    client: IHttpClient;
     resourceCollections: ResourceCollections;
     apiClients: ApiClients;
     resourceCache: ResourceCache;
@@ -70,6 +71,10 @@ export const defaultSettings: CoreSettings = {
     componentDisplayType: ComponentDisplayType.Comforable,
 };
 
+type ContextRouteMatch = {
+    contextId: string;
+};
+
 const FusionContext = createContext<IFusionContext>({} as IFusionContext);
 
 export const createFusionContext = (
@@ -88,7 +93,13 @@ export const createFusionContext = (
 
     const coreSettings = new SettingsContainer<CoreSettings>("core", defaultSettings);
 
-    const contextManager = new ContextManager(apiClients);
+    // Try to get the current context id from the current route if a user navigates directly to the app/context
+    const contextRouteMatch = matchPath<ContextRouteMatch>("apps/:appKey/:contextId", {
+        path: history.location.pathname,
+    });
+    const contextId = contextRouteMatch && contextRouteMatch.params ? contextRouteMatch.params.contextId : null;
+
+    const contextManager = new ContextManager(apiClients, contextId);
 
     return {
         auth: { container: authContainer },

@@ -14,13 +14,18 @@ type ContextCache = {
 
 export default class ContextManager extends ReliableDictionary<ContextCache> {
     private readonly contextClient: ContextClient;
+    private isSettingFromRoute: boolean = false;
 
-    constructor(apiClients: ApiClients) {
+    constructor(apiClients: ApiClients, contextId: string | null) {
         super(new LocalStorageProvider(`FUSION_CURRENT_CONTEXT`));
         this.contextClient = apiClients.context;
+
+        if (contextId) {
+            this.setCurrentContextFromIdAsync(contextId);
+        }
     }
 
-    async setCurrentContextAsync(context: Context): Promise<void> {
+    async setCurrentContextAsync(context: Context) {
         const currentContext = await this.getCurrentContextAsync();
         const history = await this.getAsync("history");
 
@@ -45,26 +50,41 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
     }
 
     getCurrentContext() {
+        // Avoid returning cached context if we're in the process of resolving a context from the current route
+        if (this.isSettingFromRoute) {
+            return null;
+        }
+
         const value = this.toObject();
         return value !== null ? value.current : null;
     }
 
-    async getCurrentContextAsync() {
-        const value = await this.toObjectAsync();
+    getHistory(): Context[] {
+        const value = this.toObject();
+        return value !== null && value.history !== null ? value.history : [];
+    }
 
-        if (value === null || !value.current) {
+    async getCurrentContextAsync() {
+        // Avoid returning cached context if we're in the process of resolving a context from the current route
+        if (this.isSettingFromRoute) {
             return null;
         }
 
-        const contextResponse = await this.contextClient.getContextAsync(value.current.id);
+        const currentContext = await this.getAsync("current");
+
+        if (!currentContext) {
+            return null;
+        }
+
+        const contextResponse = await this.contextClient.getContextAsync(currentContext.id);
         return contextResponse.data;
     }
 
-    async exchangeContextAsync(currentContext: Context, requiredType: ContextTypes) {
+    async exchangeContextAsync(currentContext: Context, ...requiredTypes: ContextTypes[]) {
         try {
             const result = await this.contextClient.getRelatedContexts(
                 currentContext.id,
-                requiredType
+                ...requiredTypes
             );
             return result.data;
         } catch {
@@ -72,14 +92,30 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         }
     }
 
-    async exchangeCurrentContextAsync(requiredType: ContextTypes) {
+    async exchangeCurrentContextAsync(...requiredType: ContextTypes[]) {
         const currentContext = await this.getCurrentContextAsync();
 
         if (currentContext === null) {
             return [];
         }
 
-        return await this.exchangeContextAsync(currentContext, requiredType);
+        return await this.exchangeContextAsync(currentContext, ...requiredType);
+    }
+
+    private async setCurrentContextFromIdAsync(contextId: string) {
+        this.isSettingFromRoute = true;
+
+        try {
+            const response = await this.contextClient.getContextAsync(contextId);
+            const context = response.data;
+
+            if (context) {
+                this.isSettingFromRoute = false;
+                await this.setCurrentContextAsync(context);
+            }
+        } catch {
+            this.isSettingFromRoute = false;
+        }
     }
 }
 
@@ -88,13 +124,32 @@ const useContextManager = () => {
     return fusionContext.contextManager;
 };
 
-const useCurrentContext = (type?: ContextTypes) => {
+const useContextHistory = () => {
+    const contextManager = useContextManager();
+    const [history, setHistory] = useState<Context[]>(contextManager.getHistory());
+
+    const setHistoryFromCache = useCallback((contextCache: ContextCache) => {
+        if (contextCache.history !== history) {
+            setHistory(contextCache.history || []);
+        }
+    }, []);
+
+    useEffect(() => {
+        contextManager.toObjectAsync().then(setHistoryFromCache);
+
+        return contextManager.on("change", setHistoryFromCache);
+    }, []);
+
+    return history;
+};
+
+const useCurrentContext = (...types: ContextTypes[]): Context | null => {
     const contextManager = useContextManager();
     const [currentContext, setCurrentContext] = useState(contextManager.getCurrentContext());
 
     const setContext = useCallback((contextCache: ContextCache) => {
         if (contextCache.current !== currentContext) {
-            setCurrentContext(contextCache.current as Context);
+            setCurrentContext(contextCache.current);
         }
     }, []);
 
@@ -104,11 +159,28 @@ const useCurrentContext = (type?: ContextTypes) => {
         return contextManager.on("change", setContext);
     }, []);
 
-    if (type && currentContext && currentContext.type.id !== type) {
+    const history = useContextHistory();
+    if (
+        currentContext &&
+        types.length > 0 &&
+        !types.find(type => currentContext.type.id === type)
+    ) {
         return null;
     }
 
-    return currentContext;
+    // We don't have a context at all, but we could try to find the first context in the history
+    // that matches the given types (if any)
+    if (!currentContext && types.length > 0 && history.length > 0) {
+        const historicalContext =
+            history.find(c => types.findIndex(type => c.type.id === type) > 0) || null;
+
+        if (historicalContext) {
+            contextManager.setCurrentContextAsync(historicalContext);
+            return historicalContext;
+        }
+    }
+
+    return currentContext || null;
 };
 
 const useContextQuery = (
@@ -121,6 +193,7 @@ const useContextQuery = (
     const apiClients = useApiClients();
 
     const fetchContexts = useCallback(async (query: string) => {
+        setIsQuerying(true);
         if (query && query.length > 2) {
             try {
                 var response = await apiClients.context.queryContextsAsync(query, ...types);
@@ -136,7 +209,6 @@ const useContextQuery = (
     useDebouncedAbortable(fetchContexts, queryText);
 
     const search = (query: string) => {
-        setIsQuerying(true);
         setQueryText(query);
     };
 
