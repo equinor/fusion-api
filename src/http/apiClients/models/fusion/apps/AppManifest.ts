@@ -6,6 +6,11 @@ export type AppAuth = {
 };
 
 type AppManifest = {
+    key: string;
+    name: string;
+    shortName: string;
+    description: string;
+    version: string;
     contextTypes?: ContextTypes[];
     auth?: AppAuth;
 }
