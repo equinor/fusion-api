@@ -68,7 +68,7 @@ export type CoreSettings = {
 };
 
 export const defaultSettings: CoreSettings = {
-    componentDisplayType: ComponentDisplayType.Comforable,
+    componentDisplayType: ComponentDisplayType.Comfortable,
 };
 
 type ContextRouteMatch = {

@@ -1,7 +1,7 @@
 import useCoreSettings from "../settings/useCoreSettings";
 
 export enum ComponentDisplayType {
-    Comforable = "Comforable",
+    Comfortable = "Comfortable",
     Compact = "Compact",
 }
 
