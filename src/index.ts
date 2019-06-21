@@ -25,4 +25,6 @@ export { useContextManager, useCurrentContext, useContextQuery } from "./core/Co
 
 export { withAbortController, useAbortControllerManager } from "./utils/AbortControllerManager";
 
+export { useComponentDisplayType, ComponentDisplayType } from "./core/ComponentDisplayType";
+
 export * from "./http/hooks/dataProxy/useHandover";
