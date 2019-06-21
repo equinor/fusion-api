@@ -64,7 +64,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         });
     }
 
-    async getLinkedContext(context: Context) {
+    async getLinkedContextAsync(context: Context) {
         const links = await this.getAsync("links");
 
         if(!links || !links[context.id]) {
