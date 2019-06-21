@@ -8,12 +8,12 @@ export default class LocalStorageProvider implements IReliableDictionaryStorageP
 
     constructor(baseKey: string, defaultValue?: LocalCache) {
         this.baseKey = baseKey;
-        
+
         const cachedJson = localStorage.getItem(this.baseKey);
         const cachedValue = cachedJson ? JSON.parse(cachedJson) : {};
         this.localCache = cachedValue;
 
-        if(!cachedValue && defaultValue) {
+        if (!cachedValue && defaultValue) {
             this.localCache = defaultValue;
         }
     }
@@ -31,18 +31,20 @@ export default class LocalStorageProvider implements IReliableDictionaryStorageP
 
     async setItemAsync<T>(key: string, value: T): Promise<void> {
         const localCache = await this.toObjectAsync();
-        localCache[key] = value;
+        this.localCache = { ...localCache, [key]: value };
         await this.persistAsync();
     }
 
     async removeItemAsync(key: string): Promise<void> {
         const localCache = await this.toObjectAsync();
         delete localCache[key];
+        this.localCache = { ...localCache };
         await this.persistAsync();
     }
 
     async clearAsync(): Promise<void> {
         localStorage.removeItem(this.baseKey);
+        this.localCache = {};
     }
 
     async toObjectAsync(): Promise<LocalCache> {
