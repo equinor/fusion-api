@@ -2,13 +2,16 @@ import { useState, useEffect } from "react";
 import { useFusionContext, Settings } from "../core/FusionContext";
 import { useAppContext } from "../app/AppContext";
 import SettingsContainer, { ReadonlySettings } from "./SettingsContainer";
+import useCurrentUser from '../auth/useCurrentUser';
 
 type SetAppSetting = <T>(key: string, value: T) => void;
 type AppSettingsHook = [ReadonlySettings, SetAppSetting];
 
 const ensureAppSettings = (settings: Settings, appKey: string, defaultSettings?: ReadonlySettings) => {
+    const currentUser = useCurrentUser();
+    
     if (typeof settings.apps[appKey] === "undefined") {
-        const appSettings = new SettingsContainer(appKey, defaultSettings);
+        const appSettings = new SettingsContainer(appKey, currentUser, defaultSettings);
         settings.apps[appKey] = appSettings;
         return appSettings;
     }

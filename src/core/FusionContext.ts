@@ -91,7 +91,7 @@ export const createFusionContext = (
 
     const history = createBrowserHistory();
 
-    const coreSettings = new SettingsContainer<CoreSettings>("core", defaultSettings);
+    const coreSettings = new SettingsContainer<CoreSettings>("core", authContainer.getCachedUser(), defaultSettings);
 
     // Try to get the current context id from the current route if a user navigates directly to the app/context
     const contextRouteMatch = matchPath<ContextRouteMatch>("apps/:appKey/:contextId", {

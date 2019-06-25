@@ -3,6 +3,7 @@ import ReliableDictionary, {
     IReadonlyReliableDictionary,
     IReliableDictionary,
 } from "../utils/ReliableDictionary";
+import AuthUser from '../auth/AuthUser';
 
 type Settings = {
     [key: string]: any;
@@ -18,7 +19,7 @@ export interface ISettingsContainer<T = ReadonlySettings>  extends IReadonlySett
 
 export default class SettingsContainer<T = ReadonlySettings> extends ReliableDictionary<T>
     implements ISettingsContainer<T> {
-    constructor(baseKey: string, defaultSettings?: Settings) {
-        super(new LocalStorageProvider(`FUSION_SETTINGS_CACHE:${baseKey}`, defaultSettings));
+    constructor(baseKey: string, user: AuthUser | null, defaultSettings?: Settings) {
+        super(new LocalStorageProvider(`FUSION_SETTINGS_CACHE:${baseKey}:${user ? user.id : "global"}`, defaultSettings));
     }
 }
