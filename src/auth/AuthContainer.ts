@@ -44,7 +44,7 @@ export interface IAuthContainer {
      * Log out
      * @param clientId Optional client id to log out of. If blank it will log out of all apps
      */
-    logoutAsync(clientId: string): Promise<void>;
+    logoutAsync(clientId?: string): Promise<void>;
 
     /**
      * Get the current cached user
