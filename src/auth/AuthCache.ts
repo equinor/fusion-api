@@ -13,18 +13,18 @@ export default class AuthCache extends ReliableDirctionary {
         super(new LocalStorageProvider("FUSION_AUTH_CACHE"));
     }
 
-    private static createAppCacheKey(app: AuthApp, key: TokenCacheKey): string {
+    private static createAppCacheKey(app: AuthApp, key: TokenCacheKey) {
         return `FUSION_AUTH_CACHE:${app.clientId}:${key}`;
     }
 
-    async storeTokenAsync(app: AuthApp, token: AuthToken): Promise<void> {
+    async storeTokenAsync(app: AuthApp, token: AuthToken) {
         await this.setAsync(
             AuthCache.createAppCacheKey(app, TokenCacheKey.TOKEN),
             token.toString()
         );
     }
 
-    async getTokenAsync(app: AuthApp): Promise<AuthToken | null> {
+    async getTokenAsync(app: AuthApp) {
         const originalToken = await this.getAsync<string, string>(
             AuthCache.createAppCacheKey(app, TokenCacheKey.TOKEN)
         );
@@ -36,11 +36,15 @@ export default class AuthCache extends ReliableDirctionary {
         return AuthToken.parse(originalToken);
     }
 
+    async clearTokenAsync(app: AuthApp) {
+        await this.removeAsync(AuthCache.createAppCacheKey(app, TokenCacheKey.TOKEN));
+    }
+
     async storeUserAsync(user: AuthUser) {
         await this.setAsync(TokenCacheKey.USER, user.toObject());
     }
 
-    async getUserAsync(): Promise<AuthUser | null> {
+    async getUserAsync() {
         const cachedUser = await this.getAsync<string, AuthUserJSON>(TokenCacheKey.USER);
 
         if (cachedUser === null) {

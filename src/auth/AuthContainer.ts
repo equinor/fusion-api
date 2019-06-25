@@ -41,9 +41,20 @@ export interface IAuthContainer {
     login(clientId: string): void;
 
     /**
+     * Log out
+     * @param clientId Optional client id to log out of. If blank it will log out of all apps
+     */
+    logoutAsync(clientId: string): Promise<void>;
+
+    /**
      * Get the current cached user
      */
     getCachedUserAsync(): Promise<AuthUser | null>;
+
+    /**
+     * Get the current cached user sync
+     */
+    getCachedUser(): AuthUser | null;
 }
 
 const getTopLevelWindow = (win: Window): Window => {
@@ -148,12 +159,31 @@ export default class AuthContainer implements IAuthContainer {
         getTopLevelWindow(window).location.href = AuthContainer.buildLoginUrl(app, nonce);
     }
 
+    async logoutAsync(clientId?: string) {
+        if(clientId) {
+            const app = this.resolveApp(clientId);
+
+            if (app === null) {
+                throw new FusionAuthAppNotFoundError(clientId);
+            }
+            
+            return await this.cache.clearTokenAsync(app);
+        }
+
+        await this.cache.clearAsync();
+        // TODO: Redirect to sign out page to clear cookies
+    }
+
     async getCachedUserAsync(): Promise<AuthUser | null> {
         if (!this.cachedUser) {
             this.cachedUser = await this.cache.getUserAsync();
         }
 
         return this.cachedUser;
+    }
+
+    getCachedUser() {
+        return this.cachedUser || null;
     }
 
     private async cacheUserAsync(user: AuthUser): Promise<void> {
