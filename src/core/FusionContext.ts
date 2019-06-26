@@ -79,7 +79,20 @@ export type FusionContextOptions = {
     loadBundlesFromDisk: boolean;
 };
 
-const FusionContext = createContext<IFusionContext>({} as IFusionContext);
+const ensureGlobalFusionContextType = () => {
+    const win = window as any;
+    const key = "EQUINOR_FUSION_CONTEXT";
+
+    if(typeof win[key] !== undefined && win[key]) {
+        return win[key] as React.Context<IFusionContext>;
+    }
+
+    const fusionContext = createContext<IFusionContext>({} as IFusionContext);
+    win[key] = fusionContext;
+    return fusionContext;
+}
+
+const FusionContext = ensureGlobalFusionContextType();
 
 export const createFusionContext = (
     authContainer: IAuthContainer,
