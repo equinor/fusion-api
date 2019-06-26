@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useFusionContext } from "../core/FusionContext";
 import AppManifest from "./AppManifest";
+import AppContext from "./AppContext";
 
 type AppWrapperProps = {
     appKey: string;
@@ -18,7 +19,7 @@ const AppWrapper: React.FC<AppWrapperProps> = ({ appKey }: AppWrapperProps) => {
     const [, forceUpdate] = useState();
     useEffect(() => {
         // If the app has been registered between rendering the app and useEffect
-        if(appKey && !currentApp && appContainer.get(appKey)) {
+        if (appKey && !currentApp && appContainer.get(appKey)) {
             forceUpdate(null);
         }
 
@@ -58,13 +59,23 @@ const AppWrapper: React.FC<AppWrapperProps> = ({ appKey }: AppWrapperProps) => {
         return <div>Unable to find app</div>;
     }
 
-    if(!currentApp.manifest || !currentApp.manifest.AppComponent) {
+    if (!currentApp.manifest || !currentApp.manifest.AppComponent) {
         return null;
     }
 
     const AppComponent = currentApp.manifest.AppComponent;
 
-    return <AppComponent />;
+    return (
+        <AppContext.Provider
+            value={{
+                appKey: appKey,
+                appPath: "apps/" + appKey,
+                manifest: currentApp.manifest,
+            }}
+        >
+            <AppComponent />
+        </AppContext.Provider>
+    );
 };
 
 export default AppWrapper;

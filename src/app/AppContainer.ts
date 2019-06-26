@@ -22,6 +22,7 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
             this.emit("update", newApp);
         } else {
             existingApp.manifest = { ...existingApp.manifest, ...manifest };
+            this.emit("update", existingApp);
         }
     }
 
