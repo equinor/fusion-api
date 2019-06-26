@@ -58,6 +58,10 @@ const AppWrapper: React.FC<AppWrapperProps> = ({ appKey }: AppWrapperProps) => {
         return <div>Unable to find app</div>;
     }
 
+    if(!currentApp.manifest || !currentApp.manifest.AppComponent) {
+        return null;
+    }
+
     const AppComponent = currentApp.manifest.AppComponent;
 
     return <AppComponent />;
