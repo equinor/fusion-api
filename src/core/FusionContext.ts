@@ -75,15 +75,20 @@ type ContextRouteMatch = {
     contextId: string;
 };
 
+export type FusionContextOptions = {
+    loadBundlesFromDisk: boolean;
+};
+
 const FusionContext = createContext<IFusionContext>({} as IFusionContext);
 
 export const createFusionContext = (
     authContainer: IAuthContainer,
     serviceResolver: ServiceResolver,
-    refs: Refs
+    refs: Refs,
+    options?: FusionContextOptions
 ): IFusionContext => {
     const abortControllerManager = new AbortControllerManager();
-    const resourceCollections = createResourceCollections(serviceResolver);
+    const resourceCollections = createResourceCollections(serviceResolver, options);
 
     const resourceCache = new ResourceCache();
     const httpClient = new HttpClient(authContainer, resourceCache, abortControllerManager);
@@ -91,13 +96,18 @@ export const createFusionContext = (
 
     const history = createBrowserHistory();
 
-    const coreSettings = new SettingsContainer<CoreSettings>("core", authContainer.getCachedUser(), defaultSettings);
+    const coreSettings = new SettingsContainer<CoreSettings>(
+        "core",
+        authContainer.getCachedUser(),
+        defaultSettings
+    );
 
     // Try to get the current context id from the current route if a user navigates directly to the app/context
     const contextRouteMatch = matchPath<ContextRouteMatch>("apps/:appKey/:contextId", {
         path: history.location.pathname,
     });
-    const contextId = contextRouteMatch && contextRouteMatch.params ? contextRouteMatch.params.contextId : null;
+    const contextId =
+        contextRouteMatch && contextRouteMatch.params ? contextRouteMatch.params.contextId : null;
 
     const contextManager = new ContextManager(apiClients, contextId);
 
