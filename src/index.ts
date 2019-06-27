@@ -2,10 +2,7 @@ export { IAuthContainer, default as AuthContainer } from "./auth/AuthContainer";
 
 export { default as useCurrentUser } from "./auth/useCurrentUser";
 
-export { registerApp, appContainer } from "./app/AppContainer";
-export { default as AppWrapper } from "./app/AppWrapper";
-export { default as AppContext, IAppContext, useAppContext } from "./app/AppContext";
-export { AppRoute, AppLink, AppSwitch } from "./app/AppRouter";
+export { registerApp, useCurrentApp } from "./app/AppContainer";
 
 export { default as FusionContext, IFusionContext, useFusionContext, createFusionContext } from "./core/FusionContext";
 
@@ -26,5 +23,7 @@ export { useContextManager, useCurrentContext, useContextQuery } from "./core/Co
 export { withAbortController, useAbortControllerManager } from "./utils/AbortControllerManager";
 
 export { useComponentDisplayType, ComponentDisplayType } from "./core/ComponentDisplayType";
+
+export { default as combineUrls } from "./utils/combineUrls";
 
 export * from "./http/hooks/dataProxy/useHandover";

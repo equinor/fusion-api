@@ -1,42 +1,122 @@
 import AppManifest from "./AppManifest";
 import EventEmitter from "../utils/EventEmitter";
+import ApiClients from "../http/apiClients";
+import FusionClient from "../http/apiClients/FusionClient";
+import { useFusionContext } from "../core/FusionContext";
 
-type RegisteredApp = {
-    appKey: string;
-    manifest: AppManifest;
+type AppRegistration = {
+    AppComponent: React.ComponentType;
 };
 
 type AppContainerEvents = {
-    update: (app: RegisteredApp) => void;
-}
+    update: (app: AppManifest) => void;
+    change: (app: AppManifest) => void;
+};
 
 export default class AppContainer extends EventEmitter<AppContainerEvents> {
-    private apps: RegisteredApp[] = [];
+    currentApp: AppManifest | null = null;
+    private apps: AppManifest[] = [];
+    private readonly fusionClient: FusionClient;
+
+    constructor(apiClients: ApiClients) {
+        super();
+        this.fusionClient = apiClients.fusion;
+    }
 
     updateManifest(appKey: string, manifest: AppManifest): void {
         const existingApp = this.get(appKey);
 
-        if(existingApp === null) {
-            const newApp = { appKey, manifest };
-            this.apps.push(newApp);
-            this.emit("update", newApp);
+        if (existingApp === null) {
+            const newApp = manifest;
+            this.addOrUpdate(newApp);
         } else {
-            existingApp.manifest = { ...existingApp.manifest, ...manifest };
-            this.emit("update", existingApp);
+            const updatedApp = { ...existingApp, ...manifest };
+            this.addOrUpdate(updatedApp);
         }
     }
 
-    get(appKey: string): RegisteredApp | null {
-        return this.apps.find(app => app.appKey === appKey) || null;
+    get(appKey: string | null) {
+        return this.apps.find(app => app.key === appKey) || null;
     }
 
     getAll() {
-        return this.apps as Readonly<RegisteredApp[]>;
+        return this.apps as Readonly<AppManifest[]>;
+    }
+
+    async setCurrentAppAsync(appKey: string | null) {
+        const app = this.get(appKey);
+        if (app || !appKey) {
+            this.currentApp = app;
+            return this.emit("change", app);
+        }
+
+        const { data: manifest } = await this.fusionClient.getAppManifestAsync(appKey);
+        const appManifest = manifest as AppManifest;
+        this.updateManifest(appKey, appManifest);
+
+        await this.fusionClient.loadAppScriptAsync(appKey);
+
+        this.currentApp = appManifest;
+        this.emit("change", manifest);
+    }
+
+    async getAllAsync() {
+        const response = await this.fusionClient.getAppsAsync();
+        response.data.forEach(manifest =>
+            this.updateManifest(manifest.key, manifest as AppManifest)
+        );
+
+        return this.getAll();
+    }
+
+    private addOrUpdate(app: AppManifest) {
+        const existingApp = this.get(app.key);
+
+        if (existingApp) {
+            this.apps = this.apps.map(a => (a.key === app.key ? app : a));
+        } else {
+            this.apps = [...this.apps, app];
+        }
+
+        this.emit("update", app);
     }
 }
 
-const appContainer = new AppContainer();
+let appContainerSingleton: AppContainer | null = null;
 
-const registerApp = (appKey: string, manifest: AppManifest): void => appContainer.updateManifest(appKey, manifest);
+let appContainerPromise: Promise<AppContainer> | null = null;
+let setAppContainerSingleton: ((appContainer: AppContainer) => void) | null;
+const appContainerFactory = (appContainer: AppContainer) => {
+    if (setAppContainerSingleton) {
+        setAppContainerSingleton(appContainer);
+    }
+};
 
-export { registerApp, appContainer, AppManifest };
+const getAppContainer = (): Promise<AppContainer> => {
+    if (appContainerSingleton) {
+        return Promise.resolve(appContainerSingleton);
+    }
+
+    if (appContainerPromise) {
+        return appContainerPromise;
+    }
+
+    appContainerPromise = new Promise(resolve => {
+        setAppContainerSingleton = resolve;
+    });
+
+    return appContainerPromise;
+};
+
+const registerApp = (appKey: string, manifest: AppRegistration): void => {
+    getAppContainer().then(appContainer =>
+        appContainer.updateManifest(appKey, manifest as AppManifest)
+    );
+};
+
+const useCurrentApp = () => {
+    const { app } = useFusionContext();
+    return app.container.currentApp;
+};
+
+export { registerApp, appContainerFactory, AppManifest, useCurrentApp };

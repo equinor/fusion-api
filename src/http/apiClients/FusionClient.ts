@@ -7,7 +7,7 @@ import getScript from "../../utils/getScript";
 export default class FusionClient extends BaseApiClient {
     async getAppsAsync() {
         const url = this.resourceCollections.fusion.apps();
-        return await this.httpClient.getAsync<any, FusionApiHttpErrorResponse>(url);
+        return await this.httpClient.getAsync<AppManifest[], FusionApiHttpErrorResponse>(url);
     }
 
     async getAppManifestAsync(appKey: string) {

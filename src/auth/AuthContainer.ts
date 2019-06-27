@@ -96,6 +96,7 @@ export default class AuthContainer implements IAuthContainer {
                 (await this.getCachedUserAsync()) || AuthUser.createFromToken(parsedToken);
             cachedUser.mergeWithToken(parsedToken);
             await this.cacheUserAsync(cachedUser);
+            window.location.hash = "";
         } catch (e) {
             throw new FusionAuthLoginError();
             // Log?

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useFusionContext, Settings } from "../core/FusionContext";
-import { useAppContext } from "../app/AppContext";
+import { useCurrentApp } from "../app/AppContainer";
 import SettingsContainer, { ReadonlySettings } from "./SettingsContainer";
 import useCurrentUser from '../auth/useCurrentUser';
 
@@ -21,9 +21,9 @@ const ensureAppSettings = (settings: Settings, appKey: string, defaultSettings?:
 
 export default (defaultSettings?: ReadonlySettings): AppSettingsHook => {
     const { settings } = useFusionContext();
-    const { appKey } = useAppContext();
+    const currentApp = useCurrentApp();
 
-    let appSettings = ensureAppSettings(settings, appKey);
+    let appSettings = ensureAppSettings(settings, currentApp ? currentApp.key : "");
 
     const [localAppSettings, setLocalAppsettings] = useState<ReadonlySettings>(appSettings.toObject() || {});
 

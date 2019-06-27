@@ -8,8 +8,7 @@ import HttpClient, { IHttpClient } from "../http/HttpClient";
 import ResourceCache from "../http/ResourceCache";
 import ServiceResolver from "../http/resourceCollections/ServiceResolver";
 import SettingsContainer from "../settings/SettingsContainer";
-import AppContainer, { appContainer } from "../app/AppContainer";
-import AppManifest from "../app/AppManifest";
+import AppContainer, { appContainerFactory } from "../app/AppContainer";
 import { ComponentDisplayType } from "../core/ComponentDisplayType";
 import ContextManager from "./ContextManager";
 import AbortControllerManager from "../utils/AbortControllerManager";
@@ -45,11 +44,6 @@ export type Settings = {
 
 export type App = {
     container: AppContainer;
-    currentApp: {
-        appKey: string;
-        appPath: string;
-        manifest: AppManifest | null;
-    };
 };
 
 export interface IFusionContext {
@@ -115,6 +109,9 @@ export const createFusionContext = (
         defaultSettings
     );
 
+    const appContainer = new AppContainer(apiClients);
+    appContainerFactory(appContainer);
+
     // Try to get the current context id from the current route if a user navigates directly to the app/context
     const contextRouteMatch = matchPath<ContextRouteMatch>("apps/:appKey/:contextId", {
         path: history.location.pathname,
@@ -140,11 +137,6 @@ export const createFusionContext = (
         },
         app: {
             container: appContainer,
-            currentApp: {
-                appKey: "",
-                appPath: "/",
-                manifest: null,
-            },
         },
         contextManager,
         abortControllerManager,
