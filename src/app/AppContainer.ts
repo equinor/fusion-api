@@ -87,8 +87,11 @@ let appContainerSingleton: AppContainer | null = null;
 let appContainerPromise: Promise<AppContainer> | null = null;
 let setAppContainerSingleton: ((appContainer: AppContainer) => void) | null;
 const appContainerFactory = (appContainer: AppContainer) => {
+    appContainerSingleton = appContainer;
+
     if (setAppContainerSingleton) {
         setAppContainerSingleton(appContainer);
+        setAppContainerSingleton = null;
     }
 };
 
