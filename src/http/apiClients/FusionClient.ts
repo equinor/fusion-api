@@ -21,6 +21,6 @@ export default class FusionClient extends BaseApiClient {
 
     async getAppIconAsync(appKey: string) {
         const url = this.resourceCollections.fusion.appIcon(appKey);
-        return await this.httpClient.getAsync<string, Error>(url);
+        return await this.httpClient.getStringAsync<Error>(url);
     }
 }

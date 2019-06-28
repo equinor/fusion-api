@@ -39,11 +39,22 @@ export default class HttpClient implements IHttpClient {
         this.abortControllerManager = abortControllerManager;
     }
 
-    async getAsync<T, TExpectedErrorResponse>(url: string, init?: RequestInit) {
+    async getAsync<T, TExpectedErrorResponse>(url: string, init?: RequestInit): Promise<HttpResponse<T>> {
+        const result = await this.getStringAsync<TExpectedErrorResponse>(url, init);
+        const data = JSON.parse(result.data) as T;
+
+        return {
+            data,
+            headers: result.headers,
+            status: result.status,
+        };
+    }
+
+    async getStringAsync<TExpectedErrorResponse>(url: string, init?: RequestInit) {
         // Reuse GET requests in progress
-        const requestInProgress = this.getRequestInProgress<T>(url);
+        const requestInProgress = this.getRequestInProgress(url);
         if (requestInProgress) {
-            return await requestInProgress;
+            return await (requestInProgress as Promise<HttpResponse<string>>);
         }
 
         await this.resourceCache.setIsFetchingAsync(url);
@@ -51,15 +62,23 @@ export default class HttpClient implements IHttpClient {
         init = ensureRequestInit(init, init => ({ ...init, method: "GET" }));
 
         try {
-            const request = this.performFetchAsync<T, TExpectedErrorResponse>(url, init);
-            this.requestsInProgress[url] = request;
+            const request = this.performFetchAsync<TExpectedErrorResponse>(url, init);
+            this.requestsInProgress[url] = new Promise<HttpResponse<string>>(async (resolve, reject) => {
+                try {
+                    const response = await request;
+                    const data = await this.parseResponseStringAsync(response);
 
-            const response = await request;
-            delete this.requestsInProgress[url];
+                    delete this.requestsInProgress[url];
 
-            await this.resourceCache.updateAsync(url, response);
+                    await this.resourceCache.updateAsync(url, data);
 
-            return response;
+                    resolve(data);
+                } catch(e) {
+                    reject(e);
+                }
+            });
+
+            return await (this.requestsInProgress[url] as Promise<HttpResponse<string>>);
         } catch (error) {
             delete this.requestsInProgress[url];
             throw error;
@@ -77,7 +96,8 @@ export default class HttpClient implements IHttpClient {
             body: JSON.stringify(body),
         }));
 
-        return await this.performFetchAsync<TResponse, TExpectedErrorResponse>(url, init);
+        const response = await this.performFetchAsync<TExpectedErrorResponse>(url, init);
+        return await this.parseResponseAsync<TResponse>(response);
     }
 
     async putAsync<TBody, TResponse, TExpectedErrorResponse>(
@@ -91,7 +111,8 @@ export default class HttpClient implements IHttpClient {
             body: JSON.stringify(body),
         }));
 
-        return await this.performFetchAsync<TResponse, TExpectedErrorResponse>(url, init);
+        const response = await this.performFetchAsync<TExpectedErrorResponse>(url, init);
+        return await this.parseResponseAsync<TResponse>(response);
     }
 
     private transformHeaders(
@@ -107,8 +128,8 @@ export default class HttpClient implements IHttpClient {
         };
     }
 
-    private getRequestInProgress<T>(url: string) {
-        return this.requestsInProgress[url] as Promise<HttpResponse<T>>;
+    private getRequestInProgress(url: string) {
+        return this.requestsInProgress[url];
     }
 
     private addSessionIdHeader(init: RequestInit) {
@@ -151,7 +172,7 @@ export default class HttpClient implements IHttpClient {
         return requestWithAbortSignal;
     }
 
-    private async parseResponseAsync<T>(response: Response) {
+    private async parseResponseJSONAsync<T>(response: Response) {
         try {
             const json = await response.json();
             return json as T;
@@ -161,14 +182,36 @@ export default class HttpClient implements IHttpClient {
         }
     }
 
+    private async parseResponseStringAsync(response: Response) : Promise<HttpResponse<string>> {
+        const data = await response.text();
+        // TODO: Update cache status?
+
+        return {
+            data,
+            status: response.status,
+            headers: response.headers,
+        };
+    }
+
+    private async parseResponseAsync<T>(response: Response): Promise<HttpResponse<T>> {
+        const data = await this.parseResponseJSONAsync<T>(response);
+        // TODO: Update cache status?
+
+        return {
+            data,
+            status: response.status,
+            headers: response.headers,
+        };
+    }
+
     private responseIsRefreshable(response: Response) {
         return response.headers.get("x-pp-is-refreshable") !== null;
     }
 
-    private async performFetchAsync<T, TExpectedErrorResponse>(
+    private async performFetchAsync<TExpectedErrorResponse>(
         url: string,
         init: RequestInit
-    ): Promise<HttpResponse<T>> {
+    ): Promise<Response> {
         try {
             const options = await this.transformRequestAsync(url, init);
 
@@ -178,29 +221,14 @@ export default class HttpClient implements IHttpClient {
 
             if (!response.ok) {
                 // Add more info
-                const errorResponse = await this.parseResponseAsync<TExpectedErrorResponse>(
+                const errorResponse = await this.parseResponseJSONAsync<TExpectedErrorResponse>(
                     response
                 );
 
                 throw new HttpClientRequestFailedError(url, response.status, errorResponse);
             }
 
-            const data = await this.parseResponseAsync<T>(response);
-
-            let refreshPromise: Promise<HttpResponse<T>> | null = null;
-            if (this.responseIsRefreshable(response)) {
-                const refreshOptions = this.addRefreshHeader(options);
-                refreshPromise = this.performFetchAsync(url, refreshOptions);
-            }
-
-            // TODO: Update cache status?
-
-            return {
-                data,
-                status: response.status,
-                headers: response.headers,
-                refreshPromise,
-            };
+            return response;
         } catch (error) {
             if (error instanceof HttpClientRequestFailedError) {
                 // TODO: Add to notification center?

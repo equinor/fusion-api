@@ -8,6 +8,8 @@ export default interface IHttpClient {
      */
     getAsync<T, TExpectedErrorResponse>(url: string, init?: RequestInit): Promise<HttpResponse<T>>;
 
+    getStringAsync<TExpectedErrorResponse>(url: string, init?: RequestInit): Promise<HttpResponse<string>>;
+
     /**
      * Perform a POST request
      * @param url Request url
