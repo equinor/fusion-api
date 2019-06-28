@@ -3,6 +3,7 @@ import EventEmitter from "../utils/EventEmitter";
 import ApiClients from "../http/apiClients";
 import FusionClient from "../http/apiClients/FusionClient";
 import { useFusionContext } from "../core/FusionContext";
+import { useEffect, useState } from 'react';
 
 type AppRegistration = {
     AppComponent: React.ComponentType;
@@ -119,6 +120,12 @@ const registerApp = (appKey: string, manifest: AppRegistration): void => {
 
 const useCurrentApp = () => {
     const { app } = useFusionContext();
+
+    const [_, forceUpdate] = useState();
+    useEffect(() => {
+        return app.container.on("change", () => forceUpdate(null));
+    }, []);
+
     return app.container.currentApp;
 };
 
