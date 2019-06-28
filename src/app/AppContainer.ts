@@ -30,6 +30,7 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
         if (existingApp === null) {
             const newApp = manifest;
             this.addOrUpdate(newApp);
+            this.fetchIconAsync(appKey);
         } else {
             const updatedApp = { ...existingApp, ...manifest };
             this.addOrUpdate(updatedApp);
@@ -68,6 +69,18 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
         );
 
         return this.getAll();
+    }
+
+    private async fetchIconAsync(appKey: string) {
+        const app = this.get(appKey);
+
+        if(!app) {
+            return;
+        }
+
+        const response = await this.fusionClient.getAppIconAsync(appKey);
+        const appWithIcon = { ...app, icon: response.data };
+        this.addOrUpdate(appWithIcon);
     }
 
     private addOrUpdate(app: AppManifest) {
@@ -129,4 +142,33 @@ const useCurrentApp = () => {
     return app.container.currentApp;
 };
 
-export { registerApp, appContainerFactory, AppManifest, useCurrentApp };
+const useApps = (): [Error | null, boolean, AppManifest[]] => {
+    const { app } = useFusionContext();
+    const [apps, setApps] = useState<AppManifest[]>([]);
+    const [error, setError] = useState<Error | null>(null);
+    const [isFetching, setIsFetching] = useState(false);
+
+    const fetchApps = async () => {
+        setIsFetching(true);
+
+        try {
+            const allApps = await app.container.getAllAsync();
+            setApps(allApps as AppManifest[]);
+        } catch(e) {
+            setError(e);
+        }
+
+        setIsFetching(false);
+    };
+
+    useEffect(() => {
+        fetchApps();
+        return app.container.on("update", () => {
+            setApps(app.container.getAll() as AppManifest[]);
+        });
+    }, []);
+
+    return [error, isFetching, apps];
+}
+
+export { registerApp, appContainerFactory, AppManifest, useCurrentApp, useApps };

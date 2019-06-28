@@ -14,6 +14,7 @@ type AppManifest = {
     tags: string[];
     contextTypes?: ContextTypes[];
     auth?: AppAuth;
+    icon?: string;
 }
 
 export default AppManifest;

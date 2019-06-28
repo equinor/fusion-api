@@ -16,11 +16,11 @@ export default class FusionResourceCollection extends BaseResourceCollection {
     }
 
     apps(): string {
-        return combineUrls(this.getBaseUrl(), this.getBundlesPath(), "apps");
+        return combineUrls(this.getBaseUrl(), "bundles", "apps");
     }
 
     app(appKey: string) {
-        return combineUrls(this.apps(), appKey);
+        return combineUrls(this.getBaseUrl(), this.getBundlesPath(), appKey);
     }
 
     appManifest(appKey: string) {
@@ -35,11 +35,19 @@ export default class FusionResourceCollection extends BaseResourceCollection {
         return this.app(appKey) + ".js";
     }
 
+    appIcon(appKey: string) {
+        return combineUrls(this.app(appKey), this.getResourcesPath(), "app-icon.svg");
+    }
+
     private getBundlesPath() {
         return this.options && this.options.loadBundlesFromDisk ? "js" : "bundles";
     }
 
     private getManifestFileName() {
         return this.options && this.options.loadBundlesFromDisk ? `app-manifest.json?v=${(+new Date)}` : "";
+    }
+
+    private getResourcesPath() {
+        return this.options && this.options.loadBundlesFromDisk ? "" : "resources";
     }
 }

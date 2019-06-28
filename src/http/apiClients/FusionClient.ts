@@ -1,4 +1,3 @@
-import { HttpResponse } from "../HttpClient";
 import BaseApiClient from "./BaseApiClient";
 import { FusionApiHttpErrorResponse } from "./models/common/FusionApiHttpErrorResponse";
 import AppManifest from "./models/fusion/apps/AppManifest";
@@ -18,5 +17,10 @@ export default class FusionClient extends BaseApiClient {
     async loadAppScriptAsync(appKey: string) {
         const url = this.resourceCollections.fusion.appScript(appKey);
         return await getScript(url);
+    }
+
+    async getAppIconAsync(appKey: string) {
+        const url = this.resourceCollections.fusion.appIcon(appKey);
+        return await this.httpClient.getAsync<string, Error>(url);
     }
 }
