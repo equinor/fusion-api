@@ -20,11 +20,11 @@ export default class FusionResourceCollection extends BaseResourceCollection {
     }
 
     app(appKey: string) {
-        return combineUrls(this.getBaseUrl(), this.getBundlesPath(), appKey);
+        return combineUrls(this.getBaseUrl(), this.getBundlesPath(), "apps", appKey);
     }
 
     appManifest(appKey: string) {
-        return combineUrls(this.app(appKey), this.getManifestFileName());
+        return combineUrls(this.app(appKey), this.getAppManifestFileName());
     }
 
     appScript(appKey: string) {
@@ -43,7 +43,7 @@ export default class FusionResourceCollection extends BaseResourceCollection {
         return this.options && this.options.loadBundlesFromDisk ? "js" : "bundles";
     }
 
-    private getManifestFileName() {
+    private getAppManifestFileName() {
         return this.options && this.options.loadBundlesFromDisk ? `app-manifest.json?v=${(+new Date)}` : "";
     }
 
