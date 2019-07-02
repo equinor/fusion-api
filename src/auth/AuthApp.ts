@@ -8,7 +8,7 @@ export default class AuthApp {
     }
 
     updateResources(resources: string[]): void {
-        resources.forEach(resource => {
+        resources.map(resource => resource.toLowerCase()).forEach(resource => {
             if (this.resources.indexOf(resource) === -1) {
                 this.resources.push(resource);
             }

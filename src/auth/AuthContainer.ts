@@ -195,7 +195,7 @@ export default class AuthContainer implements IAuthContainer {
     private static getResourceOrigin(resource: string): string {
         try {
             const url = new URL(resource);
-            return url.origin;
+            return url.origin.toLowerCase();
         } catch {
             return "";
         }
