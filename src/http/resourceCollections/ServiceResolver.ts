@@ -5,6 +5,7 @@ type ServiceResolver = {
     getOrgBaseUrl: () => string;
     getPowerBiBaseUrl: () => string;
     getTasksBaseUrl: () => string;
+    getProjectsApiUrl: () => string;
 };
 
 export default ServiceResolver;

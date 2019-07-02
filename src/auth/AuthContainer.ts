@@ -58,7 +58,7 @@ export interface IAuthContainer {
 }
 
 const getTopLevelWindow = (win: Window): Window => {
-    if(win === win.parent) {
+    if (win === win.parent) {
         return win;
     }
 
@@ -161,13 +161,13 @@ export default class AuthContainer implements IAuthContainer {
     }
 
     async logoutAsync(clientId?: string) {
-        if(clientId) {
+        if (clientId) {
             const app = this.resolveApp(clientId);
 
             if (app === null) {
                 throw new FusionAuthAppNotFoundError(clientId);
             }
-            
+
             return await this.cache.clearTokenAsync(app);
         }
 
@@ -197,7 +197,7 @@ export default class AuthContainer implements IAuthContainer {
             const url = new URL(resource);
             return url.origin;
         } catch {
-            return resource;
+            return "";
         }
     }
 
