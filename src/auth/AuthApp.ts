@@ -4,7 +4,7 @@ export default class AuthApp {
 
     constructor(clientId: string, resources: string[]) {
         this.clientId = clientId;
-        this.resources = resources;
+        this.resources = resources.map(resource => resource.toLowerCase());
     }
 
     updateResources(resources: string[]): void {

@@ -236,7 +236,7 @@ export default class AuthContainer implements IAuthContainer {
     private resolveApp(resource: string): AuthApp | null {
         const resourceOrigin = AuthContainer.getResourceOrigin(resource);
         const app = this.apps.find(
-            app => app.resources.indexOf(resourceOrigin) > 0 || app.clientId === resourceOrigin
+            app => app.resources.indexOf(resourceOrigin) !== -1 || app.clientId === resourceOrigin
         );
 
         if (typeof app === "undefined") {
