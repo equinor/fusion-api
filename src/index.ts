@@ -4,13 +4,21 @@ export { default as useCurrentUser } from "./auth/useCurrentUser";
 
 export { registerApp, useCurrentApp } from "./app/AppContainer";
 
-export { default as FusionContext, IFusionContext, useFusionContext, createFusionContext } from "./core/FusionContext";
+export {
+    default as FusionContext,
+    IFusionContext,
+    useFusionContext,
+    createFusionContext,
+} from "./core/FusionContext";
 
 export { default as ServiceResolver } from "./http/resourceCollections/ServiceResolver";
 
 export { default as HttpClient, IHttpClient } from "./http/HttpClient";
 
-export { default as ResourceCollections, createResourceCollections } from "./http/resourceCollections";
+export {
+    default as ResourceCollections,
+    createResourceCollections,
+} from "./http/resourceCollections";
 
 export { default as ApiClients, createApiClients } from "./http/apiClients";
 
@@ -25,5 +33,7 @@ export { withAbortController, useAbortControllerManager } from "./utils/AbortCon
 export { useComponentDisplayType, ComponentDisplayType } from "./core/ComponentDisplayType";
 
 export { default as combineUrls } from "./utils/combineUrls";
+
+export { default as useHistory, HistoryContext, IHistoryContext } from "./hooks/useHistory";
 
 export * from "./http/hooks/dataProxy/useHandover";

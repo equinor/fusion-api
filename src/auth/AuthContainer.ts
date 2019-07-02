@@ -110,19 +110,20 @@ export default class AuthContainer implements IAuthContainer {
             throw new FusionAuthAppNotFoundError(resource);
         }
 
-        return new Promise(async resolve => {
-            const cachedToken = await this.cache.getTokenAsync(app);
+        const cachedToken = await this.cache.getTokenAsync(app);
 
-            if (cachedToken !== null && cachedToken.isValid()) {
-                return resolve(cachedToken.toString());
-            }
+        if (cachedToken !== null && cachedToken.isValid()) {
+            return cachedToken.toString();
+        }
 
-            // TODO: This should refresh the token instead of logging in
-            // For now this is not possible because of iframes and crazy stuff
-            this.login(resource);
+        return await this.refreshTokenAsync(resource);
+    }
 
-            return resolve(null);
-        });
+    protected async refreshTokenAsync(resource: string): Promise<string | null> {
+        // TODO: This should refresh the token instead of logging in
+        // For now this is not possible because of iframes and crazy stuff
+        this.login(resource);
+        return null;
     }
 
     async registerAppAsync(clientId: string, resources: string[]): Promise<boolean> {
@@ -187,12 +188,12 @@ export default class AuthContainer implements IAuthContainer {
         return this.cachedUser || null;
     }
 
-    private async cacheUserAsync(user: AuthUser): Promise<void> {
+    protected async cacheUserAsync(user: AuthUser): Promise<void> {
         this.cachedUser = user;
         await this.cache.storeUserAsync(user);
     }
 
-    private static getResourceOrigin(resource: string): string {
+    protected static getResourceOrigin(resource: string): string {
         try {
             const url = new URL(resource);
             return url.origin.toLowerCase();
@@ -201,7 +202,7 @@ export default class AuthContainer implements IAuthContainer {
         }
     }
 
-    private static getTokenFromHash(hash: string): string | null {
+    protected static getTokenFromHash(hash: string): string | null {
         const parts = hash.substr(1).split("&");
         const tokenPart = parts.find(part => part.indexOf("id_token=") === 0);
 
@@ -212,7 +213,7 @@ export default class AuthContainer implements IAuthContainer {
         return tokenPart.replace("id_token=", "");
     }
 
-    private static buildLoginUrl(app: AuthApp, nonce: AuthNonce, customParams: object = {}) {
+    protected static buildLoginUrl(app: AuthApp, nonce: AuthNonce, customParams: object = {}) {
         const base =
             "https://login.microsoftonline.com/3aa4a235-b6e2-48d5-9195-7fcf05b459b0/oauth2/authorize";
         const params: any = {
@@ -220,7 +221,7 @@ export default class AuthContainer implements IAuthContainer {
             client_id: app.clientId,
             response_type: "id_token",
             redirect_uri: getTopLevelWindow(window).location.href,
-            // login_hint: window["currentUpn"], // Get current user profile mail
+            login_hint: (window as any)["currentUpn"], // Get current user profile mail (only used in the fusion portal)
             domain_hint: "@equinor.com",
             nonce: nonce.getKey(),
         };
@@ -233,7 +234,7 @@ export default class AuthContainer implements IAuthContainer {
         return base + "?" + queryString;
     }
 
-    private resolveApp(resource: string): AuthApp | null {
+    protected resolveApp(resource: string): AuthApp | null {
         const resourceOrigin = AuthContainer.getResourceOrigin(resource);
         const app = this.apps.find(
             app => app.resources.indexOf(resourceOrigin) !== -1 || app.clientId === resourceOrigin
