@@ -11,7 +11,7 @@ type AppRegistration = {
 
 type AppContainerEvents = {
     update: (app: AppManifest) => void;
-    change: (app: AppManifest) => void;
+    change: (app: AppManifest | null) => void;
 };
 
 export default class AppContainer extends EventEmitter<AppContainerEvents> {
@@ -45,21 +45,29 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
         return this.apps as Readonly<AppManifest[]>;
     }
 
-    async setCurrentAppAsync(appKey: string | null) {
-        const app = this.get(appKey);
-        if (app || !appKey) {
-            this.currentApp = app;
-            return this.emit("change", app);
+    async setCurrentAppAsync(appKey: string | null): Promise<void> {
+        if(!appKey) {
+            this.currentApp = null;
+            this.emit("change", null);
+            return
         }
 
-        const { data: manifest } = await this.fusionClient.getAppManifestAsync(appKey);
-        const appManifest = manifest as AppManifest;
-        this.updateManifest(appKey, appManifest);
+        const app = this.get(appKey);
 
-        await this.fusionClient.loadAppScriptAsync(appKey);
+        if(!app) {
+            const { data: manifest } = await this.fusionClient.getAppManifestAsync(appKey);
+            const appManifest = manifest as AppManifest;
+            this.updateManifest(appKey, appManifest);
+            return await this.setCurrentAppAsync(appKey);
+        }
 
-        this.currentApp = appManifest;
-        this.emit("change", manifest);
+        if(!app.AppComponent) {
+            await this.fusionClient.loadAppScriptAsync(appKey);
+            return await this.setCurrentAppAsync(appKey);
+        }
+
+        this.currentApp = app;
+        this.emit("change", app);
     }
 
     async getAllAsync() {
