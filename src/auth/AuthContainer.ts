@@ -158,7 +158,7 @@ export default class AuthContainer implements IAuthContainer {
 
         // Login page cannot be displayed within a frame
         // Get the top level window and redirect there
-        getTopLevelWindow(window).location.href = AuthContainer.buildLoginUrl(app, nonce);
+        getTopLevelWindow(window).location.href = this.buildLoginUrl(app, nonce);
     }
 
     async logoutAsync(clientId?: string) {
@@ -213,7 +213,7 @@ export default class AuthContainer implements IAuthContainer {
         return tokenPart.replace("id_token=", "");
     }
 
-    protected static buildLoginUrl(app: AuthApp, nonce: AuthNonce, customParams: object = {}) {
+    protected buildLoginUrl(app: AuthApp, nonce: AuthNonce, customParams: object = {}) {
         const base =
             "https://login.microsoftonline.com/3aa4a235-b6e2-48d5-9195-7fcf05b459b0/oauth2/authorize";
         const params: any = {
