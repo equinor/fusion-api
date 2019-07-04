@@ -1,15 +1,24 @@
-type Handler<TEvents, TKey extends keyof TEvents = keyof TEvents, THandler = TEvents[TKey]> = {
+import { useState, useEffect, Dispatch, SetStateAction } from "react";
+
+type Parameter<T> = T extends (arg: infer T) => any ? T : never;
+
+type Handler<TEvents extends Events, TKey extends keyof TEvents = keyof TEvents> = {
     key: TKey;
-    handler: THandler;
+    handler: (arg: Parameter<TEvents[TKey]>) => void;
 };
 
-type Handlers<TEvents> = Handler<TEvents>[];
+type Events = {
+    [key: string]: (arg: any) => void;
+};
 
-export default abstract class EventEmitter<TEvents> {
-    private handlers: Handlers<TEvents> = [];
+export default abstract class EventEmitter<TEvents extends Events> {
+    private handlers:  Handler<TEvents>[] = [];
 
-    on<TKey extends keyof TEvents>(key: TKey, handler: TEvents[TKey]): () => void {
-        const registeredHandler = {
+    on<TKey extends keyof TEvents>(
+        key: TKey,
+        handler: (arg: Parameter<TEvents[TKey]>) => void
+    ): () => void {
+        const registeredHandler: Handler<TEvents> = {
             key,
             handler,
         };
@@ -22,14 +31,28 @@ export default abstract class EventEmitter<TEvents> {
         };
     }
 
-    protected emit<TKey extends keyof TEvents>(key: TKey, ...args: any[]): this {
+    protected emit<TKey extends keyof TEvents>(key: TKey, arg: Parameter<TEvents[TKey]>): this {
         const handlers = this.handlers.filter(h => h.key === key);
 
         handlers.forEach(handler => {
-            const handlerFunction = (handler.handler as unknown) as Function;
-            handlerFunction(...args);
+            const handlerFunction = handler.handler as TEvents[TKey];
+            handlerFunction(arg);
         });
 
         return this;
     }
 }
+
+export const useEventEmitterValue = <TEvents extends Events, TKey extends keyof TEvents>(
+    emitter: EventEmitter<TEvents>,
+    event: TKey,
+    transform: (value: Parameter<TEvents[TKey]>) => Parameter<TEvents[TKey]> | null = value => value
+): [Parameter<TEvents[TKey]> | null, Dispatch<SetStateAction<Parameter<TEvents[TKey]> | null>>] => {
+    const [value, setValue] = useState<Parameter<TEvents[TKey]> | null>(null);
+
+    useEffect(() => {
+        return emitter.on(event, data => setValue(transform(data)));
+    }, [emitter, event]);
+
+    return [value, setValue];
+};

@@ -1,5 +1,6 @@
 import IReliableDictionaryStorageProvider, {
     ReadonlyDictionary,
+    Dictionary
 } from "./IReliableDictionaryStorageProvider";
 import { IReadonlyReliableDictionary } from "./ReadonlyReliableDictionary";
 import EventEmitter from "../EventEmitter";

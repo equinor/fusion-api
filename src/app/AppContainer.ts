@@ -1,9 +1,9 @@
 import AppManifest from "./AppManifest";
-import EventEmitter from "../utils/EventEmitter";
+import EventEmitter, { useEventEmitterValue } from "../utils/EventEmitter";
 import ApiClients from "../http/apiClients";
 import FusionClient from "../http/apiClients/FusionClient";
 import { useFusionContext } from "../core/FusionContext";
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 type AppRegistration = {
     AppComponent: React.ComponentType;
@@ -42,26 +42,26 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
     }
 
     getAll() {
-        return this.apps as Readonly<AppManifest[]>;
+        return [...this.apps];
     }
 
     async setCurrentAppAsync(appKey: string | null): Promise<void> {
-        if(!appKey) {
+        if (!appKey) {
             this.currentApp = null;
             this.emit("change", null);
-            return
+            return;
         }
 
         const app = this.get(appKey);
 
-        if(!app) {
+        if (!app) {
             const { data: manifest } = await this.fusionClient.getAppManifestAsync(appKey);
             const appManifest = manifest as AppManifest;
             this.updateManifest(appKey, appManifest);
             return await this.setCurrentAppAsync(appKey);
         }
 
-        if(!app.AppComponent) {
+        if (!app.AppComponent) {
             await this.fusionClient.loadAppScriptAsync(appKey);
             return await this.setCurrentAppAsync(appKey);
         }
@@ -82,7 +82,7 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
     private async fetchIconAsync(appKey: string) {
         const app = this.get(appKey);
 
-        if(!app) {
+        if (!app) {
             return;
         }
 
@@ -141,13 +141,8 @@ const registerApp = (appKey: string, manifest: AppRegistration): void => {
 
 const useCurrentApp = () => {
     const { app } = useFusionContext();
-
-    const [_, forceUpdate] = useState();
-    useEffect(() => {
-        return app.container.on("change", () => forceUpdate(null));
-    }, []);
-
-    return app.container.currentApp;
+    const [currentApp] = useEventEmitterValue(app.container, "change");
+    return currentApp;
 };
 
 const useApps = (): [Error | null, boolean, AppManifest[]] => {
@@ -161,8 +156,8 @@ const useApps = (): [Error | null, boolean, AppManifest[]] => {
 
         try {
             const allApps = await app.container.getAllAsync();
-            setApps(allApps as AppManifest[]);
-        } catch(e) {
+            setApps(allApps);
+        } catch (e) {
             setError(e);
         }
 
@@ -171,12 +166,10 @@ const useApps = (): [Error | null, boolean, AppManifest[]] => {
 
     useEffect(() => {
         fetchApps();
-        return app.container.on("update", () => {
-            setApps(app.container.getAll() as AppManifest[]);
-        });
+        return app.container.on("update", () => setApps(app.container.getAll()));
     }, []);
 
     return [error, isFetching, apps];
-}
+};
 
 export { registerApp, appContainerFactory, AppManifest, useCurrentApp, useApps };
