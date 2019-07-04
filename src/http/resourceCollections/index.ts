@@ -1,6 +1,7 @@
 import DataProxyResourceCollection from "./DataProxyResourceCollection";
 import FusionResourceCollection from "./FusionResourceCollection";
 import ContextResourceCollection from "./ContextResourceCollection";
+import TasksResourceCollection from "./TasksResourceCollection";
 import ServiceResolver from "./ServiceResolver";
 import { FusionContextOptions } from "../../core/FusionContext";
 
@@ -8,6 +9,7 @@ type ResourceCollections = {
     dataProxy: DataProxyResourceCollection;
     fusion: FusionResourceCollection;
     context: ContextResourceCollection;
+    tasks: TasksResourceCollection;
 };
 
 export { DataProxyResourceCollection };
@@ -19,6 +21,7 @@ export const createResourceCollections = (
     dataProxy: new DataProxyResourceCollection(serviceResolver),
     fusion: new FusionResourceCollection(serviceResolver, options),
     context: new ContextResourceCollection(serviceResolver),
+    tasks: new TasksResourceCollection(serviceResolver),
 });
 
 export default ResourceCollections;
