@@ -90,12 +90,7 @@ export default class AuthContainer implements IAuthContainer {
             const app = new AuthApp(clientId, []);
             this.apps.push(app);
 
-            await this.cache.storeTokenAsync(app, parsedToken);
-
-            const cachedUser =
-                (await this.getCachedUserAsync()) || AuthUser.createFromToken(parsedToken);
-            cachedUser.mergeWithToken(parsedToken);
-            await this.cacheUserAsync(cachedUser);
+            await this.updateTokenForAppAsync(app, token);
             window.location.hash = "";
         } catch (e) {
             throw new FusionAuthLoginError();
@@ -116,7 +111,15 @@ export default class AuthContainer implements IAuthContainer {
             return cachedToken.toString();
         }
 
-        return await this.refreshTokenAsync(resource);
+        const refreshedToken = await this.refreshTokenAsync(resource);
+
+        if(!refreshedToken) {
+            return null;
+        }
+
+        await this.updateTokenForAppAsync(app, refreshedToken);
+
+        return refreshedToken;
     }
 
     protected async refreshTokenAsync(resource: string): Promise<string | null> {
@@ -186,6 +189,17 @@ export default class AuthContainer implements IAuthContainer {
 
     getCachedUser() {
         return this.cachedUser || null;
+    }
+
+    private async updateTokenForAppAsync(app: AuthApp, token: string) {
+        const parsedToken = AuthToken.parse(token);
+        await this.cache.storeTokenAsync(app, parsedToken);
+
+        const cachedUser =
+                (await this.getCachedUserAsync()) || AuthUser.createFromToken(parsedToken);
+
+        cachedUser.mergeWithToken(parsedToken);
+        await this.cacheUserAsync(cachedUser);
     }
 
     protected async cacheUserAsync(user: AuthUser): Promise<void> {
