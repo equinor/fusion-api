@@ -7,14 +7,14 @@ const useTaskSourceSystems = () => {
     return useApiClient(async apiClients => {
         var response = await apiClients.tasks.getSourceSystemsAsync();
         return response.data;
-    });
+    }, []);
 };
 
 const useTaskTypes = () => {
     return useApiClient(async apiClients => {
         var response = await apiClients.tasks.getTaskTypesAsync();
         return response.data;
-    });
+    }, []);
 };
 
 const useTaskPrioritySetter = () => {
