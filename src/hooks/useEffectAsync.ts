@@ -6,6 +6,6 @@ export default <T>(effect: AsyncEffectCallback<T>, dependencies?: readonly any[]
     useEffect(() => {
         const abortController = new AbortController();
         effect(abortController.signal);
-        return abortController.abort;
+        return () => abortController.abort();
     }, dependencies);
 };

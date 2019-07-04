@@ -36,4 +36,6 @@ export { default as combineUrls } from "./utils/combineUrls";
 
 export { default as useHistory, HistoryContext, IHistoryContext } from "./hooks/useHistory";
 
+export { default as useTasks, useTaskSourceSystems, useTaskTypes, useTaskPrioritySetter } from "./http/hooks/useTasks";
+
 export * from "./http/hooks/dataProxy/useHandover";
