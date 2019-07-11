@@ -13,8 +13,8 @@ export const combineUrls = (base: string, ...parts: string[]) =>
                     part
                         .toString()
                         .replace(/^\/+/, "")
-                        .replace(/\/+$/, ""),
+                        .replace(/\/+$/, "")
+                        .replace(/\/\//gm, seperator),
                 base || ""
             )
-            .replace(/\/\//gm, seperator)
     );
