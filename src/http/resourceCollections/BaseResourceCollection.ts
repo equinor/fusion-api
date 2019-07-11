@@ -1,5 +1,5 @@
 import ServiceResolver from "./ServiceResolver";
-import combineUrls from "../../utils/combineUrls";
+import { combineUrls } from "../../utils/url";
 
 export default abstract class BaseResourceCollection {
     protected serviceResolver: ServiceResolver;

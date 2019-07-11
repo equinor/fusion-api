@@ -1,5 +1,5 @@
 import BaseResourceCollection from "./BaseResourceCollection";
-import combineUrls from "../../utils/combineUrls";
+import { combineUrls } from "../../utils/url";
 import { TaskTypes } from "../apiClients/models/tasks/TaskType";
 
 export default class TasksResourceCollection extends BaseResourceCollection {

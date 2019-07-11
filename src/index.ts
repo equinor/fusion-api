@@ -32,7 +32,7 @@ export { withAbortController, useAbortControllerManager } from "./utils/AbortCon
 
 export { useComponentDisplayType, ComponentDisplayType } from "./core/ComponentDisplayType";
 
-export { default as combineUrls } from "./utils/combineUrls";
+export * from "./utils/url";
 
 export { default as useHistory, HistoryContext, IHistoryContext } from "./hooks/useHistory";
 

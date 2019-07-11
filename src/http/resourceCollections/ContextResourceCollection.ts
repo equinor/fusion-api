@@ -1,6 +1,6 @@
 import buildQuery from "odata-query";
 import BaseResourceCollection from "./BaseResourceCollection";
-import combineUrls from "../../utils/combineUrls";
+import { combineUrls } from "../../utils/url";
 import { ContextTypes } from "../apiClients/models/context";
 
 export default class ContextResourceCollection extends BaseResourceCollection {
@@ -32,7 +32,7 @@ export default class ContextResourceCollection extends BaseResourceCollection {
     relatedContexts(id: string, ...types: ContextTypes[]) {
         const oDataQuery = buildQuery({
             filter: {
-                "type.id": { in: types }
+                "type.id": { in: types },
             },
         });
 

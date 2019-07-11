@@ -3,6 +3,7 @@ import AuthToken from "./AuthToken";
 import AuthNonce from "./AuthNonce";
 import AuthCache from "./AuthCache";
 import AuthUser from "./AuthUser";
+import { trimTrailingSlash } from "../utils/url";
 
 export class FusionAuthAppNotFoundError extends Error {
     constructor(clientId: string) {
@@ -210,7 +211,7 @@ export default class AuthContainer implements IAuthContainer {
     protected static getResourceOrigin(resource: string): string {
         try {
             const url = new URL(resource);
-            return url.origin.toLowerCase();
+            return trimTrailingSlash(url.origin.toLowerCase());
         } catch {
             return "";
         }

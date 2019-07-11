@@ -1,11 +1,11 @@
 import BaseResourceCollection from "./BaseResourceCollection";
-import combineUrls from "../../utils/combineUrls";
-import ServiceResolver from './ServiceResolver';
-import { FusionContextOptions } from '../../core/FusionContext';
+import { combineUrls } from "../../utils/url";
+import ServiceResolver from "./ServiceResolver";
+import { FusionContextOptions } from "../../core/FusionContext";
 
 export default class FusionResourceCollection extends BaseResourceCollection {
     options?: FusionContextOptions;
-    
+
     constructor(serviceResolver: ServiceResolver, options?: FusionContextOptions) {
         super(serviceResolver);
         this.options = options;
@@ -28,8 +28,8 @@ export default class FusionResourceCollection extends BaseResourceCollection {
     }
 
     appScript(appKey: string) {
-        if(this.options && this.options.loadBundlesFromDisk) {
-            return combineUrls(this.app(appKey), `app-bundle.js?v=${(+new Date)}`);
+        if (this.options && this.options.loadBundlesFromDisk) {
+            return combineUrls(this.app(appKey), `app-bundle.js?v=${+new Date()}`);
         }
 
         return this.app(appKey) + ".js";
@@ -44,7 +44,9 @@ export default class FusionResourceCollection extends BaseResourceCollection {
     }
 
     private getAppManifestFileName() {
-        return this.options && this.options.loadBundlesFromDisk ? `app-manifest.json?v=${(+new Date)}` : "";
+        return this.options && this.options.loadBundlesFromDisk
+            ? `app-manifest.json?v=${+new Date()}`
+            : "";
     }
 
     private getResourcesPath() {
