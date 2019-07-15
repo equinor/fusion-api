@@ -24,5 +24,14 @@
     "exclude": [
         // "src/typings/@equinor",
         "./node_modules/@types"
-    ]
+    ],
+    "typedocOptions": {
+        "name": "Fusion API",
+        "entryPoint": "./src/index.ts",
+        "mode": "file",
+        "out": "docs",
+        "ignoreCompilerErrors": true,
+        "excludeNotExported": true,
+        "excludePrivate": true
+    }
 }
