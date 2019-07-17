@@ -36,7 +36,7 @@ export default abstract class EventEmitter<TEvents extends Events> {
 
         handlers.forEach(handler => {
             const handlerFunction = handler.handler as TEvents[TKey];
-            handlerFunction(arg);
+            window.requestAnimationFrame(() => handlerFunction(arg));
         });
 
         return this;
