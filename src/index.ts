@@ -36,6 +36,6 @@ export * from "./utils/url";
 
 export { default as useHistory, HistoryContext, IHistoryContext } from "./hooks/useHistory";
 
-export { default as useTasks, useTaskSourceSystems, useTaskTypes, useTaskPrioritySetter } from "./http/hooks/useTasks";
+export { useTasksContainer, useTasks, useTaskSourceSystems, useTaskTypes, useTaskPrioritySetter } from "./core/TasksContainer";
 
 export * from "./http/hooks/dataProxy/useHandover";

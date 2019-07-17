@@ -1,6 +1,6 @@
 import { useState, useEffect, Dispatch, SetStateAction } from "react";
 
-type Parameter<T> = T extends (arg: infer T) => any ? T : never;
+export type Parameter<T> = T extends (arg: infer T) => any ? T : never;
 
 type Handler<TEvents extends Events, TKey extends keyof TEvents = keyof TEvents> = {
     key: TKey;
@@ -12,7 +12,7 @@ type Events = {
 };
 
 export default abstract class EventEmitter<TEvents extends Events> {
-    private handlers:  Handler<TEvents>[] = [];
+    private handlers: Handler<TEvents>[] = [];
 
     on<TKey extends keyof TEvents>(
         key: TKey,
@@ -43,12 +43,16 @@ export default abstract class EventEmitter<TEvents extends Events> {
     }
 }
 
-export const useEventEmitterValue = <TEvents extends Events, TKey extends keyof TEvents>(
+export const useEventEmitterValue = <
+    TEvents extends Events,
+    TKey extends keyof TEvents,
+    TData = Parameter<TEvents[TKey]>
+>(
     emitter: EventEmitter<TEvents>,
     event: TKey,
-    transform: (value: Parameter<TEvents[TKey]>) => Parameter<TEvents[TKey]> | null = value => value
-): [Parameter<TEvents[TKey]> | null, Dispatch<SetStateAction<Parameter<TEvents[TKey]> | null>>] => {
-    const [value, setValue] = useState<Parameter<TEvents[TKey]> | null>(null);
+    transform: (value: TData) => TData | null = value => value
+): [TData | null, Dispatch<SetStateAction<TData | null>>] => {
+    const [value, setValue] = useState<TData | null>(null);
 
     useEffect(() => {
         return emitter.on(event, data => setValue(transform(data)));

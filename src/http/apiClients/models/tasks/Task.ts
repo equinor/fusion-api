@@ -12,7 +12,7 @@ type Task = {
     type: TaskType;
     sourceSystem: TaskSourceSystem;
     priority: number;
-    taskTypeKey: string;
+    taskTypeKey: TaskTypes;
     title: string;
     category: string;
     description: string;

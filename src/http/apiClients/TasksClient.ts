@@ -33,4 +33,9 @@ export default class TasksClient extends BaseApiClient {
         const url = this.resourceCollections.tasks.priority(id, priority);
         await this.httpClient.putAsync<null, Task[], FusionApiHttpErrorResponse>(url, null);
     }
+    
+    async refreshTasksAsync(type: TaskTypes, refreshRequest: RequestInit) {
+        const url = this.resourceCollections.tasks.tasks(type);
+        return this.httpClient.getAsync<Task[], FusionApiHttpErrorResponse>(url, refreshRequest);
+    }
 }

@@ -39,44 +39,51 @@ export default class HttpClient implements IHttpClient {
         this.abortControllerManager = abortControllerManager;
     }
 
-    async getAsync<T, TExpectedErrorResponse>(url: string, init?: RequestInit): Promise<HttpResponse<T>> {
+    async getAsync<T, TExpectedErrorResponse>(
+        url: string,
+        init?: RequestInit
+    ): Promise<HttpResponse<T>> {
         const result = await this.getStringAsync<TExpectedErrorResponse>(url, init);
         const data = JSON.parse(result.data) as T;
 
-        return {
+        const response: HttpResponse<T> = {
+            ...result,
             data,
-            headers: result.headers,
-            status: result.status,
         };
+
+        return response;
     }
 
     async getStringAsync<TExpectedErrorResponse>(url: string, init?: RequestInit) {
         // Reuse GET requests in progress
-        const requestInProgress = this.getRequestInProgress(url);
+        const requestInProgress = this.getRequestInProgress<string>(url);
         if (requestInProgress) {
-            return await (requestInProgress as Promise<HttpResponse<string>>);
+            return await requestInProgress;
         }
 
         await this.resourceCache.setIsFetchingAsync(url);
 
-        init = ensureRequestInit(init, init => ({ ...init, method: "GET" }));
+        const requestInit = ensureRequestInit(init, init => ({ ...init, method: "GET" }));
 
         try {
-            const request = this.performFetchAsync<TExpectedErrorResponse>(url, init);
-            this.requestsInProgress[url] = new Promise<HttpResponse<string>>(async (resolve, reject) => {
-                try {
-                    const response = await request;
-                    const data = await this.parseResponseStringAsync(response);
+            const request = this.performFetchAsync<TExpectedErrorResponse>(url, requestInit);
 
-                    delete this.requestsInProgress[url];
+            this.requestsInProgress[url] = new Promise<HttpResponse<string>>(
+                async (resolve, reject) => {
+                    try {
+                        const response = await request;
+                        const data = await this.parseResponseStringAsync<TExpectedErrorResponse>(requestInit, response);
 
-                    await this.resourceCache.updateAsync(url, data);
+                        delete this.requestsInProgress[url];
 
-                    resolve(data);
-                } catch(e) {
-                    reject(e);
+                        await this.resourceCache.updateAsync(url, data);
+
+                        resolve(data);
+                    } catch (e) {
+                        reject(e);
+                    }
                 }
-            });
+            );
 
             return await (this.requestsInProgress[url] as Promise<HttpResponse<string>>);
         } catch (error) {
@@ -97,7 +104,7 @@ export default class HttpClient implements IHttpClient {
         }));
 
         const response = await this.performFetchAsync<TExpectedErrorResponse>(url, init);
-        return await this.parseResponseAsync<TResponse>(response);
+        return await this.parseResponseAsync<TResponse, TExpectedErrorResponse>(init, response);
     }
 
     async putAsync<TBody, TResponse, TExpectedErrorResponse>(
@@ -112,24 +119,100 @@ export default class HttpClient implements IHttpClient {
         }));
 
         const response = await this.performFetchAsync<TExpectedErrorResponse>(url, init);
-        return await this.parseResponseAsync<TResponse>(response);
+        return await this.parseResponseAsync<TResponse, TExpectedErrorResponse>(init, response);
     }
 
-    private transformHeaders(
-        init: RequestInit,
-        transform: (headers: Headers) => void
-    ): RequestInit {
-        const headers = new Headers(init.headers);
-        transform(headers);
+    
+    private async performFetchAsync<TExpectedErrorResponse>(
+        url: string,
+        init: RequestInit
+    ): Promise<Response> {
+        try {
+            const options = await this.transformRequestAsync(url, init);
 
-        return {
-            ...init,
-            headers,
+            const response = await fetch(url, options);
+
+            // TODO: Track dependency with app insight
+
+            if (!response.ok) {
+                // Add more info
+                const errorResponse = await this.parseResponseJSONAsync<TExpectedErrorResponse>(
+                    response
+                );
+
+                throw new HttpClientRequestFailedError(url, response.status, errorResponse);
+            }
+
+            return response;
+        } catch (error) {
+            if (error instanceof HttpClientRequestFailedError) {
+                // TODO: Add to notification center?
+                // TODO: Update cache status?
+                throw error;
+            }
+
+            // Add more info
+            throw error as HttpClientError;
+        }
+    }
+
+    // Response parsers
+    private async parseResponseJSONAsync<TResponse>(response: Response) {
+        try {
+            const json = await response.json();
+            return json as TResponse;
+        } catch (parseError) {
+            // Add more info
+            throw new HttpClientParseError(response);
+        }
+    }
+
+    private async parseResponseStringAsync<TExpectedErrorResponse>(request: RequestInit, response: Response): Promise<HttpResponse<string>> {
+        const data = await response.text();
+        // TODO: Update cache status?
+
+        return this.createHttpResponse<string, TExpectedErrorResponse>(request, response, data);
+    }
+
+    private async parseResponseAsync<TResponse, TExpectedErrorResponse>(request: RequestInit, response: Response): Promise<HttpResponse<TResponse>> {
+        const data = await this.parseResponseJSONAsync<TResponse>(response);
+        // TODO: Update cache status?
+
+        return this.createHttpResponse<TResponse, TExpectedErrorResponse>(request, response, data);
+    }
+
+    private createHttpResponse<TResponse, TExpectedErrorResponse>(request: RequestInit, response: Response, data: TResponse) {
+        const httpResponse: HttpResponse<TResponse> = {
+            data,
+            status: response.status,
+            headers: response.headers,
+            refreshRequest: null,
         };
+
+        if(this.responseIsRefreshable(response)) {
+            const refreshRequest = this.addRefreshHeader(request);
+
+            return {
+                ...httpResponse,
+                refreshRequest,
+            };
+        }
+
+        return httpResponse;
     }
 
-    private getRequestInProgress(url: string) {
-        return this.requestsInProgress[url];
+    private responseIsRefreshable(response: Response) {
+        return response.headers.get("x-pp-is-refreshable") !== null;
+    }
+
+    // Request transformers
+    private async transformRequestAsync(url: string, init: RequestInit) {
+        const requestWithSessionId = this.addSessionIdHeader(init);
+        const requestWithAcceptJson = this.addAcceptJsonHeader(requestWithSessionId);
+        const requestWithAuthToken = await this.addAuthHeaderAsync(url, requestWithAcceptJson);
+        const requestWithAbortSignal = this.addAbortSignal(requestWithAuthToken);
+
+        return requestWithAbortSignal;
     }
 
     private addSessionIdHeader(init: RequestInit) {
@@ -163,82 +246,22 @@ export default class HttpClient implements IHttpClient {
         return init;
     }
 
-    private async transformRequestAsync(url: string, init: RequestInit) {
-        const requestWithSessionId = this.addSessionIdHeader(init);
-        const requestWithAcceptJson = this.addAcceptJsonHeader(requestWithSessionId);
-        const requestWithAuthToken = await this.addAuthHeaderAsync(url, requestWithAcceptJson);
-        const requestWithAbortSignal = this.addAbortSignal(requestWithAuthToken);
-
-        return requestWithAbortSignal;
-    }
-
-    private async parseResponseJSONAsync<T>(response: Response) {
-        try {
-            const json = await response.json();
-            return json as T;
-        } catch (parseError) {
-            // Add more info
-            throw new HttpClientParseError(response);
-        }
-    }
-
-    private async parseResponseStringAsync(response: Response) : Promise<HttpResponse<string>> {
-        const data = await response.text();
-        // TODO: Update cache status?
+    private transformHeaders(
+        init: RequestInit,
+        transform: (headers: Headers) => void
+    ): RequestInit {
+        const headers = new Headers(init.headers);
+        transform(headers);
 
         return {
-            data,
-            status: response.status,
-            headers: response.headers,
+            ...init,
+            headers,
         };
     }
-
-    private async parseResponseAsync<T>(response: Response): Promise<HttpResponse<T>> {
-        const data = await this.parseResponseJSONAsync<T>(response);
-        // TODO: Update cache status?
-
-        return {
-            data,
-            status: response.status,
-            headers: response.headers,
-        };
-    }
-
-    private responseIsRefreshable(response: Response) {
-        return response.headers.get("x-pp-is-refreshable") !== null;
-    }
-
-    private async performFetchAsync<TExpectedErrorResponse>(
-        url: string,
-        init: RequestInit
-    ): Promise<Response> {
-        try {
-            const options = await this.transformRequestAsync(url, init);
-
-            const response = await fetch(url, options);
-
-            // TODO: Track dependency with app insight
-
-            if (!response.ok) {
-                // Add more info
-                const errorResponse = await this.parseResponseJSONAsync<TExpectedErrorResponse>(
-                    response
-                );
-
-                throw new HttpClientRequestFailedError(url, response.status, errorResponse);
-            }
-
-            return response;
-        } catch (error) {
-            if (error instanceof HttpClientRequestFailedError) {
-                // TODO: Add to notification center?
-                // TODO: Update cache status?
-                throw error;
-            }
-
-            // Add more info
-            throw error as HttpClientError;
-        }
+    
+    // Utils
+    private getRequestInProgress<T>(url: string) {
+        return this.requestsInProgress[url] as Promise<HttpResponse<T>>;
     }
 }
 

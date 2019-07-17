@@ -12,6 +12,7 @@ import AppContainer, { appContainerFactory } from "../app/AppContainer";
 import { ComponentDisplayType } from "../core/ComponentDisplayType";
 import ContextManager from "./ContextManager";
 import AbortControllerManager from "../utils/AbortControllerManager";
+import TasksContainer from "./TasksContainer";
 
 export type Auth = {
     container: IAuthContainer;
@@ -54,6 +55,7 @@ export interface IFusionContext {
     settings: Settings;
     app: App;
     contextManager: ContextManager;
+    tasksContainer: TasksContainer;
     abortControllerManager: AbortControllerManager;
 }
 
@@ -120,6 +122,7 @@ export const createFusionContext = (
         contextRouteMatch && contextRouteMatch.params ? contextRouteMatch.params.contextId : null;
 
     const contextManager = new ContextManager(apiClients, contextId);
+    const tasksContainer = new TasksContainer(apiClients);
 
     return {
         auth: { container: authContainer },
@@ -139,6 +142,7 @@ export const createFusionContext = (
             container: appContainer,
         },
         contextManager,
+        tasksContainer,
         abortControllerManager,
     };
 };
