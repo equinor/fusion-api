@@ -110,7 +110,8 @@ const useTasksContainer = () => {
 
 const useTasksData = <TKey extends keyof TasksEvents, TData = Parameter<TasksEvents[TKey]>>(
     event: TKey,
-    fetchAsync: (tasksContainer: TasksContainer) => Promise<TData>
+    fetchAsync: (tasksContainer: TasksContainer) => Promise<TData>,
+    defaultData: TData
 ): [Error | null, boolean, TData] => {
     const tasksContainer = useTasksContainer();
     const [error, setError] = useState(null);
@@ -135,20 +136,22 @@ const useTasksData = <TKey extends keyof TasksEvents, TData = Parameter<TasksEve
         fetch();
     }, []);
 
-    return [error, isFetching, data || []];
+    return [error, isFetching, data || defaultData];
 };
 
 const useTaskSourceSystems = () => {
     return useTasksData(
         "source-systems-updated",
-        async tasksContainer => await tasksContainer.getSourceSystemsAsync()
+        async tasksContainer => await tasksContainer.getSourceSystemsAsync(),
+        useTasksContainer().getSourceSystems()
     );
 };
 
 const useTaskTypes = () => {
     return useTasksData(
         "task-types-updated",
-        async tasksContainer => await tasksContainer.getTaskTypesAsync()
+        async tasksContainer => await tasksContainer.getTaskTypesAsync(),
+        useTasksContainer().getTaskTypes()
     );
 };
 
@@ -165,7 +168,8 @@ const useTasks = () => {
 
     const [tasksError, isFetchingTasks, tasks] = useTasksData(
         "tasks-updated",
-        async tasksContainer => await tasksContainer.getAllTasksAsync()
+        async tasksContainer => await tasksContainer.getAllTasksAsync(),
+        useTasksContainer().getTasks()
     );
 
     const error = sourceSystemsError || taskTypesError || tasksError;
