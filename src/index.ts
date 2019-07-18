@@ -38,6 +38,6 @@ export { default as useHistory, HistoryContext, IHistoryContext } from "./hooks/
 
 export { useTasksContainer, useTasks, useTaskSourceSystems, useTaskTypes, useTaskPrioritySetter } from "./core/TasksContainer";
 
-export { default as createPagination, Page, Pagination } from "./utils/createPagination";
+export { default as createPagination, applyPagination, Page, Pagination } from "./utils/Pagination";
 
 export * from "./http/hooks/dataProxy/useHandover";
