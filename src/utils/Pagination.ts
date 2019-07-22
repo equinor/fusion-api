@@ -45,7 +45,7 @@ const toPage = (index: number): Page => ({
 });
 
 export type Pagination = {
-    rowCount: number;
+    totalCount: number;
     perPage: number;
     pageCount: number;
     pages: Page[];
@@ -62,12 +62,12 @@ export const applyPagination = <T>(data: T[], { perPage, currentPage }: Paginati
 };
 
 export const createPagination = (
-    rowCount: number,
+    totalCount: number,
     perPage: number,
     currentPageIndex: number = 0,
     padding: number = 3
 ) => {
-    const pageCount = Math.ceil(rowCount / perPage);
+    const pageCount = Math.ceil(totalCount / perPage);
     const pages: Page[] = [];
     for (let i = 0; i < pageCount; i++) {
         pages.push(toPage(i));
@@ -82,7 +82,7 @@ export const createPagination = (
     const prevPage = getPrevPage(pages, currentPage);
 
     return {
-        rowCount,
+        totalCount,
         perPage,
         pageCount,
         pages,
@@ -172,8 +172,17 @@ export const useAsyncPagination = <T>(
     };
 
     useEffect(() => {
+        setData([]);
+        setPagination(
+            createPagination(
+                pagination.totalCount,
+                internalPerPage,
+                internalCurrentPageIndex,
+                padding
+            )
+        );
         applyPaginationAsync();
-    }, [fetchAsync, internalCurrentPageIndex, internalPerPage]);
+    }, [internalCurrentPageIndex, internalPerPage]);
 
     return {
         pagination,
