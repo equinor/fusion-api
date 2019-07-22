@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { number } from "prop-types";
+import { useState, useEffect, useCallback } from "react";
 
 export type Page = {
     index: number;
@@ -7,7 +6,7 @@ export type Page = {
 };
 
 const getPaginationHead = (pages: Page[], currentPage: Page, padding: number) => {
-    if (currentPage.index < padding || pages.length <= padding) {
+    if (currentPage.index < padding - 1 || pages.length <= padding) {
         return [];
     }
 
@@ -15,7 +14,7 @@ const getPaginationHead = (pages: Page[], currentPage: Page, padding: number) =>
 };
 
 const getPaginationTail = (pages: Page[], currentPage: Page, padding: number) => {
-    if (currentPage.index >= pages.length - padding || pages.length <= padding) {
+    if (currentPage.index > pages.length - padding || pages.length <= padding) {
         return [];
     }
 
@@ -66,7 +65,7 @@ export const createPagination = (
     perPage: number,
     currentPageIndex: number = 0,
     padding: number = 3
-) => {
+): Pagination => {
     const pageCount = Math.ceil(totalCount / perPage);
     const pages: Page[] = [];
     for (let i = 0; i < pageCount; i++) {
@@ -95,75 +94,76 @@ export const createPagination = (
     };
 };
 
+export type PaginationHook<T> = {
+    pagination: Pagination;
+    pagedData: T[];
+    setCurrentPage: (index: number, perPage: number) => void;
+};
+
 export const usePagination = <T>(
     data: T[],
-    perPage: number = 20,
-    currentPageIndex: number = 0,
+    initialPerPage: number = 20,
+    initialCurrentPageIndex: number = 0,
     padding: number = 3
-) => {
-    const [internalCurrentPageIndex, setCurrentPageIndex] = useState(currentPageIndex);
-    const [internalPerPage, setCurrentPerPage] = useState(perPage);
+): PaginationHook<T> => {
+    const [currentPageIndex, setCurrentPageIndex] = useState(initialCurrentPageIndex);
+    const [perPage, setPerPage] = useState(initialPerPage);
     const [pagination, setPagination] = useState<Pagination>(
-        createPagination(data.length, internalPerPage, internalCurrentPageIndex, padding)
+        createPagination(data.length, perPage, currentPageIndex, padding)
     );
     const [pagedData, setPagedData] = useState<T[]>(applyPagination(data, pagination));
 
     useEffect(() => {
-        const newPagination = createPagination(
-            data.length,
-            internalPerPage,
-            internalCurrentPageIndex,
-            padding
-        );
+        const newPagination = createPagination(data.length, perPage, currentPageIndex, padding);
         const newPagedData = applyPagination(data, newPagination);
         setPagination(newPagination);
         setPagedData(newPagedData);
-    }, [data, internalCurrentPageIndex, internalPerPage]);
+    }, [data, currentPageIndex, perPage]);
+
+    const setCurrentPage = useCallback((index: number, perPage: number) => {
+        setCurrentPageIndex(index);
+        setPerPage(perPage);
+    }, []);
 
     return {
         pagination,
         pagedData,
-        currentPageIndex: internalCurrentPageIndex,
-        setCurrentPageIndex,
-        setCurrentPerPage,
-        perPage: internalPerPage,
+        setCurrentPage,
     };
 };
 
-export type PaginationResult<T> = {
+export type PagedResult<T> = {
     items: T[];
     totalCount: number;
 };
 
+export type AsyncPaginationHook<T> = PaginationHook<T> & {
+    isFetching: boolean;
+    error: Error | null;
+};
+
 export const useAsyncPagination = <T>(
-    fetchAsync: (pagination: Pagination) => Promise<PaginationResult<T>>,
-    perPage: number,
-    currentPageIndex: number = 0,
+    fetchAsync: (pagination: Pagination) => Promise<PagedResult<T>>,
+    initialPerPage: number,
+    initialCurrentPageIndex: number = 0,
     padding: number = 3
-) => {
-    const [internalCurrentPageIndex, setCurrentPageIndex] = useState(currentPageIndex);
-    const [internalPerPage, setCurrentPerPage] = useState(perPage);
+): AsyncPaginationHook<T> => {
+    const [currentPageIndex, setCurrentPageIndex] = useState(initialCurrentPageIndex);
+    const [perPage, setPerPage] = useState(initialPerPage);
     const [isFetching, setIsFetching] = useState(false);
     const [error, setError] = useState<Error | null>(null);
-    const [data, setData] = useState<T[]>([]);
+    const [pagedData, setPagedData] = useState<T[]>([]);
     const [pagination, setPagination] = useState<Pagination>(
-        createPagination(0, internalPerPage, internalCurrentPageIndex, padding)
+        createPagination(0, perPage, currentPageIndex, padding)
     );
 
     const applyPaginationAsync = async () => {
         setIsFetching(true);
 
         try {
-            const pagedData = await fetchAsync(pagination);
-            setData(pagedData.items);
-            setPagination(
-                createPagination(
-                    pagedData.totalCount,
-                    internalPerPage,
-                    internalCurrentPageIndex,
-                    padding
-                )
-            );
+            const result = await fetchAsync(pagination);
+            setPagedData(result.items);
+            setPagination(createPagination(result.totalCount, perPage, currentPageIndex, padding));
         } catch (e) {
             setError(e);
         }
@@ -172,26 +172,21 @@ export const useAsyncPagination = <T>(
     };
 
     useEffect(() => {
-        setData([]);
-        setPagination(
-            createPagination(
-                pagination.totalCount,
-                internalPerPage,
-                internalCurrentPageIndex,
-                padding
-            )
-        );
+        setPagedData([]);
+        setPagination(createPagination(pagination.totalCount, perPage, currentPageIndex, padding));
         applyPaginationAsync();
-    }, [internalCurrentPageIndex, internalPerPage]);
+    }, [currentPageIndex, perPage]);
+
+    const setCurrentPage = useCallback((index: number, perPage: number) => {
+        setCurrentPageIndex(index);
+        setPerPage(perPage);
+    }, []);
 
     return {
         pagination,
-        data,
+        pagedData,
         isFetching,
         error,
-        currentPageIndex: internalCurrentPageIndex,
-        setCurrentPageIndex,
-        setCurrentPerPage,
-        perPage: internalPerPage,
+        setCurrentPage,
     };
 };
