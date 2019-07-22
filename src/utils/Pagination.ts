@@ -135,7 +135,7 @@ export type PaginationResult<T> = {
     totalCount: number;
 };
 
-export const usePaginationAsync = <T>(
+export const useAsyncPagination = <T>(
     fetchAsync: (pagination: Pagination) => Promise<PaginationResult<T>>,
     perPage: number,
     currentPageIndex: number = 0,
@@ -152,7 +152,7 @@ export const usePaginationAsync = <T>(
 
     const applyPaginationAsync = async () => {
         setIsFetching(true);
-        
+
         try {
             const pagedData = await fetchAsync(pagination);
             setData(pagedData.items);
