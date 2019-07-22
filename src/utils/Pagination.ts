@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
+import { number } from "prop-types";
 
 export type Page = {
     index: number;
@@ -96,24 +97,92 @@ export const createPagination = (
 
 export const usePagination = <T>(
     data: T[],
+    perPage: number = 20,
+    currentPageIndex: number = 0,
+    padding: number = 3
+) => {
+    const [internalCurrentPageIndex, setCurrentPageIndex] = useState(currentPageIndex);
+    const [internalPerPage, setCurrentPerPage] = useState(perPage);
+    const [pagination, setPagination] = useState<Pagination>(
+        createPagination(data.length, internalPerPage, internalCurrentPageIndex, padding)
+    );
+    const [pagedData, setPagedData] = useState<T[]>(applyPagination(data, pagination));
+
+    useEffect(() => {
+        const newPagination = createPagination(
+            data.length,
+            internalPerPage,
+            internalCurrentPageIndex,
+            padding
+        );
+        const newPagedData = applyPagination(data, newPagination);
+        setPagination(newPagination);
+        setPagedData(newPagedData);
+    }, [data, internalCurrentPageIndex, internalPerPage]);
+
+    return {
+        pagination,
+        pagedData,
+        currentPageIndex: internalCurrentPageIndex,
+        setCurrentPageIndex,
+        setCurrentPerPage,
+        perPage: internalPerPage,
+    };
+};
+
+export type PaginationResult<T> = {
+    items: T[];
+    totalCount: number;
+};
+
+export const usePaginationAsync = <T>(
+    fetchAsync: (pagination: Pagination) => Promise<PaginationResult<T>>,
     perPage: number,
     currentPageIndex: number = 0,
     padding: number = 3
 ) => {
     const [internalCurrentPageIndex, setCurrentPageIndex] = useState(currentPageIndex);
-    const [pagination, setPagination] = useState<Pagination>(createPagination(data.length, perPage, currentPageIndex, padding));
-    const [pagedData, setPagedData] = useState<T[]>(applyPagination(data, pagination));
+    const [internalPerPage, setCurrentPerPage] = useState(perPage);
+    const [isFetching, setIsFetching] = useState(false);
+    const [error, setError] = useState<Error | null>(null);
+    const [data, setData] = useState<T[]>([]);
+    const [pagination, setPagination] = useState<Pagination>(
+        createPagination(0, internalPerPage, internalCurrentPageIndex, padding)
+    );
+
+    const applyPaginationAsync = async () => {
+        setIsFetching(true);
+        
+        try {
+            const pagedData = await fetchAsync(pagination);
+            setData(pagedData.items);
+            setPagination(
+                createPagination(
+                    pagedData.totalCount,
+                    internalPerPage,
+                    internalCurrentPageIndex,
+                    padding
+                )
+            );
+        } catch (e) {
+            setError(e);
+        }
+
+        setIsFetching(false);
+    };
 
     useEffect(() => {
-        const newPagination = createPagination(data.length, perPage, currentPageIndex, padding);
-        const newPagedData = applyPagination(data, newPagination);
-        setPagination(newPagination);
-        setPagedData(newPagedData);
-    }, [data, internalCurrentPageIndex]);
+        applyPaginationAsync();
+    }, [fetchAsync, internalCurrentPageIndex, internalPerPage]);
 
     return {
         pagination,
-        pagedData,
+        data,
+        isFetching,
+        error,
+        currentPageIndex: internalCurrentPageIndex,
         setCurrentPageIndex,
+        setCurrentPerPage,
+        perPage: internalPerPage,
     };
 };
