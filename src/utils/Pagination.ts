@@ -39,10 +39,22 @@ const getPrevPage = (pages: Page[], currentPage: Page) => {
     return pages[prevIndex] || pages[pages.length - 1];
 };
 
+const getPaginationRange = (totalCount: number, perPage: number, currentPage: Page) => {
+    return {
+        from: currentPage.index * perPage + 1,
+        to: Math.min((currentPage.index * perPage) + perPage, totalCount),
+    };
+};
+
 const toPage = (index: number): Page => ({
     index,
     value: (index + 1).toString(),
 });
+
+export type PaginationRange = {
+    from: number;
+    to: number;
+};
 
 export type Pagination = {
     totalCount: number;
@@ -55,6 +67,7 @@ export type Pagination = {
     currentPage: Page;
     nextPage: Page;
     prevPage: Page;
+    range: PaginationRange;
 };
 
 export const applyPagination = <T>(data: T[], { perPage, currentPage }: Pagination) => {
@@ -81,6 +94,8 @@ export const createPagination = (
     const nextPage = getNextPage(pages, currentPage);
     const prevPage = getPrevPage(pages, currentPage);
 
+    const range = getPaginationRange(totalCount, perPage, currentPage);
+
     return {
         totalCount,
         perPage,
@@ -92,6 +107,7 @@ export const createPagination = (
         currentPage,
         nextPage,
         prevPage,
+        range,
     };
 };
 
