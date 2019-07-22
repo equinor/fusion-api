@@ -1,13 +1,15 @@
 import { useFusionContext } from "../core/FusionContext";
 
+type AbortDispatcher = () => void;
+
 export default class AbortControllerManager {
     private currentAbortController: AbortController | null = null;
 
-    withAbortController(abortableAction: () => Promise<void>): () => void {
-        var abortController = new AbortController();
+    withAbortController(abortableAction: (signal: AbortSignal) => Promise<void>): AbortDispatcher {
+        const abortController = new AbortController();
         this.currentAbortController = abortController;
 
-        abortableAction().then(() => {
+        abortableAction(abortController.signal).then(() => {
             this.currentAbortController = null;
         });
 
@@ -28,15 +30,17 @@ const useAbortControllerManager = () => {
     return abortControllerManager;
 };
 
+type AbortableAction = (signal: AbortSignal) => Promise<void>;
+
 /**
  * Returns a function to be called if the request(s) performed within the passed function should be aborted
  */
-const withAbortController = (): (abortableAction: () => Promise<void>) => (() => void) => {
+const withAbortController = (): ((abortableAction: AbortableAction) => AbortDispatcher) => {
     const abortControllerManager = useAbortControllerManager();
 
-    return (abortableAction: () => Promise<void>): (() => void) => {
+    return (abortableAction: AbortableAction): AbortDispatcher => {
         return abortControllerManager.withAbortController(abortableAction);
     };
-}
+};
 
 export { useAbortControllerManager, withAbortController };

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { withAbortController } from "./AbortControllerManager";
 
 export type Page = {
     index: number;
@@ -156,19 +157,30 @@ export const useAsyncPagination = <T>(
     const [pagination, setPagination] = useState<Pagination>(
         createPagination(0, perPage, currentPageIndex, padding)
     );
+    const abortable = withAbortController();
 
     const applyPaginationAsync = async () => {
         setIsFetching(true);
 
-        try {
-            const result = await fetchAsync(pagination);
-            setPagedData(result.items);
-            setPagination(createPagination(result.totalCount, perPage, currentPageIndex, padding));
-        } catch (e) {
-            setError(e);
-        }
+        return abortable(async signal => {
+            try {
+                const result = await fetchAsync(pagination);
 
-        setIsFetching(false);
+                if (signal.aborted) {
+                    return;
+                }
+
+                setPagedData(result.items);
+                setPagination(
+                    createPagination(result.totalCount, perPage, currentPageIndex, padding)
+                );
+                setError(null);
+            } catch (e) {
+                setError(e);
+            }
+
+            setIsFetching(false);
+        });
     };
 
     useEffect(() => {
