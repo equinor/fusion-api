@@ -159,7 +159,7 @@ export const useAsyncPagination = <T>(
     );
     const abortable = withAbortController();
 
-    const applyPaginationAsync = async () => {
+    const applyPaginationAsync = () => {
         setIsFetching(true);
 
         return abortable(async signal => {
@@ -186,7 +186,7 @@ export const useAsyncPagination = <T>(
     useEffect(() => {
         setPagedData([]);
         setPagination(createPagination(pagination.totalCount, perPage, currentPageIndex, padding));
-        applyPaginationAsync();
+        return applyPaginationAsync();
     }, [currentPageIndex, perPage]);
 
     const setCurrentPage = useCallback((index: number, perPage: number) => {
