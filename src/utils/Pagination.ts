@@ -163,7 +163,8 @@ export const useAsyncPagination = <T>(
     fetchAsync: (pagination: Pagination) => Promise<PagedResult<T>>,
     initialPerPage: number,
     initialCurrentPageIndex: number = 0,
-    padding: number = 3
+    padding: number = 3,
+    deps: readonly any[] = []
 ): AsyncPaginationHook<T> => {
     const [currentPageIndex, setCurrentPageIndex] = useState(initialCurrentPageIndex);
     const [perPage, setPerPage] = useState(initialPerPage);
@@ -203,7 +204,7 @@ export const useAsyncPagination = <T>(
         setPagedData([]);
         setPagination(createPagination(pagination.totalCount, perPage, currentPageIndex, padding));
         return applyPaginationAsync();
-    }, [currentPageIndex, perPage]);
+    }, [currentPageIndex, perPage, ...deps]);
 
     const setCurrentPage = useCallback((index: number, perPage: number) => {
         setCurrentPageIndex(index);
