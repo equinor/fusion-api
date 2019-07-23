@@ -29,14 +29,14 @@ const getPaginationCenter = (pages: Page[], currentPage: Page, padding: number) 
     return pages.slice(start, end);
 };
 
-const getNextPage = (pages: Page[], currentPage: Page) => {
+const getNextPage = (pages: Page[], currentPage: Page): Page | null => {
     const nextIndex = currentPage.index + 1;
-    return pages[nextIndex] || pages[0];
+    return pages[nextIndex] || null;
 };
 
-const getPrevPage = (pages: Page[], currentPage: Page) => {
+const getPrevPage = (pages: Page[], currentPage: Page): Page | null => {
     const prevIndex = currentPage.index - 1;
-    return pages[prevIndex] || pages[pages.length - 1];
+    return pages[prevIndex] || null;
 };
 
 const getPaginationRange = (totalCount: number, perPage: number, currentPage: Page) => {
@@ -65,8 +65,8 @@ export type Pagination = {
     center: Page[];
     tail: Page[];
     currentPage: Page;
-    nextPage: Page;
-    prevPage: Page;
+    nextPage: Page | null;
+    prevPage: Page | null;
     range: PaginationRange;
 };
 
