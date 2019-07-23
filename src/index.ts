@@ -40,4 +40,6 @@ export { useTasksContainer, useTasks, useTaskSourceSystems, useTaskTypes, useTas
 
 export { createPagination, applyPagination, usePagination, useAsyncPagination, Page, Pagination, PagedResult, PaginationRange } from "./utils/Pagination";
 
+export { default as useSorting, applySorting, SortDirection, PropertyAccessor, PropertyAccessorFunction } from "./hooks/useSorting";
+
 export * from "./http/hooks/dataProxy/useHandover";
