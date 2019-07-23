@@ -21,7 +21,7 @@ const getValue = <T>(item: T | null, accessor: PropertyAccessor<T>) => {
 };
 
 export const applySorting = <T>(
-    data: T[],
+    data: readonly T[],
     sortBy: PropertyAccessor<T> | null = null,
     direction: SortDirection | null = null
 ) => {
@@ -29,7 +29,7 @@ export const applySorting = <T>(
         return data;
     }
 
-    const comparer = new Intl.Collator().compare;
+    const comparer = new Intl.Collator('co', { numeric: true }).compare;
     return data.slice().sort((a, b) => {
         const aValue = getValue(a, sortBy);
         const bValue = getValue(b, sortBy);
@@ -57,7 +57,7 @@ const cycleSortDirection = (direction: SortDirection | null): SortDirection | nu
 };
 
 export default <T>(
-    data: T[],
+    data: readonly T[],
     defaultSortBy: PropertyAccessor<T> | null = null,
     defaultDirection: SortDirection | null = null
 ) => {
@@ -69,12 +69,12 @@ export default <T>(
         setSortedData(applySorting(data, sortBy, direction));
     }, [data, sortBy, direction]);
 
-    const reset = () => {
+    const resetSorting = () => {
         setSortBy(null);
         setDirection(null);
     };
 
-    const set = (newSortBy: PropertyAccessor<T> | null, newDirection: SortDirection | null) => {
+    const updateSortBy = (newSortBy: PropertyAccessor<T> | null, newDirection: SortDirection | null) => {
         newDirection =
             newDirection || sortBy === newSortBy || !newSortBy
                 ? cycleSortDirection(direction)
@@ -88,7 +88,7 @@ export default <T>(
         sortedData,
         sortBy,
         direction,
-        set,
-        reset,
+        setSortBy: updateSortBy,
+        resetSorting,
     };
 };
