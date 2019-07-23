@@ -30,7 +30,7 @@ export const applySorting = <T>(
     }
 
     const comparer = new Intl.Collator().compare;
-    return data.sort((a, b) => {
+    return data.slice().sort((a, b) => {
         const aValue = getValue(a, sortBy);
         const bValue = getValue(b, sortBy);
 
@@ -44,6 +44,16 @@ export const applySorting = <T>(
 
         return direction === "asc" ? comparer(aValue, bValue) : comparer(bValue, aValue);
     });
+};
+
+const cycleSortDirection = (direction: SortDirection | null): SortDirection | null => {
+    if (!direction) {
+        return "asc";
+    } else if (direction === "asc") {
+        return "desc";
+    }
+
+    return null;
 };
 
 export default <T>(
@@ -64,9 +74,14 @@ export default <T>(
         setDirection(null);
     };
 
-    const set = (sortBy: PropertyAccessor<T> | null, direction: SortDirection | null) => {
-        setSortBy(sortBy);
-        setDirection(direction);
+    const set = (newSortBy: PropertyAccessor<T> | null, newDirection: SortDirection | null) => {
+        newDirection =
+            newDirection || sortBy === newSortBy || !newSortBy
+                ? cycleSortDirection(direction)
+                : cycleSortDirection(null);
+
+        setSortBy(newSortBy);
+        setDirection(newDirection);
     };
 
     return {
