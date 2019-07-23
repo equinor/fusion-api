@@ -42,7 +42,7 @@ export const applySorting = <T>(
             return direction === "asc" ? -1 : 1;
         }
 
-        return comparer(aValue, bValue);
+        return direction === "asc" ? comparer(aValue, bValue) : comparer(bValue, aValue);
     });
 };
 
