@@ -21,7 +21,7 @@ const getValue = <T>(item: T | null, accessor: PropertyAccessor<T>) => {
 };
 
 export const applySorting = <T>(
-    data: readonly T[],
+    data: T[],
     sortBy: PropertyAccessor<T> | null = null,
     direction: SortDirection | null = null
 ) => {
@@ -57,7 +57,7 @@ const cycleSortDirection = (direction: SortDirection | null): SortDirection | nu
 };
 
 export default <T>(
-    data: readonly T[],
+    data: T[],
     defaultSortBy: PropertyAccessor<T> | null = null,
     defaultDirection: SortDirection | null = null
 ) => {

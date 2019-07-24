@@ -174,9 +174,14 @@ export const useAsyncPagination = <T>(
     const [pagination, setPagination] = useState<Pagination>(
         createPagination(0, perPage, currentPageIndex, padding)
     );
-    const abortable = withAbortController();
 
-    const applyPaginationAsync = () => {
+    useEffect(() => {
+        setPagedData([]);
+        setPagination(createPagination(pagination.totalCount, perPage, currentPageIndex, padding));
+    }, [currentPageIndex, perPage, ...deps]);
+
+    const abortable = withAbortController();
+    useEffect(() => {
         setIsFetching(true);
 
         return abortable(async signal => {
@@ -198,13 +203,7 @@ export const useAsyncPagination = <T>(
 
             setIsFetching(false);
         });
-    };
-
-    useEffect(() => {
-        setPagedData([]);
-        setPagination(createPagination(pagination.totalCount, perPage, currentPageIndex, padding));
-        return applyPaginationAsync();
-    }, [currentPageIndex, perPage, ...deps]);
+    }, [pagination]);
 
     const setCurrentPage = useCallback((index: number, perPage: number) => {
         setCurrentPageIndex(index);
