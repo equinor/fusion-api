@@ -24,7 +24,10 @@ const getPaginationTail = (pages: Page[], currentPage: Page, padding: number) =>
 
 const getPaginationCenter = (pages: Page[], currentPage: Page, padding: number) => {
     const distance = Math.floor(padding / 2);
-    const start = Math.max(currentPage.index - distance, 0);
+    const start =
+        currentPage.index === pages.length - 1
+            ? pages.length - padding - 1
+            : Math.max(currentPage.index - distance, 0);
     const end = Math.max(currentPage.index + distance + 1, padding);
     return pages.slice(start, end);
 };
@@ -42,7 +45,7 @@ const getPrevPage = (pages: Page[], currentPage: Page): Page | null => {
 const getPaginationRange = (totalCount: number, perPage: number, currentPage: Page) => {
     return {
         from: currentPage.index * perPage + 1,
-        to: Math.min((currentPage.index * perPage) + perPage, totalCount),
+        to: Math.min(currentPage.index * perPage + perPage, totalCount),
     };
 };
 
@@ -175,13 +178,8 @@ export const useAsyncPagination = <T>(
         createPagination(0, perPage, currentPageIndex, padding)
     );
 
-    useEffect(() => {
-        setPagedData([]);
-        setPagination(createPagination(pagination.totalCount, perPage, currentPageIndex, padding));
-    }, [currentPageIndex, perPage, ...deps]);
-
     const abortable = withAbortController();
-    useEffect(() => {
+    const applyPaginationAsync = (pagination: Pagination) => {
         setIsFetching(true);
 
         return abortable(async signal => {
@@ -203,7 +201,19 @@ export const useAsyncPagination = <T>(
 
             setIsFetching(false);
         });
-    }, [pagination]);
+    };
+
+    useEffect(() => {
+        setPagedData([]);
+        const newPagination = createPagination(
+            pagination.totalCount,
+            perPage,
+            currentPageIndex,
+            padding
+        );
+        setPagination(newPagination);
+        return applyPaginationAsync(newPagination);
+    }, [currentPageIndex, perPage, ...deps]);
 
     const setCurrentPage = useCallback((index: number, perPage: number) => {
         setCurrentPageIndex(index);
