@@ -60,7 +60,7 @@ export type NotificationPresenterRegistration = {
     present: NotificationPresenter;
 };
 
-export class NotificationCenter extends ReliableDictionary<NotificationCache, NotificationEvents> {
+export default class NotificationCenter extends ReliableDictionary<NotificationCache, NotificationEvents> {
     private presenters: NotificationPresenterRegistration[] = [];
 
     constructor() {

@@ -1,12 +1,11 @@
 import IReliableDictionaryStorageProvider, {
     ReadonlyDictionary,
-    Dictionary
-} from "./IReliableDictionaryStorageProvider";
-import { IReadonlyReliableDictionary } from "./ReadonlyReliableDictionary";
-import EventEmitter, { Events } from "../EventEmitter";
+} from './IReliableDictionaryStorageProvider';
+import { IReadonlyReliableDictionary } from './ReadonlyReliableDictionary';
+import EventEmitter, { Events } from '../EventEmitter';
 
-export { default as LocalStorageProvider } from "./LocalStorageProvider";
-export { default as ReadOnlyReliableDictionary } from "./ReadonlyReliableDictionary";
+export { default as LocalStorageProvider } from './LocalStorageProvider';
+export { default as ReadOnlyReliableDictionary } from './ReadonlyReliableDictionary';
 
 export { IReadonlyReliableDictionary };
 
@@ -22,9 +21,13 @@ type ReliableDictionaryEvents<TCacheType> = {
     change: (dictionary: TCacheType) => void;
 };
 
-export default abstract class ReliableDictionary<TCacheType = ReadonlyDictionary, TAdditionalEvents extends Events = {}>
-    extends EventEmitter<ReliableDictionaryEvents<TCacheType> & TAdditionalEvents>
-    implements IReliableDictionary<TCacheType> {
+type AdditionalEvents = {};
+
+export default abstract class ReliableDictionary<
+    TCacheType = ReadonlyDictionary,
+    TAdditionalEvents extends Events = AdditionalEvents,
+    TEvents extends Events = ReliableDictionaryEvents<TCacheType> & TAdditionalEvents
+> extends EventEmitter<TEvents> implements IReliableDictionary<TCacheType> {
     protected provider: IReliableDictionaryStorageProvider;
 
     constructor(provider: IReliableDictionaryStorageProvider) {
@@ -32,11 +35,16 @@ export default abstract class ReliableDictionary<TCacheType = ReadonlyDictionary
         this.provider = provider;
     }
 
-    async getAsync<TKey extends keyof TCacheType, T = TCacheType[TKey]>(key: TKey): Promise<T | null> {
-        return await this.provider.getItemAsync(key.toString()) as T;
+    async getAsync<TKey extends keyof TCacheType, T = TCacheType[TKey]>(
+        key: TKey
+    ): Promise<T | null> {
+        return (await this.provider.getItemAsync(key.toString())) as T;
     }
 
-    async setAsync<TKey extends keyof TCacheType, T = TCacheType[TKey]>(key: TKey, value: T): Promise<void> {
+    async setAsync<TKey extends keyof TCacheType, T = TCacheType[TKey]>(
+        key: TKey,
+        value: T
+    ): Promise<void> {
         await this.provider.setItemAsync(key.toString(), value);
         await this.emitChangesAsync();
     }
@@ -62,6 +70,6 @@ export default abstract class ReliableDictionary<TCacheType = ReadonlyDictionary
 
     private async emitChangesAsync(): Promise<void> {
         const dictionary = await this.toObjectAsync();
-        this.emit("change", dictionary);
+        this.emit('change', dictionary);
     }
 }
