@@ -76,6 +76,7 @@ export {
     NotificationPresenterRegistration,
     NotificationPresenter,
     NotificationResolver,
+    useNotificationCenter,
 } from './core/NotificationCenter';
 
 export * from './http/hooks/dataProxy/useHandover';

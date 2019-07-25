@@ -180,5 +180,5 @@ export default class NotificationCenter extends ReliableDictionary<NotificationC
 export const useNotificationCenter = () => {
     const { notificationCenter } = useFusionContext();
 
-    return notificationCenter.sendAsync;
+    return (notificationRequest: NotificationRequest) => notificationCenter.sendAsync(notificationRequest);
 };
