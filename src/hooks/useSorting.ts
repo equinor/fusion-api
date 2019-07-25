@@ -5,6 +5,11 @@ export type PropertyAccessor<T> = keyof T | PropertyAccessorFunction<T>;
 
 export type SortDirection = "asc" | "desc";
 
+/**
+ * Gets the value from an item based on the accessor (which may be a string or a function)
+ * @param item The item
+ * @param accessor The accessor
+ */
 const getValue = <T>(item: T | null, accessor: PropertyAccessor<T>) => {
     if (!item) {
         return null;
@@ -20,6 +25,12 @@ const getValue = <T>(item: T | null, accessor: PropertyAccessor<T>) => {
     return value ? value.toString() : null;
 };
 
+/**
+ * Apply sort to a data set
+ * @param data The data to sort
+ * @param sortBy The property to sort by or an accessor function
+ * @param direction Sort direction
+ */
 export const applySorting = <T>(
     data: T[],
     sortBy: PropertyAccessor<T> | null = null,
@@ -34,6 +45,7 @@ export const applySorting = <T>(
         const aValue = getValue(a, sortBy);
         const bValue = getValue(b, sortBy);
 
+        // Sort null/falsy values at the end/beginning for asc/desc respectively
         if (!aValue && !bValue) {
             return 0;
         } else if (!aValue) {
@@ -46,6 +58,10 @@ export const applySorting = <T>(
     });
 };
 
+/**
+ * Cycle the direction. E.g. null > asc > desc > null > repeat
+ * @param direction Current direction
+ */
 const cycleSortDirection = (direction: SortDirection | null): SortDirection | null => {
     if (!direction) {
         return "asc";
@@ -56,7 +72,14 @@ const cycleSortDirection = (direction: SortDirection | null): SortDirection | nu
     return null;
 };
 
-export default <T>(
+/**
+ * Sorting hook that takes care of sorting and storing the sort by and direction
+ * If the default sort by of direction is null, no initial sorting will be applied
+ * @param data The data to sort
+ * @param defaultSortBy The default sort property
+ * @param defaultDirection The default direction
+ */
+export const useSorting = <T>(
     data: T[],
     defaultSortBy: PropertyAccessor<T> | null = null,
     defaultDirection: SortDirection | null = null
