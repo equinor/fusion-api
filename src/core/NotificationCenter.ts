@@ -19,6 +19,7 @@ export type NotificationRequest = {
     title: string;
     body?: string;
     cancelLabel?: string;
+    confirmLabel?: string;
 };
 
 export type NotificationResponse = {
@@ -45,6 +46,7 @@ type NotificationEvents = {
     dismissed: (notification: NotificationRequest) => void;
     confirmed: (notification: NotificationRequest) => void;
     cancelled: (notification: NotificationRequest) => void;
+    finished: (notification: NotificationRequest) => void;
 };
 
 export type NotificationResolver = (response: NotificationResponse) => void;
@@ -80,6 +82,8 @@ export default class NotificationCenter extends ReliableDictionary<NotificationC
         } else if (response.cancelled) {
             this.emit('cancelled', notificationRequest);
         }
+
+        this.emit('finished', notificationRequest);
 
         const notificationWithResponse = {
             ...notification,
