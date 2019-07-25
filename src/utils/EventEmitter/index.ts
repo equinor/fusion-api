@@ -7,7 +7,7 @@ type Handler<TEvents extends Events, TKey extends keyof TEvents = keyof TEvents>
     handler: (arg: Parameter<TEvents[TKey]>) => void;
 };
 
-type Events = {
+export type Events = {
     [key: string]: (arg: any) => void;
 };
 

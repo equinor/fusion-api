@@ -3,7 +3,7 @@ import IReliableDictionaryStorageProvider, {
     Dictionary
 } from "./IReliableDictionaryStorageProvider";
 import { IReadonlyReliableDictionary } from "./ReadonlyReliableDictionary";
-import EventEmitter from "../EventEmitter";
+import EventEmitter, { Events } from "../EventEmitter";
 
 export { default as LocalStorageProvider } from "./LocalStorageProvider";
 export { default as ReadOnlyReliableDictionary } from "./ReadonlyReliableDictionary";
@@ -22,8 +22,8 @@ type ReliableDictionaryEvents<TCacheType> = {
     change: (dictionary: TCacheType) => void;
 };
 
-export default abstract class ReliableDictionary<TCacheType = ReadonlyDictionary>
-    extends EventEmitter<ReliableDictionaryEvents<TCacheType>>
+export default abstract class ReliableDictionary<TCacheType = ReadonlyDictionary, TAdditionalEvents extends Events = {}>
+    extends EventEmitter<ReliableDictionaryEvents<TCacheType> & TAdditionalEvents>
     implements IReliableDictionary<TCacheType> {
     protected provider: IReliableDictionaryStorageProvider;
 
