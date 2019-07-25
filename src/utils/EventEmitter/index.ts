@@ -1,13 +1,19 @@
-import { useState, useEffect, Dispatch, SetStateAction } from "react";
+import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 
-export type Parameter<T> = T extends (arg: infer T) => any ? T : never;
+export type Parameter<T extends (arg: any) => void> = T extends (arg: infer P) => void ? P : never;
+
+export type EventHandlerParameter<
+    TEvent extends Events,
+    TKey extends keyof TEvent,
+    THandler extends TEvent[TKey] = TEvent[TKey]
+> = THandler extends (arg: infer P) => void ? P : never;
 
 type Handler<TEvents extends Events, TKey extends keyof TEvents = keyof TEvents> = {
     key: TKey;
-    handler: (arg: Parameter<TEvents[TKey]>) => void;
+    handler: (arg: EventHandlerParameter<TEvents, TKey>) => void;
 };
 
-type Events = {
+export type Events = {
     [key: string]: (arg: any) => void;
 };
 
@@ -16,7 +22,7 @@ export default abstract class EventEmitter<TEvents extends Events> {
 
     on<TKey extends keyof TEvents>(
         key: TKey,
-        handler: (arg: Parameter<TEvents[TKey]>) => void
+        handler: (arg: EventHandlerParameter<TEvents, TKey>) => void
     ): () => void {
         const registeredHandler: Handler<TEvents> = {
             key,
@@ -31,7 +37,10 @@ export default abstract class EventEmitter<TEvents extends Events> {
         };
     }
 
-    protected emit<TKey extends keyof TEvents>(key: TKey, arg: Parameter<TEvents[TKey]>): this {
+    protected emit<TKey extends keyof TEvents, TParameter = EventHandlerParameter<TEvents, TKey>>(
+        key: TKey,
+        arg: TParameter
+    ): this {
         const handlers = this.handlers.filter(h => h.key === key);
 
         handlers.forEach(handler => {
@@ -46,7 +55,7 @@ export default abstract class EventEmitter<TEvents extends Events> {
 export const useEventEmitterValue = <
     TEvents extends Events,
     TKey extends keyof TEvents,
-    TData = Parameter<TEvents[TKey]>
+    TData = EventHandlerParameter<TEvents, TKey>
 >(
     emitter: EventEmitter<TEvents>,
     event: TKey,

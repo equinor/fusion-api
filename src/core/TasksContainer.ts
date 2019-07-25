@@ -1,6 +1,6 @@
 import ApiClients from "../http/apiClients";
 import TasksClient from "../http/apiClients/TasksClient";
-import EventEmitter, { useEventEmitterValue, Parameter } from "../utils/EventEmitter";
+import EventEmitter, { useEventEmitterValue, EventHandlerParameter } from "../utils/EventEmitter";
 import Task, { TaskType, TaskSourceSystem, TaskTypes } from "../http/apiClients/models/tasks/Task";
 import { useState, useEffect } from "react";
 import { useFusionContext } from "./FusionContext";
@@ -108,7 +108,7 @@ const useTasksContainer = () => {
     return tasksContainer;
 };
 
-const useTasksData = <TKey extends keyof TasksEvents, TData = Parameter<TasksEvents[TKey]>>(
+const useTasksData = <TKey extends keyof TasksEvents, TData = EventHandlerParameter<TasksEvents, TKey>>(
     event: TKey,
     fetchAsync: (tasksContainer: TasksContainer) => Promise<TData>,
     defaultData: TData
