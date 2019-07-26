@@ -9,6 +9,8 @@ export type NotificationPriority = 'low' | 'medium' | 'high';
  * Used when sending a request to send a notification
  */
 export type NotificationRequest = {
+    /* Optional notification id. Notifications with a unique id will only be shown to the user once. Ever. */
+    id?: string;
     /** The level of the notification */
     level: NotificationLevel;
     /**
@@ -62,7 +64,10 @@ export type NotificationPresenterRegistration = {
     present: NotificationPresenter;
 };
 
-export default class NotificationCenter extends ReliableDictionary<NotificationCache, NotificationEvents> {
+export default class NotificationCenter extends ReliableDictionary<
+    NotificationCache,
+    NotificationEvents
+> {
     private presenters: NotificationPresenterRegistration[] = [];
 
     constructor() {
@@ -70,6 +75,10 @@ export default class NotificationCenter extends ReliableDictionary<NotificationC
     }
 
     async sendAsync(notificationRequest: NotificationRequest): Promise<NotificationResponse> {
+        if(!await this.shouldPresentNotificationAsync(notificationRequest)) {
+            return Promise.reject();
+        }
+
         const notification = this.createNotification(notificationRequest);
         await this.persistAsync(notification);
 
@@ -115,9 +124,19 @@ export default class NotificationCenter extends ReliableDictionary<NotificationC
         return notifications || [];
     }
 
+    private async shouldPresentNotificationAsync(notificationRequest: NotificationRequest) {
+        const allNotifications = await this.getAllNotificationsAsync();
+
+        if(allNotifications.find(n => n.id === notificationRequest.id)) {
+            return false;
+        }
+
+        return true;
+    }
+
     private createNotification(notificationRequest: NotificationRequest): Notification {
         return {
-            id: uuid(),
+            id: notificationRequest.id || uuid(),
             request: notificationRequest,
             response: null,
             presented: new Date(),
@@ -184,5 +203,6 @@ export default class NotificationCenter extends ReliableDictionary<NotificationC
 export const useNotificationCenter = () => {
     const { notificationCenter } = useFusionContext();
 
-    return (notificationRequest: NotificationRequest) => notificationCenter.sendAsync(notificationRequest);
+    return (notificationRequest: NotificationRequest) =>
+        notificationCenter.sendAsync(notificationRequest);
 };

@@ -27,6 +27,12 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
     updateManifest(appKey: string, manifest: AppManifest): void {
         const existingApp = this.get(appKey);
 
+        // Ensure app key on the manifest
+        manifest = {
+            ...manifest,
+            key: appKey,
+        };
+
         if (existingApp === null) {
             const newApp = manifest;
             this.addOrUpdate(newApp);
