@@ -1,4 +1,4 @@
-import useApiClient, { ApiClientHookResult } from "../useApiClient";
+import useApiClient, { ApiClientHookResult } from '../useApiClient';
 import {
     HandoverItem,
     HandoverMcpkg,
@@ -10,7 +10,7 @@ import {
     HandoverSWCR,
     HandoverUnsignedAction,
     HandoverUnsignedTask,
-} from "../../apiClients/DataProxyClient";
+} from '../../apiClients/DataProxyClient';
 
 export const useHandover = (
     siteCode: string,
@@ -35,10 +35,11 @@ export const useHandoverMcpkgs = (
 ): ApiClientHookResult<HandoverMcpkg[]> => {
     return useApiClient<HandoverMcpkg[]>(
         async apiClients => {
-            const response = await apiClients.dataProxy.getHandoverMcpkgAsync(
+            const response = await apiClients.dataProxy.getHandoverChildrenAsync<HandoverMcpkg>(
                 siteCode,
                 projectIdentifier,
-                commpkgId
+                commpkgId,
+                'mcpkg'
             );
             return response.data;
         },
@@ -53,10 +54,11 @@ export const useHandoverWorkOrders = (
 ): ApiClientHookResult<HandoverWorkOrder[]> => {
     return useApiClient<HandoverWorkOrder[]>(
         async apiClients => {
-            const response = await apiClients.dataProxy.getHandoverWorkOrdersAsync(
+            const response = await apiClients.dataProxy.getHandoverChildrenAsync<HandoverWorkOrder>(
                 siteCode,
                 projectIdentifier,
-                commpkgId
+                commpkgId,
+                'work-orders'
             );
             return response.data;
         },
@@ -71,11 +73,9 @@ export const useHandoverUnsignedTasks = (
 ): ApiClientHookResult<HandoverUnsignedTask[]> => {
     return useApiClient<HandoverUnsignedTask[]>(
         async apiClients => {
-            const response = await apiClients.dataProxy.getHandoverUnsignedTasksAsync(
-                siteCode,
-                projectIdentifier,
-                commpkgId
-            );
+            const response = await apiClients.dataProxy.getHandoverChildrenAsync<
+                HandoverUnsignedTask
+            >(siteCode, projectIdentifier, commpkgId, 'unsigned-tasks');
             return response.data;
         },
         [siteCode, projectIdentifier]
@@ -89,11 +89,9 @@ export const useHandoverUnsignedActions = (
 ): ApiClientHookResult<HandoverUnsignedAction[]> => {
     return useApiClient<HandoverUnsignedAction[]>(
         async apiClients => {
-            const response = await apiClients.dataProxy.getHandoverUnsignedActionsAsync(
-                siteCode,
-                projectIdentifier,
-                commpkgId
-            );
+            const response = await apiClients.dataProxy.getHandoverChildrenAsync<
+                HandoverUnsignedAction
+            >(siteCode, projectIdentifier, commpkgId, 'unsigned-actions');
             return response.data;
         },
         [siteCode, projectIdentifier]
@@ -107,10 +105,11 @@ export const useHandoverPunch = (
 ): ApiClientHookResult<HandoverPunch[]> => {
     return useApiClient<HandoverPunch[]>(
         async apiClients => {
-            const response = await apiClients.dataProxy.getHandoverPunchAsync(
+            const response = await apiClients.dataProxy.getHandoverChildrenAsync<HandoverPunch>(
                 siteCode,
                 projectIdentifier,
-                commpkgId
+                commpkgId,
+                'punch'
             );
             return response.data;
         },
@@ -125,10 +124,11 @@ export const useHandoverSWCR = (
 ): ApiClientHookResult<HandoverSWCR[]> => {
     return useApiClient<HandoverSWCR[]>(
         async apiClients => {
-            const response = await apiClients.dataProxy.getHandoverSWCRAsync(
+            const response = await apiClients.dataProxy.getHandoverChildrenAsync<HandoverSWCR>(
                 siteCode,
                 projectIdentifier,
-                commpkgId
+                commpkgId,
+                'swcr'
             );
             return response.data;
         },
@@ -143,10 +143,11 @@ export const useHandoverDetails = (
 ): ApiClientHookResult<HandoverDetails> => {
     return useApiClient<HandoverDetails>(
         async apiClients => {
-            const response = await apiClients.dataProxy.getHandoverDetailsAsync(
+            const response = await apiClients.dataProxy.getHandoverChildrenAsync<HandoverDetails>(
                 siteCode,
                 projectIdentifier,
-                commpkgId
+                commpkgId,
+                'details'
             );
             return response.data[0];
         },
@@ -161,10 +162,11 @@ export const useHandoverNCR = (
 ): ApiClientHookResult<HandoverNCR[]> => {
     return useApiClient<HandoverNCR[]>(
         async apiClients => {
-            const response = await apiClients.dataProxy.getHandoverNCRAsync(
+            const response = await apiClients.dataProxy.getHandoverChildrenAsync<HandoverNCR>(
                 siteCode,
                 projectIdentifier,
-                commpkgId
+                commpkgId,
+                'ncr'
             );
             return response.data;
         },
@@ -179,10 +181,11 @@ export const useHandoverQuery = (
 ): ApiClientHookResult<HandoverQuery[]> => {
     return useApiClient<HandoverQuery[]>(
         async apiClients => {
-            const response = await apiClients.dataProxy.getHandoverQueryAsync(
+            const response = await apiClients.dataProxy.getHandoverChildrenAsync<HandoverQuery>(
                 siteCode,
                 projectIdentifier,
-                commpkgId
+                commpkgId,
+                'query'
             );
             return response.data;
         },
