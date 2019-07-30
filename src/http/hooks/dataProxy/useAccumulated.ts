@@ -1,107 +1,30 @@
 import useApiClient, { ApiClientHookResult } from '../useApiClient';
 import { AccumulatedContainer } from '../../apiClients/DataProxyClient';
 
-export const useAccumulatedMccr = (
-    siteCode: string,
-    projectIdentifier: string
-): ApiClientHookResult<AccumulatedContainer[]> => {
-    return useApiClient<AccumulatedContainer[]>(
-        async apiClients => {
-            const response = await apiClients.dataProxy.getAccumulatedItemAsync<
-                AccumulatedContainer
-            >(siteCode, projectIdentifier, 'mccr');
-            return response.data;
-        },
-        [siteCode, projectIdentifier]
-    );
+type Actions = {
+    mccr: AccumulatedContainer;
+    punch: AccumulatedContainer;
+    commpkg: AccumulatedContainer;
+    productivity: AccumulatedContainer;
+    womaterial: AccumulatedContainer;
+    installation: AccumulatedContainer;
+    earnedplanned: AccumulatedContainer;
 };
 
-export const useAccumulatedPunch = (
+export function useAccumulatedItem<TKey extends keyof Actions, T = Actions[TKey]>(
     siteCode: string,
-    projectIdentifier: string
-): ApiClientHookResult<AccumulatedContainer[]> => {
-    return useApiClient<AccumulatedContainer[]>(
+    projectIdentifier: string,
+    action: TKey
+): ApiClientHookResult<T[]> {
+    return useApiClient<T[]>(
         async apiClients => {
-            const response = await apiClients.dataProxy.getAccumulatedItemAsync<
-                AccumulatedContainer
-            >(siteCode, projectIdentifier, 'punch');
+            const response = await apiClients.dataProxy.getAccumulatedItemAsync<T>(
+                siteCode,
+                projectIdentifier,
+                action
+            );
             return response.data;
         },
         [siteCode, projectIdentifier]
     );
-};
-
-export const useAccumulatedCommpkg = (
-    siteCode: string,
-    projectIdentifier: string
-): ApiClientHookResult<AccumulatedContainer[]> => {
-    return useApiClient<AccumulatedContainer[]>(
-        async apiClients => {
-            const response = await apiClients.dataProxy.getAccumulatedItemAsync<
-                AccumulatedContainer
-            >(siteCode, projectIdentifier, 'commpkg');
-            return response.data;
-        },
-        [siteCode, projectIdentifier]
-    );
-};
-
-export const useAccumulatedProductivity = (
-    siteCode: string,
-    projectIdentifier: string
-): ApiClientHookResult<AccumulatedContainer[]> => {
-    return useApiClient<AccumulatedContainer[]>(
-        async apiClients => {
-            const response = await apiClients.dataProxy.getAccumulatedItemAsync<
-                AccumulatedContainer
-            >(siteCode, projectIdentifier, 'productivity');
-            return response.data;
-        },
-        [siteCode, projectIdentifier]
-    );
-};
-
-export const useAccumulatedWOWithMaterial = (
-    siteCode: string,
-    projectIdentifier: string
-): ApiClientHookResult<AccumulatedContainer[]> => {
-    return useApiClient<AccumulatedContainer[]>(
-        async apiClients => {
-            const response = await apiClients.dataProxy.getAccumulatedItemAsync<
-                AccumulatedContainer
-            >(siteCode, projectIdentifier, 'womaterial');
-            return response.data;
-        },
-        [siteCode, projectIdentifier]
-    );
-};
-
-export const useAccumulatedInstallation = (
-    siteCode: string,
-    projectIdentifier: string
-): ApiClientHookResult<AccumulatedContainer[]> => {
-    return useApiClient<AccumulatedContainer[]>(
-        async apiClients => {
-            const response = await apiClients.dataProxy.getAccumulatedItemAsync<
-                AccumulatedContainer
-            >(siteCode, projectIdentifier, 'installation');
-            return response.data;
-        },
-        [siteCode, projectIdentifier]
-    );
-};
-
-export const useAccumulatedEarnedAndPlanned = (
-    siteCode: string,
-    projectIdentifier: string
-): ApiClientHookResult<AccumulatedContainer[]> => {
-    return useApiClient<AccumulatedContainer[]>(
-        async apiClients => {
-            const response = await apiClients.dataProxy.getAccumulatedItemAsync<
-                AccumulatedContainer
-            >(siteCode, projectIdentifier, 'earnedplanned');
-            return response.data;
-        },
-        [siteCode, projectIdentifier]
-    );
-};
+}
