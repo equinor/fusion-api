@@ -8,3 +8,4 @@ export { HandoverSWCR } from "./handover/HandoverSWCR";
 export { HandoverDetails } from "./handover/HandoverDetails";
 export { HandoverNCR } from "./handover/HandoverNCR";
 export { HandoverQuery } from "./handover/HandoverQuery";
+export { AccumulatedContainer } from "./AccumulatedContainer";
