@@ -1,17 +1,7 @@
 import useApiClient, { ApiClientHookResult } from '../useApiClient';
-import { AccumulatedContainer } from '../../apiClients/DataProxyClient';
+import { AccumulatedActions } from '../../apiClients/DataProxyClient';
 
-type Actions = {
-    mccr: AccumulatedContainer;
-    punch: AccumulatedContainer;
-    commpkg: AccumulatedContainer;
-    productivity: AccumulatedContainer;
-    womaterial: AccumulatedContainer;
-    installation: AccumulatedContainer;
-    earnedplanned: AccumulatedContainer;
-};
-
-export function useAccumulatedItem<TKey extends keyof Actions, T = Actions[TKey]>(
+export function useAccumulatedItem<TKey extends keyof AccumulatedActions, T = AccumulatedActions[TKey]>(
     siteCode: string,
     projectIdentifier: string,
     action: TKey

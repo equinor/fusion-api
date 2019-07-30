@@ -27,7 +27,9 @@ export {
     HandoverUnsignedTask,
     HandoverWorkOrder,
     HandoverQuery,
-    AccumulatedContainer
+    AccumulatedContainer,
+    HandoverActions,
+    AccumulatedActions
 };
 
 export default class DataProxyClient extends BaseApiClient {
@@ -40,7 +42,7 @@ export default class DataProxyClient extends BaseApiClient {
         siteCode: string,
         projectIdentifier: string,
         commpkgId: string,
-        action: HandoverActions
+        action: keyof HandoverActions
     ) {
         const url = this.resourceCollections.dataProxy.handoverChildren(
             siteCode,
@@ -54,7 +56,7 @@ export default class DataProxyClient extends BaseApiClient {
     async getAccumulatedItemAsync<T>(
         siteCode: string,
         projectIdentifier: string,
-        action: AccumulatedActions
+        action: keyof AccumulatedActions
     ) {
         const url = this.resourceCollections.dataProxy.accumulatedItem(
             siteCode,

@@ -1,15 +1,7 @@
 import useApiClient, { ApiClientHookResult } from '../useApiClient';
 import {
     HandoverItem,
-    HandoverMcpkg,
-    HandoverWorkOrder,
-    HandoverDetails,
-    HandoverNCR,
-    HandoverPunch,
-    HandoverQuery,
-    HandoverSWCR,
-    HandoverUnsignedAction,
-    HandoverUnsignedTask,
+    HandoverActions,
 } from '../../apiClients/DataProxyClient';
 
 export const useHandover = (
@@ -28,19 +20,7 @@ export const useHandover = (
     );
 };
 
-type Actions = {
-    "mcpkg": HandoverMcpkg,
-    "work-orders": HandoverWorkOrder,
-    "unsigned-tasks": HandoverUnsignedTask,
-    "unsigned-actions": HandoverUnsignedAction,
-    "punch": HandoverPunch,
-    "swcr": HandoverSWCR,
-    "details": HandoverDetails,
-    "ncr": HandoverNCR,
-    "query": HandoverQuery
-}
-
-export function useHanoverChild<TKey extends keyof Actions, T = Actions[TKey]>(
+export function useHanoverChild<TKey extends keyof HandoverActions, T = HandoverActions[TKey]>(
     siteCode: string,
     projectIdentifier: string,
     commpkgId: string,

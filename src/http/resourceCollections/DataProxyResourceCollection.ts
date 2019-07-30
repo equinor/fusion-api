@@ -1,24 +1,39 @@
 import BaseResourceCollection from './BaseResourceCollection';
+import {
+    AccumulatedContainer,
+    HandoverMcpkg,
+    HandoverWorkOrder,
+    HandoverUnsignedTask,
+    HandoverUnsignedAction,
+    HandoverPunch,
+    HandoverSWCR,
+    HandoverDetails,
+    HandoverNCR,
+    HandoverQuery,
+} from '../apiClients/models/dataProxy';
 
-export type HandoverActions =
-    | 'mcpkg'
-    | 'work-orders'
-    | 'unsigned-tasks'
-    | 'unsigned-actions'
-    | 'punch'
-    | 'swcr'
-    | 'details'
-    | 'ncr'
-    | 'query';
+export type AccumulatedActions = {
+    mccr: AccumulatedContainer;
+    punch: AccumulatedContainer;
+    commpkg: AccumulatedContainer;
+    productivity: AccumulatedContainer;
+    womaterial: AccumulatedContainer;
+    installation: AccumulatedContainer;
+    earnedplanned: AccumulatedContainer;
+};
 
-export type AccumulatedActions =
-    | 'mccr'
-    | 'punch'
-    | 'commpkg'
-    | 'productivity'
-    | 'womaterial'
-    | 'installation'
-    | 'earnedplanned';
+export type HandoverActions = {
+    mcpkg: HandoverMcpkg;
+    'work-orders': HandoverWorkOrder;
+    'unsigned-tasks': HandoverUnsignedTask;
+    'unsigned-actions': HandoverUnsignedAction;
+    punch: HandoverPunch;
+    swcr: HandoverSWCR;
+    details: HandoverDetails;
+    ncr: HandoverNCR;
+    query: HandoverQuery;
+};
+
 export default class DataProxyResourceCollection extends BaseResourceCollection {
     protected getBaseUrl(): string {
         return this.serviceResolver.getDataProxyBaseUrl();
@@ -32,7 +47,7 @@ export default class DataProxyResourceCollection extends BaseResourceCollection 
         siteCode: string,
         projectIdentifier: string,
         commpkgId: string,
-        action: HandoverActions
+        action: keyof HandoverActions
     ): string {
         return this.getSiteAndProjectUrl(
             siteCode,
@@ -44,7 +59,7 @@ export default class DataProxyResourceCollection extends BaseResourceCollection 
     accumulatedItem(
         siteCode: string,
         projectIdentifier: string,
-        action: AccumulatedActions
+        action: keyof AccumulatedActions
     ): string {
         return this.getSiteAndProjectUrl(siteCode, projectIdentifier, `${action}-accumulated`);
     }
