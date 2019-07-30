@@ -28,7 +28,7 @@ export function useHanoverChild<TKey extends keyof HandoverActions, T = Handover
 ): ApiClientHookResult<T[]> {
     return useApiClient<T[]>(
         async apiClients => {
-            const response = await apiClients.dataProxy.getHandoverChildrenAsync<T>(
+            const response = await apiClients.dataProxy.getHandoverChildrenAsync<TKey, T>(
                 siteCode,
                 projectIdentifier,
                 commpkgId,

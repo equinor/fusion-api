@@ -13,7 +13,11 @@ import {
     HandoverQuery,
     AccumulatedContainer,
 } from './models/dataProxy';
-import { HandoverActions, AccumulatedActions } from '../resourceCollections/DataProxyResourceCollection';
+import {
+    HandoverActions,
+    AccumulatedActions,
+} from '../resourceCollections/DataProxyResourceCollection';
+import { HttpResponse } from '../HttpClient';
 
 // Export models
 export {
@@ -29,7 +33,7 @@ export {
     HandoverQuery,
     AccumulatedContainer,
     HandoverActions,
-    AccumulatedActions
+    AccumulatedActions,
 };
 
 export default class DataProxyClient extends BaseApiClient {
@@ -38,12 +42,12 @@ export default class DataProxyClient extends BaseApiClient {
         return await this.httpClient.getAsync<HandoverItem[], FusionApiHttpErrorResponse>(url);
     }
 
-    async getHandoverChildrenAsync<T>(
+    async getHandoverChildrenAsync<TKey extends keyof HandoverActions, T = HandoverActions[TKey]>(
         siteCode: string,
         projectIdentifier: string,
         commpkgId: string,
-        action: keyof HandoverActions
-    ) {
+        action: TKey
+    ): Promise<HttpResponse<T[]>> {
         const url = this.resourceCollections.dataProxy.handoverChildren(
             siteCode,
             projectIdentifier,
@@ -53,11 +57,10 @@ export default class DataProxyClient extends BaseApiClient {
         return await this.httpClient.getAsync<T[], FusionApiHttpErrorResponse>(url);
     }
 
-    async getAccumulatedItemAsync<T>(
-        siteCode: string,
-        projectIdentifier: string,
-        action: keyof AccumulatedActions
-    ) {
+    async getAccumulatedItemAsync<
+        TKey extends keyof AccumulatedActions,
+        T = AccumulatedActions[TKey]
+    >(siteCode: string, projectIdentifier: string, action: TKey): Promise<HttpResponse<T[]>> {
         const url = this.resourceCollections.dataProxy.accumulatedItem(
             siteCode,
             projectIdentifier,

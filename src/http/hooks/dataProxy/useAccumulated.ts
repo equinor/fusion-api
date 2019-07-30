@@ -8,7 +8,7 @@ export function useAccumulatedItem<TKey extends keyof AccumulatedActions, T = Ac
 ): ApiClientHookResult<T[]> {
     return useApiClient<T[]>(
         async apiClients => {
-            const response = await apiClients.dataProxy.getAccumulatedItemAsync<T>(
+            const response = await apiClients.dataProxy.getAccumulatedItemAsync<TKey, T>(
                 siteCode,
                 projectIdentifier,
                 action
