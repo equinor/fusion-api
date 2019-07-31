@@ -47,6 +47,7 @@ export {
     useTaskTypes,
     useTaskPrioritySetter,
 } from './core/TasksContainer';
+export { default as Task, TaskType, TaskTypes, TaskSourceSystem, TaskSourceSystems } from "./http/apiClients/models/tasks/Task";
 
 export {
     createPagination,

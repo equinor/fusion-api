@@ -9,8 +9,8 @@ type Person = {
 
 type Task = {
     id: string;
-    type: TaskType;
-    sourceSystem: TaskSourceSystem;
+    taskType: TaskType;
+    taskSourceSystem: TaskSourceSystem;
     priority: number;
     taskTypeKey: TaskTypes;
     title: string;

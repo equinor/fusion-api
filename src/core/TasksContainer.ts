@@ -117,7 +117,7 @@ const useTasksData = <TKey extends keyof TasksEvents, TData = EventHandlerParame
     const [error, setError] = useState(null);
     const [isFetching, setIsFetching] = useState(false);
 
-    const [data, setData] = useEventEmitterValue(tasksContainer, event);
+    const [data, setData] = useEventEmitterValue(tasksContainer, event, t => t, defaultData);
 
     const fetch = async () => {
         setIsFetching(true);
@@ -178,7 +178,7 @@ const useTasks = () => {
     return {
         error,
         isFetching,
-        tasks: tasks || [],
+        tasks,
         isFetchingTaskTypes,
         taskTypes,
         isFetchingSourceSystems,
