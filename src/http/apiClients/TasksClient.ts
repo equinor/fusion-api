@@ -30,8 +30,8 @@ export default class TasksClient extends BaseApiClient {
     }
 
     async setTaskPriorityAsync(id: string, priority: number) {
-        const url = this.resourceCollections.tasks.priority(id, priority);
-        await this.httpClient.putAsync<null, Task[], FusionApiHttpErrorResponse>(url, null);
+        const url = this.resourceCollections.tasks.priority(id);
+        await this.httpClient.patchAsync<number, Task[], FusionApiHttpErrorResponse>(url, priority);
     }
     
     async refreshTasksAsync(type: TaskTypes, refreshRequest: RequestInit) {

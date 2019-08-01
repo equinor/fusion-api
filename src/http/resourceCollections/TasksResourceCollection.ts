@@ -31,7 +31,7 @@ export default class TasksResourceCollection extends BaseResourceCollection {
         return this.getBaseUrl() + `?${queryText}`;
     }
 
-    priority(id: string, priority: number) {
-        return combineUrls(this.task(id), "priority", priority.toString());
+    priority(id: string) {
+        return combineUrls(this.task(id), "priority");
     }
 }

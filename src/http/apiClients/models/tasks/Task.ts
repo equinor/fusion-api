@@ -19,8 +19,8 @@ type Task = {
     url: string;
     item: {
         type: string;
-        Name: string;
-        Description: string;
+        name: string;
+        description: string;
     };
     assignedTo: Person;
     forwardedTo?: Person;

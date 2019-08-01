@@ -122,6 +122,21 @@ export default class HttpClient implements IHttpClient {
         return await this.parseResponseAsync<TResponse, TExpectedErrorResponse>(init, response);
     }
 
+    async patchAsync<TBody, TResponse, TExpectedErrorResponse>(
+        url: string,
+        body: TBody,
+        init?: RequestInit
+    ) {
+        init = ensureRequestInit(init, init => ({
+            ...init,
+            method: "PATCH",
+            body: JSON.stringify(body),
+        }));
+
+        const response = await this.performFetchAsync<TExpectedErrorResponse>(url, init);
+        return await this.parseResponseAsync<TResponse, TExpectedErrorResponse>(init, response);
+    }
+
     
     private async performFetchAsync<TExpectedErrorResponse>(
         url: string,

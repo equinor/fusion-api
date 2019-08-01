@@ -33,4 +33,16 @@ export default interface IHttpClient {
         body: TBody,
         init?: RequestInit
     ): Promise<HttpResponse<TResponse>>;
+
+    /**
+     * Perform a PATCH request
+     * @param url Request url
+     * @param body Request body (will be serialized as JSON)
+     * @param init Optional request init object
+     */
+    patchAsync<TBody, TResponse, TExpectedErrorResponse>(
+        url: string,
+        body: TBody,
+        init?: RequestInit
+    ): Promise<HttpResponse<TResponse>>;
 }
