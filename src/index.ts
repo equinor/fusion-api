@@ -80,4 +80,7 @@ export {
     useNotificationCenter,
 } from './core/NotificationCenter';
 
+export * from './intl/DateTime';
+export * from './intl/Number';
+
 export * from './http/hooks/dataProxy/useHandover';
