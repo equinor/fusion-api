@@ -1,14 +1,14 @@
-import ApiClients from "../http/apiClients";
-import TasksClient from "../http/apiClients/TasksClient";
-import EventEmitter, { useEventEmitterValue, EventHandlerParameter } from "../utils/EventEmitter";
-import Task, { TaskType, TaskSourceSystem, TaskTypes } from "../http/apiClients/models/tasks/Task";
-import { useState, useEffect } from "react";
-import { useFusionContext } from "./FusionContext";
+import ApiClients from '../http/apiClients';
+import TasksClient from '../http/apiClients/TasksClient';
+import EventEmitter, { useEventEmitterValue, EventHandlerParameter } from '../utils/EventEmitter';
+import Task, { TaskType, TaskSourceSystem, TaskTypes } from '../http/apiClients/models/tasks/Task';
+import { useState, useEffect } from 'react';
+import { useFusionContext } from './FusionContext';
 
 type TasksEvents = {
-    "tasks-updated": (tasks: Task[]) => void;
-    "task-types-updated": (taskTypes: TaskType[]) => void;
-    "source-systems-updated": (sourceSystems: TaskSourceSystem[]) => void;
+    'tasks-updated': (tasks: Task[]) => void;
+    'task-types-updated': (taskTypes: TaskType[]) => void;
+    'source-systems-updated': (sourceSystems: TaskSourceSystem[]) => void;
 };
 
 export default class TasksContainer extends EventEmitter<TasksEvents> {
@@ -35,7 +35,7 @@ export default class TasksContainer extends EventEmitter<TasksEvents> {
         const response = await this.tasksClient.getAllTasksAsync(taskType);
         this.mergeTasks(response.data);
 
-        if(response.refreshRequest) {
+        if (response.refreshRequest) {
             return await this.refreshTasksAsync(taskType, response.refreshRequest);
         }
 
@@ -55,7 +55,32 @@ export default class TasksContainer extends EventEmitter<TasksEvents> {
     }
 
     async setTaskPriorityAsync(id: string, priority: number) {
-        await this.tasksClient.setTaskPriorityAsync(id, priority);
+        const task = this.getTasks().find(t => t.id === id);
+
+        if (!task) {
+            throw new Error("Can't find the task with id: " + id);
+        }
+
+        const previousPriority = task.priority;
+
+        try {
+            // Immediately update the priority on the task for quick UI response
+            const updatedTask = {
+                ...task,
+                priority,
+            };
+            this.mergeTasks([updatedTask]);
+
+            await this.tasksClient.setTaskPriorityAsync(id, priority);
+        } catch (e) {
+            // Revert the task priority if it failed
+            const revertedTask = {
+                ...task,
+                priority: previousPriority,
+            };
+
+            this.mergeTasks([revertedTask]);
+        }
     }
 
     getTasks(taskType?: TaskTypes) {
@@ -89,17 +114,17 @@ export default class TasksContainer extends EventEmitter<TasksEvents> {
 
         // Overwrite existing tasks with updated tasks
         this.tasks = mergedTasks.map(t => tasks.find(n => n.id === t.id) || t);
-        this.emit("tasks-updated", this.tasks);
+        this.emit('tasks-updated', this.tasks);
     }
 
     private setTaskTypes(taskTypes: TaskType[]) {
         this.taskTypes = taskTypes;
-        this.emit("task-types-updated", taskTypes);
+        this.emit('task-types-updated', taskTypes);
     }
 
     private setSourceSystems(sourceSystems: TaskSourceSystem[]) {
         this.sourceSystems = sourceSystems;
-        this.emit("source-systems-updated", sourceSystems);
+        this.emit('source-systems-updated', sourceSystems);
     }
 }
 
@@ -108,7 +133,10 @@ const useTasksContainer = () => {
     return tasksContainer;
 };
 
-const useTasksData = <TKey extends keyof TasksEvents, TData = EventHandlerParameter<TasksEvents, TKey>>(
+const useTasksData = <
+    TKey extends keyof TasksEvents,
+    TData = EventHandlerParameter<TasksEvents, TKey>
+>(
     event: TKey,
     fetchAsync: (tasksContainer: TasksContainer) => Promise<TData>,
     defaultData: TData
@@ -141,7 +169,7 @@ const useTasksData = <TKey extends keyof TasksEvents, TData = EventHandlerParame
 
 const useTaskSourceSystems = () => {
     return useTasksData(
-        "source-systems-updated",
+        'source-systems-updated',
         async tasksContainer => await tasksContainer.getSourceSystemsAsync(),
         useTasksContainer().getSourceSystems()
     );
@@ -149,7 +177,7 @@ const useTaskSourceSystems = () => {
 
 const useTaskTypes = () => {
     return useTasksData(
-        "task-types-updated",
+        'task-types-updated',
         async tasksContainer => await tasksContainer.getTaskTypesAsync(),
         useTasksContainer().getTaskTypes()
     );
@@ -167,7 +195,7 @@ const useTasks = () => {
     const [taskTypesError, isFetchingTaskTypes, taskTypes] = useTaskTypes();
 
     const [tasksError, isFetchingTasks, tasks] = useTasksData(
-        "tasks-updated",
+        'tasks-updated',
         async tasksContainer => await tasksContainer.getAllTasksAsync(),
         useTasksContainer().getTasks()
     );
