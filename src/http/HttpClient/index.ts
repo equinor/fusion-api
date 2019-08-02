@@ -217,16 +217,6 @@ export default class HttpClient implements IHttpClient {
         }
     }
 
-    private async parseResponseStringAsync<TExpectedErrorResponse>(
-        request: RequestInit,
-        response: Response
-    ): Promise<HttpResponse<string>> {
-        const data = await response.text();
-        // TODO: Update cache status?
-
-        return this.createHttpResponse<string, TExpectedErrorResponse>(request, response, data);
-    }
-
     private async parseResponseAsync<TResponse, TExpectedErrorResponse>(
         request: RequestInit,
         response: Response,

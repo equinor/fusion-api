@@ -41,7 +41,7 @@ export default class TasksClient extends BaseApiClient {
             url,
             priority,
             null,
-            Promise.resolve
+            async () => await Promise.resolve()
         );
     }
 
