@@ -2,10 +2,17 @@ type RequestInitTransformer = (init: RequestInit) => RequestInit;
 export default (init?: RequestInit, transform?: RequestInitTransformer): RequestInit => {
     init = {
         ...init,
-        headers: new Headers(init ? init.headers : {}),
+        headers: new Headers(
+            init
+                ? init.headers
+                : {
+                      Accept: 'application/json',
+                      'Content-Type': 'application/json',
+                  }
+        ),
     };
 
-    if (typeof transform === "undefined") {
+    if (typeof transform === 'undefined') {
         return init;
     }
 
