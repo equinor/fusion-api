@@ -1,4 +1,6 @@
-import { HttpResponse } from "./HttpResponse";
+import { HttpResponse } from './HttpResponse';
+
+export type ResponseParser<T> = (response: Response) => Promise<T>;
 
 export default interface IHttpClient {
     /**
@@ -6,9 +8,11 @@ export default interface IHttpClient {
      * @param url Request url
      * @param init Optional request init object
      */
-    getAsync<T, TExpectedErrorResponse>(url: string, init?: RequestInit): Promise<HttpResponse<T>>;
-
-    getStringAsync<TExpectedErrorResponse>(url: string, init?: RequestInit): Promise<HttpResponse<string>>;
+    getAsync<TResponse, TExpectedErrorResponse>(
+        url: string,
+        init?: RequestInit | null,
+        responseParser?: ResponseParser<TResponse>
+    ): Promise<HttpResponse<TResponse>>;
 
     /**
      * Perform a POST request
@@ -19,7 +23,8 @@ export default interface IHttpClient {
     postAsync<TBody, TResponse, TExpectedErrorResponse>(
         url: string,
         body: TBody,
-        init?: RequestInit
+        init?: RequestInit | null,
+        responseParser?: ResponseParser<TResponse>
     ): Promise<HttpResponse<TResponse>>;
 
     /**
@@ -31,7 +36,8 @@ export default interface IHttpClient {
     putAsync<TBody, TResponse, TExpectedErrorResponse>(
         url: string,
         body: TBody,
-        init?: RequestInit
+        init?: RequestInit | null,
+        responseParser?: ResponseParser<TResponse>
     ): Promise<HttpResponse<TResponse>>;
 
     /**
@@ -43,6 +49,7 @@ export default interface IHttpClient {
     patchAsync<TBody, TResponse, TExpectedErrorResponse>(
         url: string,
         body: TBody,
-        init?: RequestInit
+        init?: RequestInit | null,
+        responseParser?: ResponseParser<TResponse>
     ): Promise<HttpResponse<TResponse>>;
 }

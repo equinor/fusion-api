@@ -1,6 +1,6 @@
-import BaseApiClient from "./BaseApiClient";
-import { FusionApiHttpErrorResponse } from "./models/common/FusionApiHttpErrorResponse";
-import Task, { TaskSourceSystem, TaskType, TaskTypes } from "./models/tasks/Task";
+import BaseApiClient from './BaseApiClient';
+import { FusionApiHttpErrorResponse } from './models/common/FusionApiHttpErrorResponse';
+import Task, { TaskSourceSystem, TaskType, TaskTypes } from './models/tasks/Task';
 
 export default class TasksClient extends BaseApiClient {
     async getSourceSystemsAsync() {
@@ -20,8 +20,14 @@ export default class TasksClient extends BaseApiClient {
 
     async getTaskCountAsync(type: TaskTypes) {
         const url = this.resourceCollections.tasks.tasks(type);
-        const response = await this.httpClient.getStringAsync<FusionApiHttpErrorResponse>(url);
-        return parseInt(response.data, 10);
+        return await this.httpClient.getAsync<number, FusionApiHttpErrorResponse>(
+            url,
+            null,
+            async (response: Response) => {
+                const responseText = await response.text();
+                return parseInt(responseText, 10);
+            }
+        );
     }
 
     async queryTasksAsync(queryText: string) {
@@ -31,9 +37,14 @@ export default class TasksClient extends BaseApiClient {
 
     async setTaskPriorityAsync(id: string, priority: number) {
         const url = this.resourceCollections.tasks.priority(id);
-        await this.httpClient.patchAsync<number, Task[], FusionApiHttpErrorResponse>(url, priority);
+        await this.httpClient.patchAsync<number, void, FusionApiHttpErrorResponse>(
+            url,
+            priority,
+            null,
+            Promise.resolve
+        );
     }
-    
+
     async refreshTasksAsync(type: TaskTypes, refreshRequest: RequestInit) {
         const url = this.resourceCollections.tasks.tasks(type);
         return this.httpClient.getAsync<Task[], FusionApiHttpErrorResponse>(url, refreshRequest);

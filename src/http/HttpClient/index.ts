@@ -1,16 +1,16 @@
-import uuid from "uuid/v1";
-import { IAuthContainer } from "../../auth/AuthContainer";
-import AbortControllerManager from "../../utils/AbortControllerManager";
-import IHttpClient from "./IHttpClient";
-import { HttpResponse } from "./HttpResponse";
-import ResourceCache from "../ResourceCache";
+import uuid from 'uuid/v1';
+import { IAuthContainer } from '../../auth/AuthContainer';
+import AbortControllerManager from '../../utils/AbortControllerManager';
+import IHttpClient, { ResponseParser } from './IHttpClient';
+import { HttpResponse } from './HttpResponse';
+import ResourceCache from '../ResourceCache';
 import {
     HttpClientError,
     HttpClientParseError,
     HttpClientRequestFailedError,
-} from "./HttpClientError";
-import ensureRequestInit from "./ensureRequestInit";
-import { useFusionContext } from "../../core/FusionContext";
+} from './HttpClientError';
+import ensureRequestInit from './ensureRequestInit';
+import { useFusionContext } from '../../core/FusionContext';
 
 // Export interface, response and error types
 export {
@@ -39,105 +39,112 @@ export default class HttpClient implements IHttpClient {
         this.abortControllerManager = abortControllerManager;
     }
 
-    async getAsync<T, TExpectedErrorResponse>(
+    async getAsync<TResponse, TExpectedErrorResponse>(
         url: string,
-        init?: RequestInit
-    ): Promise<HttpResponse<T>> {
-        const result = await this.getStringAsync<TExpectedErrorResponse>(url, init);
-        const data = JSON.parse(result.data) as T;
-
-        const response: HttpResponse<T> = {
-            ...result,
-            data,
-        };
-
-        return response;
-    }
-
-    async getStringAsync<TExpectedErrorResponse>(url: string, init?: RequestInit) {
+        init?: RequestInit | null,
+        responseParser?: ResponseParser<TResponse>
+    ) {
         // Reuse GET requests in progress
-        const requestInProgress = this.getRequestInProgress<string>(url);
+        const requestInProgress = this.getRequestInProgress<TResponse>(url);
         if (requestInProgress) {
             return await requestInProgress;
         }
 
-        await this.resourceCache.setIsFetchingAsync(url);
+        return this.performReusableRequest<TResponse>(url, async () => {
+            await this.resourceCache.setIsFetchingAsync(url);
+            init = ensureRequestInit(init, init => ({ ...init, method: 'GET' }));
 
-        const requestInit = ensureRequestInit(init, init => ({ ...init, method: "GET" }));
-
-        try {
-            const request = this.performFetchAsync<TExpectedErrorResponse>(url, requestInit);
-
-            this.requestsInProgress[url] = new Promise<HttpResponse<string>>(
-                async (resolve, reject) => {
-                    try {
-                        const response = await request;
-                        const data = await this.parseResponseStringAsync<TExpectedErrorResponse>(requestInit, response);
-
-                        delete this.requestsInProgress[url];
-
-                        await this.resourceCache.updateAsync(url, data);
-
-                        resolve(data);
-                    } catch (e) {
-                        reject(e);
-                    }
-                }
+            const response = await this.performFetchAsync<TExpectedErrorResponse>(url, init);
+            const data = await this.parseResponseAsync<TResponse, TExpectedErrorResponse>(
+                init,
+                response,
+                responseParser
             );
 
-            return await (this.requestsInProgress[url] as Promise<HttpResponse<string>>);
-        } catch (error) {
-            delete this.requestsInProgress[url];
-            throw error;
-        }
+            await this.resourceCache.updateAsync(url, data);
+
+            return data;
+        });
     }
 
     async postAsync<TBody, TResponse, TExpectedErrorResponse>(
         url: string,
         body: TBody,
-        init?: RequestInit
+        init?: RequestInit | null,
+        responseParser?: ResponseParser<TResponse>
     ) {
         init = ensureRequestInit(init, init => ({
             ...init,
-            method: "POST",
+            method: 'POST',
             body: JSON.stringify(body),
         }));
 
         const response = await this.performFetchAsync<TExpectedErrorResponse>(url, init);
-        return await this.parseResponseAsync<TResponse, TExpectedErrorResponse>(init, response);
+        return await this.parseResponseAsync<TResponse, TExpectedErrorResponse>(
+            init,
+            response,
+            responseParser
+        );
     }
 
     async putAsync<TBody, TResponse, TExpectedErrorResponse>(
         url: string,
         body: TBody,
-        init?: RequestInit
+        init?: RequestInit | null,
+        responseParser?: ResponseParser<TResponse>
     ) {
         init = ensureRequestInit(init, init => ({
             ...init,
-            method: "PUT",
+            method: 'PUT',
             body: JSON.stringify(body),
         }));
 
         const response = await this.performFetchAsync<TExpectedErrorResponse>(url, init);
-        return await this.parseResponseAsync<TResponse, TExpectedErrorResponse>(init, response);
+        return await this.parseResponseAsync<TResponse, TExpectedErrorResponse>(
+            init,
+            response,
+            responseParser
+        );
     }
 
     async patchAsync<TBody, TResponse, TExpectedErrorResponse>(
         url: string,
         body: TBody,
-        init?: RequestInit
+        init?: RequestInit | null,
+        responseParser?: ResponseParser<TResponse>
     ) {
         init = ensureRequestInit(init, init => ({
             ...init,
-            method: "PATCH",
+            method: 'PATCH',
             body: JSON.stringify(body),
         }));
 
         const response = await this.performFetchAsync<TExpectedErrorResponse>(url, init);
-        return await this.parseResponseAsync<TResponse, TExpectedErrorResponse>(init, response);
+        return await this.parseResponseAsync<TResponse, TExpectedErrorResponse>(
+            init,
+            response,
+            responseParser
+        );
     }
 
-    
+    async deleteAsync<TResponse, TExpectedErrorResponse>(
+        url: string,
+        init?: RequestInit | null,
+        responseParser?: ResponseParser<TResponse>
+    ) {
+        init = ensureRequestInit(init, init => ({
+            ...init,
+            method: 'DELETE',
+        }));
+
+        const response = await this.performFetchAsync<TExpectedErrorResponse>(url, init);
+        return await this.parseResponseAsync<TResponse, TExpectedErrorResponse>(
+            init,
+            response,
+            responseParser
+        );
+    }
+
     private async performFetchAsync<TExpectedErrorResponse>(
         url: string,
         init: RequestInit
@@ -171,6 +178,34 @@ export default class HttpClient implements IHttpClient {
         }
     }
 
+    private async performReusableRequest<TResponse>(
+        url: string,
+        handler: () => Promise<HttpResponse<TResponse>>
+    ) {
+        // Reuse GET requests in progress
+        const requestInProgress = this.getRequestInProgress<TResponse>(url);
+        if (requestInProgress) {
+            return await requestInProgress;
+        }
+
+        const requestPerformer = async () => {
+            try {
+                const data = await handler();
+                delete this.requestsInProgress[url];
+                return data;
+            } catch (error) {
+                delete this.requestsInProgress[url];
+                throw error;
+            }
+        };
+
+        const request = requestPerformer();
+
+        this.requestsInProgress[url] = request;
+
+        return await request;
+    }
+
     // Response parsers
     private async parseResponseJSONAsync<TResponse>(response: Response) {
         try {
@@ -182,21 +217,34 @@ export default class HttpClient implements IHttpClient {
         }
     }
 
-    private async parseResponseStringAsync<TExpectedErrorResponse>(request: RequestInit, response: Response): Promise<HttpResponse<string>> {
+    private async parseResponseStringAsync<TExpectedErrorResponse>(
+        request: RequestInit,
+        response: Response
+    ): Promise<HttpResponse<string>> {
         const data = await response.text();
         // TODO: Update cache status?
 
         return this.createHttpResponse<string, TExpectedErrorResponse>(request, response, data);
     }
 
-    private async parseResponseAsync<TResponse, TExpectedErrorResponse>(request: RequestInit, response: Response): Promise<HttpResponse<TResponse>> {
-        const data = await this.parseResponseJSONAsync<TResponse>(response);
+    private async parseResponseAsync<TResponse, TExpectedErrorResponse>(
+        request: RequestInit,
+        response: Response,
+        responseParser?: ResponseParser<TResponse>
+    ): Promise<HttpResponse<TResponse>> {
+        const data = responseParser
+            ? await responseParser(response)
+            : await this.parseResponseJSONAsync<TResponse>(response);
         // TODO: Update cache status?
 
         return this.createHttpResponse<TResponse, TExpectedErrorResponse>(request, response, data);
     }
 
-    private createHttpResponse<TResponse, TExpectedErrorResponse>(request: RequestInit, response: Response, data: TResponse) {
+    private createHttpResponse<TResponse, TExpectedErrorResponse>(
+        request: RequestInit,
+        response: Response,
+        data: TResponse
+    ) {
         const httpResponse: HttpResponse<TResponse> = {
             data,
             status: response.status,
@@ -204,7 +252,7 @@ export default class HttpClient implements IHttpClient {
             refreshRequest: null,
         };
 
-        if(this.responseIsRefreshable(response)) {
+        if (this.responseIsRefreshable(response)) {
             const refreshRequest = this.addRefreshHeader(request);
 
             return {
@@ -217,7 +265,7 @@ export default class HttpClient implements IHttpClient {
     }
 
     private responseIsRefreshable(response: Response) {
-        return response.headers.get("x-pp-is-refreshable") !== null;
+        return response.headers.get('x-pp-is-refreshable') !== null;
     }
 
     // Request transformers
@@ -232,22 +280,22 @@ export default class HttpClient implements IHttpClient {
 
     private addSessionIdHeader(init: RequestInit) {
         return this.transformHeaders(init, headers =>
-            headers.append("X-Session-Id", this.sessionId)
+            headers.append('X-Session-Id', this.sessionId)
         );
     }
 
     private addAcceptJsonHeader(init: RequestInit) {
-        return this.transformHeaders(init, headers => headers.append("Accept", "application/json"));
+        return this.transformHeaders(init, headers => headers.append('Accept', 'application/json'));
     }
 
     private addRefreshHeader(init: RequestInit) {
-        return this.transformHeaders(init, headers => headers.append("x-pp-refresh", "true"));
+        return this.transformHeaders(init, headers => headers.append('x-pp-refresh', 'true'));
     }
 
     private async addAuthHeaderAsync(url: string, init: RequestInit) {
         const token = await this.authContainer.acquireTokenAsync(url);
         return this.transformHeaders(init, headers =>
-            headers.append("Authorization", "Bearer " + token)
+            headers.append('Authorization', 'Bearer ' + token)
         );
     }
 
@@ -273,7 +321,7 @@ export default class HttpClient implements IHttpClient {
             headers,
         };
     }
-    
+
     // Utils
     private getRequestInProgress<T>(url: string) {
         return this.requestsInProgress[url] as Promise<HttpResponse<T>>;

@@ -1,5 +1,5 @@
 type RequestInitTransformer = (init: RequestInit) => RequestInit;
-export default (init?: RequestInit, transform?: RequestInitTransformer): RequestInit => {
+export default (init?: RequestInit | null, transform?: RequestInitTransformer): RequestInit => {
     init = {
         ...init,
         headers: new Headers(
