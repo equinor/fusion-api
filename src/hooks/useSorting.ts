@@ -98,12 +98,15 @@ export const useSorting = <T>(
     };
 
     const updateSortBy = (newSortBy: PropertyAccessor<T> | null, newDirection: SortDirection | null) => {
+        // Figure out the new direction
         newDirection =
             newDirection || sortBy === newSortBy || !newSortBy
                 ? cycleSortDirection(direction)
                 : cycleSortDirection(null);
 
-        setSortBy(newSortBy);
+        // The new sort by accessor might be a function,
+        // passing it directly to setSortBy would invoke it as a setter
+        setSortBy(() => newSortBy);
         setDirection(newDirection);
     };
 
