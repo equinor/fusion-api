@@ -144,8 +144,9 @@ const useTasksData = <
     const tasksContainer = useTasksContainer();
     const [error, setError] = useState(null);
     const [isFetching, setIsFetching] = useState(false);
+    const [defaultDataState] = useState<TData>(defaultData);
 
-    const [data, setData] = useEventEmitterValue(tasksContainer, event, t => t, defaultData);
+    const [data, setData] = useEventEmitterValue(tasksContainer, event, t => t, defaultDataState);
 
     const fetch = async () => {
         setIsFetching(true);
@@ -164,7 +165,7 @@ const useTasksData = <
         fetch();
     }, []);
 
-    return [error, isFetching, data || defaultData];
+    return [error, isFetching, data || defaultDataState];
 };
 
 const useTaskSourceSystems = () => {
