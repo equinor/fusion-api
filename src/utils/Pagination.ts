@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
-import { withAbortController } from "./AbortControllerManager";
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { withAbortController } from './AbortControllerManager';
 
 /**
  * Represents a single page in Pagination
@@ -51,14 +51,14 @@ const getPaginationTail = (pages: Page[], currentPage: Page, padding: number) =>
 const getPaginationCenter = (pages: Page[], currentPage: Page, padding: number) => {
     // Divide the padding in two to get the distance from the current page
     const distance = Math.floor(padding / 2);
-    
+
     // Get the start index. If we're at the last page, get the last index minus the padding
     // otherwise get the negative distance from the current page or index 0 when we're at the first few pages
     const start =
         currentPage.index === pages.length - 1
             ? pages.length - padding
             : Math.max(currentPage.index - distance, 0);
-    
+
     const end = Math.max(currentPage.index + distance + 1, padding);
     return pages.slice(start, end);
 };
@@ -187,7 +187,7 @@ export type PaginationHook<T> = {
 
 /**
  * Pagination hook that creates and applies pagination to a given data set.
- * Returns the paged data, a function to set the current page 
+ * Returns the paged data, a function to set the current page
  * and the Pagination object that can be used to display pagination buttons
  * @param data The data to be paginated
  * @param initialPerPage Initial number of items per page
@@ -202,17 +202,12 @@ export const usePagination = <T>(
 ): PaginationHook<T> => {
     const [currentPageIndex, setCurrentPageIndex] = useState(initialCurrentPageIndex);
     const [perPage, setPerPage] = useState(initialPerPage);
-    const [pagination, setPagination] = useState<Pagination>(
-        createPagination(data.length, perPage, currentPageIndex, padding)
-    );
-    const [pagedData, setPagedData] = useState<T[]>(applyPagination(data, pagination));
 
-    useEffect(() => {
-        const newPagination = createPagination(data.length, perPage, currentPageIndex, padding);
-        const newPagedData = applyPagination(data, newPagination);
-        setPagination(newPagination);
-        setPagedData(newPagedData);
-    }, [data, currentPageIndex, perPage]);
+    const pagination = useMemo(
+        () => createPagination(data.length, perPage, currentPageIndex, padding),
+        [data.length, perPage, currentPageIndex, padding]
+    );
+    const pagedData = useMemo(() => applyPagination(data, pagination), [data, pagination]);
 
     const setCurrentPage = useCallback((index: number, perPage: number) => {
         setCurrentPageIndex(index);
