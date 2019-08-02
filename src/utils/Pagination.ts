@@ -49,6 +49,11 @@ const getPaginationTail = (pages: Page[], currentPage: Page, padding: number) =>
  * @param padding How mutch padding do you want?
  */
 const getPaginationCenter = (pages: Page[], currentPage: Page, padding: number) => {
+    // Does this need explaining? Really?
+    if(pages.length <= padding) {
+        return pages;
+    }
+
     // Divide the padding in two to get the distance from the current page
     const distance = Math.floor(padding / 2);
 
