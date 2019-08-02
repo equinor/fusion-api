@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 export type PropertyAccessorFunction<T> = (item: T) => string | null;
 export type PropertyAccessor<T> = keyof T | PropertyAccessorFunction<T>;
@@ -17,7 +17,7 @@ const getValue = <T>(item: T | null, accessor: PropertyAccessor<T>) => {
 
     if (typeof accessor === "string") {
         const value = item[accessor] as any;
-        return value ? value.toString() : null;
+        return value !== null && typeof value !== 'undefined' ? value.toString() : null;
     }
 
     const accessorFunction = accessor as PropertyAccessorFunction<T>;
@@ -86,11 +86,8 @@ export const useSorting = <T>(
 ) => {
     const [sortBy, setSortBy] = useState<PropertyAccessor<T> | null>(defaultSortBy);
     const [direction, setDirection] = useState<SortDirection | null>(defaultDirection);
-    const [sortedData, setSortedData] = useState(applySorting(data, sortBy, direction));
 
-    useEffect(() => {
-        setSortedData(applySorting(data, sortBy, direction));
-    }, [data, sortBy, direction]);
+    const sortedData = useMemo(() => applySorting(data, sortBy, direction), [data, sortBy, direction]);
 
     const resetSorting = () => {
         setSortBy(null);
