@@ -1,3 +1,5 @@
+import { formatDay, formatWeekDay } from '../intl/DateTime';
+
 // 0 === sunday
 export type Day = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 export type Month = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
@@ -5,6 +7,7 @@ export type Month = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
 export type CalendarDate = {
     index: number;
     value: string;
+    weekDay: string;
     day: Day;
     month: Month;
     year: number;
@@ -28,12 +31,14 @@ export const isSameDate = (a: Date, b: Date) => {
     );
 };
 
+
 const createCalendarDate = (date: Date, month: Month): CalendarDate => {
     const today = new Date();
 
     return {
         index: date.getDate() - 1,
-        value: date.getDate().toString(),
+        value: formatDay(date),
+        weekDay: formatWeekDay(date),
         day: date.getDay() as Day,
         isToday: isSameDate(date, today),
         month: date.getMonth() as Month,
