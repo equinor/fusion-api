@@ -86,7 +86,7 @@ export {
     useNotificationCenter,
 } from './core/NotificationCenter';
 
-export { Day, Month, Calendar, CalendarDate, createCalendar } from './utils/Calendar';
+export { Day, Month, Calendar, CalendarDate, createCalendar, isSameDate } from './utils/Calendar';
 
 export * from './intl/DateTime';
 export * from './intl/Number';

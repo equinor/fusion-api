@@ -20,6 +20,14 @@ export type Calendar = {
     isCurrentMonth: boolean;
 };
 
+export const isSameDate = (a: Date, b: Date) => {
+    return (
+        a.getFullYear() === b.getFullYear() &&
+        a.getMonth() === b.getMonth() &&
+        a.getDate() === b.getDate()
+    );
+};
+
 const createCalendarDate = (date: Date, month: Month): CalendarDate => {
     const today = new Date();
 
@@ -27,11 +35,11 @@ const createCalendarDate = (date: Date, month: Month): CalendarDate => {
         index: date.getDate() - 1,
         value: date.getDate().toString(),
         day: date.getDay() as Day,
-        isToday: date.getTime() === today.getTime(),
+        isToday: isSameDate(date, today),
         month: date.getMonth() as Month,
         year: date.getFullYear(),
         isSelectedMonth: date.getMonth() === month,
-        date,
+        date: new Date(date),
     };
 };
 
