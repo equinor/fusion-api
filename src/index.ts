@@ -47,7 +47,13 @@ export {
     useTaskTypes,
     useTaskPrioritySetter,
 } from './core/TasksContainer';
-export { default as Task, TaskType, TaskTypes, TaskSourceSystem, TaskSourceSystems } from "./http/apiClients/models/tasks/Task";
+export {
+    default as Task,
+    TaskType,
+    TaskTypes,
+    TaskSourceSystem,
+    TaskSourceSystems,
+} from './http/apiClients/models/tasks/Task';
 
 export {
     createPagination,
@@ -79,6 +85,8 @@ export {
     NotificationResolver,
     useNotificationCenter,
 } from './core/NotificationCenter';
+
+export { Day, Month, Calendar, CalendarDate, createCalendar } from './utils/Calendar';
 
 export * from './intl/DateTime';
 export * from './intl/Number';
