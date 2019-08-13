@@ -236,7 +236,6 @@ export default class AuthContainer implements IAuthContainer {
             client_id: app.clientId,
             response_type: "id_token",
             redirect_uri: getTopLevelWindow(window).location.href,
-            login_hint: (window as any)["currentUpn"], // Get current user profile mail (only used in the fusion portal)
             domain_hint: "@equinor.com",
             nonce: nonce.getKey(),
         };

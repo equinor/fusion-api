@@ -1,4 +1,8 @@
 export { IAuthContainer, default as AuthContainer } from './auth/AuthContainer';
+export { default as AuthApp } from './auth/AuthApp';
+export { default as AuthNonce } from './auth/AuthNonce';
+export { default as AuthUser } from './auth/AuthUser';
+export { default as AuthToken } from './auth/AuthToken';
 
 export { default as useCurrentUser } from './auth/useCurrentUser';
 
