@@ -11,6 +11,7 @@ import {
 } from './HttpClientError';
 import ensureRequestInit from './ensureRequestInit';
 import { useFusionContext } from '../../core/FusionContext';
+import RequestBody from '../models/RequestBody';
 
 // Export interface, response and error types
 export {
@@ -67,7 +68,7 @@ export default class HttpClient implements IHttpClient {
         });
     }
 
-    async postAsync<TBody, TResponse, TExpectedErrorResponse>(
+    async postAsync<TBody extends RequestBody, TResponse, TExpectedErrorResponse>(
         url: string,
         body: TBody,
         init?: RequestInit | null,
@@ -76,7 +77,7 @@ export default class HttpClient implements IHttpClient {
         init = ensureRequestInit(init, init => ({
             ...init,
             method: 'POST',
-            body: JSON.stringify(body),
+            body: this.createRequestBody(body),
         }));
 
         const response = await this.performFetchAsync<TExpectedErrorResponse>(url, init);
@@ -87,7 +88,7 @@ export default class HttpClient implements IHttpClient {
         );
     }
 
-    async putAsync<TBody, TResponse, TExpectedErrorResponse>(
+    async putAsync<TBody extends RequestBody, TResponse, TExpectedErrorResponse>(
         url: string,
         body: TBody,
         init?: RequestInit | null,
@@ -96,7 +97,7 @@ export default class HttpClient implements IHttpClient {
         init = ensureRequestInit(init, init => ({
             ...init,
             method: 'PUT',
-            body: JSON.stringify(body),
+            body: this.createRequestBody(body),
         }));
 
         const response = await this.performFetchAsync<TExpectedErrorResponse>(url, init);
@@ -107,7 +108,7 @@ export default class HttpClient implements IHttpClient {
         );
     }
 
-    async patchAsync<TBody, TResponse, TExpectedErrorResponse>(
+    async patchAsync<TBody extends RequestBody, TResponse, TExpectedErrorResponse>(
         url: string,
         body: TBody,
         init?: RequestInit | null,
@@ -116,7 +117,7 @@ export default class HttpClient implements IHttpClient {
         init = ensureRequestInit(init, init => ({
             ...init,
             method: 'PATCH',
-            body: JSON.stringify(body),
+            body: this.createRequestBody(body),
         }));
 
         const response = await this.performFetchAsync<TExpectedErrorResponse>(url, init);
@@ -315,6 +316,15 @@ export default class HttpClient implements IHttpClient {
     // Utils
     private getRequestInProgress<T>(url: string) {
         return this.requestsInProgress[url] as Promise<HttpResponse<T>>;
+    }
+
+    private createRequestBody<TBody extends RequestBody>(body: TBody) {
+        if (typeof body === 'function') {
+            const bodyFactory = body as () => string;
+            return bodyFactory();
+        }
+
+        return JSON.stringify(body);
     }
 }
 
