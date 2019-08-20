@@ -1,3 +1,3 @@
-type RequestBody = object | (() => string);
+type RequestBody = unknown | (() => string);
 
 export default RequestBody;
