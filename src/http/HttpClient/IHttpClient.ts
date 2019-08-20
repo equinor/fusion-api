@@ -1,4 +1,5 @@
 import { HttpResponse } from './HttpResponse';
+import RequestBody from '../models/RequestBody';
 
 export type ResponseParser<T> = (response: Response) => Promise<T>;
 
@@ -20,7 +21,7 @@ export default interface IHttpClient {
      * @param body Request body (will be serialized as JSON)
      * @param init Optional request init object
      */
-    postAsync<TBody, TResponse, TExpectedErrorResponse>(
+    postAsync<TBody extends RequestBody, TResponse, TExpectedErrorResponse>(
         url: string,
         body: TBody,
         init?: RequestInit | null,
@@ -33,7 +34,7 @@ export default interface IHttpClient {
      * @param body Request body (will be serialized as JSON)
      * @param init Optional request init object
      */
-    putAsync<TBody, TResponse, TExpectedErrorResponse>(
+    putAsync<TBody extends RequestBody, TResponse, TExpectedErrorResponse>(
         url: string,
         body: TBody,
         init?: RequestInit | null,
@@ -46,7 +47,7 @@ export default interface IHttpClient {
      * @param body Request body (will be serialized as JSON)
      * @param init Optional request init object
      */
-    patchAsync<TBody, TResponse, TExpectedErrorResponse>(
+    patchAsync<TBody extends RequestBody, TResponse, TExpectedErrorResponse>(
         url: string,
         body: TBody,
         init?: RequestInit | null,
