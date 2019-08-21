@@ -1,12 +1,12 @@
-import Location from './Location';
+import PositionLocation from './PositionLocation';
 
 type PositionInstance = {
     obs: string;
     percent: number;
-    appliesFrom: Date;
-    appliesTo: Date;
+    appliesFrom: string;
+    appliesTo: string;
     type: string; // Normal/Offshore/Vacation etc.
-    location: Location;
+    location: PositionLocation;
     properties: object; // dynamic metadata
 };
 
