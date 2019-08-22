@@ -59,6 +59,9 @@ export {
     TaskSourceSystems,
 } from './http/apiClients/models/tasks/Task';
 
+export * from './http/apiClients/models/org';
+export { default as PersonDetails } from './http/apiClients/models/people/PersonDetails';
+
 export {
     createPagination,
     applyPagination,
