@@ -8,9 +8,7 @@ export default class PeopleClient extends BaseApiClient {
     constructor(httpClient: IHttpClient, resourceCollection: ResourceCollections) {
         super(httpClient, resourceCollection);
 
-        httpClient.getAsync(resourceCollection.people.apiSignin(), {
-            headers: { credentials: 'include' },
-        });
+        httpClient.getAsync(resourceCollection.people.apiSignin(), { credentials: 'include' });
     }
 
     async getPersonDetailsAsync(id: string) {
