@@ -10,11 +10,11 @@ export default class PeopleResourceCollection extends BaseResourceCollection {
         return combineUrls(this.getBaseUrl(), 'api-signin');
     }
 
-    getPersonDetails(id: string) {
+    getPersonDetails(id: string): string {
         return combineUrls(this.getBaseUrl(), 'persons', id);
     }
 
-    getPersonPhoto(id: string) {
+    getPersonPhoto(id: string): string {
         return combineUrls(this.getBaseUrl(), 'persons', id, 'photo');
     }
 }
