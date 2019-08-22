@@ -5,6 +5,7 @@ import TasksResourceCollection from './TasksResourceCollection';
 import ServiceResolver from './ServiceResolver';
 import { FusionContextOptions } from '../../core/FusionContext';
 import PeopleResourceCollection from './PeopleResourceCollection';
+import OrgResourceCollection from './OrgResourceCollection';
 
 type ResourceCollections = {
     dataProxy: DataProxyResourceCollection;
@@ -12,6 +13,7 @@ type ResourceCollections = {
     context: ContextResourceCollection;
     tasks: TasksResourceCollection;
     people: PeopleResourceCollection;
+    org: OrgResourceCollection;
 };
 
 export { DataProxyResourceCollection };
@@ -25,6 +27,7 @@ export const createResourceCollections = (
     context: new ContextResourceCollection(serviceResolver),
     tasks: new TasksResourceCollection(serviceResolver),
     people: new PeopleResourceCollection(serviceResolver),
+    org: new OrgResourceCollection(serviceResolver),
 });
 
 export default ResourceCollections;
