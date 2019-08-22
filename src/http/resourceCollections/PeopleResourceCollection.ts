@@ -11,11 +11,10 @@ export default class PeopleResourceCollection extends BaseResourceCollection {
     }
 
     getPersonDetails(id: string) {
-        return '';
+        return combineUrls(this.getBaseUrl(), 'persons', id);
     }
 
     getPersonPhoto(id: string) {
-        // id or url?
-        return '';
+        return combineUrls(this.getBaseUrl(), 'persons', id, 'photo');
     }
 }

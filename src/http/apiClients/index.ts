@@ -1,16 +1,18 @@
-import DataProxyClient from "./DataProxyClient";
-import FusionClient from "./FusionClient";
-import ContextClient from "./ContextClient";
-import TasksClient from "./TasksClient";
-import ResourceCollections from "../resourceCollections";
-import { IHttpClient } from "../HttpClient";
-export { FusionApiHttpErrorResponse } from "./models/common/FusionApiHttpErrorResponse";
+import DataProxyClient from './DataProxyClient';
+import FusionClient from './FusionClient';
+import ContextClient from './ContextClient';
+import TasksClient from './TasksClient';
+import ResourceCollections from '../resourceCollections';
+import { IHttpClient } from '../HttpClient';
+import PeopleClient from './PeopleClient';
+export { FusionApiHttpErrorResponse } from './models/common/FusionApiHttpErrorResponse';
 
 type ApiClients = {
     dataProxy: DataProxyClient;
     fusion: FusionClient;
     context: ContextClient;
     tasks: TasksClient;
+    people: PeopleClient;
 };
 
 export const createApiClients = (
@@ -21,6 +23,7 @@ export const createApiClients = (
     fusion: new FusionClient(httpClient, resources),
     context: new ContextClient(httpClient, resources),
     tasks: new TasksClient(httpClient, resources),
+    people: new PeopleClient(httpClient, resources),
 });
 
 export default ApiClients;
