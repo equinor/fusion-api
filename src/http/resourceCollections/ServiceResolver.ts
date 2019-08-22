@@ -7,6 +7,7 @@ type ServiceResolver = {
     getTasksBaseUrl: () => string;
     getProjectsBaseUrl: () => string;
     getMeetingsBaseUrl: () => string;
+    getPeopleBaseUrl: () => string;
 };
 
 export default ServiceResolver;
