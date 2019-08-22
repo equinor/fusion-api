@@ -7,6 +7,8 @@ import { IHttpClient } from '../HttpClient';
 import PeopleClient from './PeopleClient';
 import OrgClient from './OrgClient';
 
+export { FusionApiHttpErrorResponse } from './models/common/FusionApiHttpErrorResponse';
+
 type ApiClients = {
     dataProxy: DataProxyClient;
     fusion: FusionClient;
