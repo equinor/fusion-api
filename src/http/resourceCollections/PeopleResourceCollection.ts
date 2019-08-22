@@ -13,8 +13,4 @@ export default class PeopleResourceCollection extends BaseResourceCollection {
     getPersonDetails(id: string): string {
         return combineUrls(this.getBaseUrl(), 'persons', id);
     }
-
-    getPersonPhoto(id: string): string {
-        return combineUrls(this.getBaseUrl(), 'persons', id, 'photo');
-    }
 }

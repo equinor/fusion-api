@@ -15,9 +15,4 @@ export default class PeopleClient extends BaseApiClient {
         const url = this.resourceCollections.people.getPersonDetails(id);
         return await this.httpClient.getAsync<PersonDetails, FusionApiHttpErrorResponse>(url);
     }
-
-    async getPersonPhotoAsync(id: string) {
-        const url = this.resourceCollections.people.getPersonPhoto(id);
-        return await this.httpClient.getAsync(url);
-    }
 }
