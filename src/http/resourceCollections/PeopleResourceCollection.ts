@@ -24,8 +24,4 @@ export default class PeopleResourceCollection extends BaseResourceCollection {
     }
 }
 
-export enum PersonODataExpand {
-    positions = 'positions',
-    roles = 'roles',
-    contracts = 'contracts',
-}
+export type PersonODataExpand = 'positions' | 'roles' | 'contracts';
