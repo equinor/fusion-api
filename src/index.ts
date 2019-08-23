@@ -59,7 +59,13 @@ export {
     TaskSourceSystems,
 } from './http/apiClients/models/tasks/Task';
 
-export * from './http/apiClients/models/org';
+export {
+    default as Position,
+    BasePosition,
+    PositionInstance,
+    AssignedPerson,
+    PositionLocation,
+} from './http/apiClients/models/org/Position';
 export { default as PersonDetails } from './http/apiClients/models/people/PersonDetails';
 
 export {

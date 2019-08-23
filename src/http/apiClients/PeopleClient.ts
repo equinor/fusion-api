@@ -14,6 +14,8 @@ export default class PeopleClient extends BaseApiClient {
 
     async getPersonDetailsAsync(id: string, oDataExpand?: PersonODataExpand[]) {
         const url = this.resourceCollections.people.getPersonDetails(id, oDataExpand);
-        return await this.httpClient.getAsync<PersonDetails, FusionApiHttpErrorResponse>(url);
+        return await this.httpClient.getAsync<PersonDetails, FusionApiHttpErrorResponse>(url, {
+            headers: { 'api-version': '3.0' },
+        });
     }
 }
