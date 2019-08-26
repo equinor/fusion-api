@@ -5,6 +5,7 @@ import PersonProject from './PersonProject';
 import PersonBasePosition from './PersonBasePosition';
 import PersonRoleScope from './PersonRoleScope';
 import PersonAccountType from './PersonAccountType';
+import PersonCompany from './PersonCompany';
 
 export {
     PersonRole,
@@ -14,10 +15,12 @@ export {
     PersonBasePosition,
     PersonRoleScope,
     PersonAccountType,
+    PersonCompany,
 };
 
 type PersonDetails = {
     azureUniqueId: string;
+    name: string;
     mail: string;
     jobTitle: string;
     department: string;
@@ -25,7 +28,7 @@ type PersonDetails = {
     officeLocation: string;
     upn: string;
     accountType: PersonAccountType;
-    company: string;
+    company: PersonCompany;
     roles?: PersonRole[];
     contracts?: PersonContract[];
     positions?: PersonPosition[];
