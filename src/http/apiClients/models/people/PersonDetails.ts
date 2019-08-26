@@ -4,6 +4,7 @@ import PersonPosition from './PersonPosition';
 import PersonProject from './PersonProject';
 import PersonBasePosition from './PersonBasePosition';
 import PersonRoleScope from './PersonRoleScope';
+import PersonAccountType from './PersonAccountType';
 
 export {
     PersonRole,
@@ -12,6 +13,7 @@ export {
     PersonProject,
     PersonBasePosition,
     PersonRoleScope,
+    PersonAccountType,
 };
 
 type PersonDetails = {
@@ -22,7 +24,7 @@ type PersonDetails = {
     mobilePhone: string;
     officeLocation: string;
     upn: string;
-    accountType: string;
+    accountType: PersonAccountType;
     company: string;
     roles?: PersonRole[];
     contracts?: PersonContract[];
