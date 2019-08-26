@@ -238,7 +238,6 @@ export default class AuthContainer implements IAuthContainer {
             client_id: app.clientId,
             response_type: 'id_token',
             redirect_uri: getTopLevelWindow(window).location.href,
-            domain_hint: '@equinor.com',
             nonce: nonce.getKey(),
             login_hint: cachedUser ? cachedUser.upn : null,
         };
