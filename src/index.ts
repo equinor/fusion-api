@@ -107,6 +107,8 @@ export {
     useNotificationCenter,
 } from './core/NotificationCenter';
 
+export { default as useDebouncedAbortable } from './hooks/useDebouncedAbortable';
+
 export { Day, Month, Calendar, CalendarDate, createCalendar, isSameDate } from './utils/Calendar';
 
 export * from './intl/DateTime';
