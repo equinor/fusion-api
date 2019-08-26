@@ -12,9 +12,12 @@ export default class PeopleResourceCollection extends BaseResourceCollection {
     }
 
     getPersonDetails(id: string, oDataExpand?: PersonODataExpand[]): string {
+        const url = combineUrls(this.getBaseUrl(), 'persons', id);
+
+        if (!oDataExpand) return url;
+
         const expand = oDataExpand ? oDataExpand.map(s => s) : [];
         const oDataQuery = buildQuery({ expand });
-        const url = combineUrls(this.getBaseUrl(), 'persons', id);
 
         return `${url}${oDataQuery}`;
     }
