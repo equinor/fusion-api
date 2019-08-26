@@ -1,12 +1,5 @@
-type AssignedPerson = {
-    id: string;
-    name: string;
-    department: string;
-    jobTitle: string;
-    officeLocation: string;
-    mail: string;
-    mobilePhone: string;
-    isAffiliateAccess: boolean;
-};
+import PersonDetails from '../people/PersonDetails';
+
+type AssignedPerson = PersonDetails & {};
 
 export default AssignedPerson;

@@ -74,6 +74,7 @@ export {
     PersonProject,
     PersonRole,
     PersonRoleScope,
+    PersonAccountType,
 } from './http/apiClients/models/people/PersonDetails';
 
 export {
@@ -115,3 +116,4 @@ export * from './intl/DateTime';
 export * from './intl/Number';
 
 export * from './http/hooks/dataProxy/useHandover';
+export * from './http/hooks/people/usePersonDetails';

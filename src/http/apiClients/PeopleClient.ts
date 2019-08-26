@@ -1,9 +1,29 @@
 import BaseApiClient from './BaseApiClient';
 import ResourceCollections from '../resourceCollections';
 import { IHttpClient } from '../HttpClient';
-import PersonDetails from './models/people/PersonDetails';
+import PersonDetails, {
+    PersonAccountType,
+    PersonRole,
+    PersonBasePosition,
+    PersonContract,
+    PersonPosition,
+    PersonProject,
+    PersonRoleScope,
+} from './models/people/PersonDetails';
 import { FusionApiHttpErrorResponse } from './models/common/FusionApiHttpErrorResponse';
 import { PersonODataExpand } from '../resourceCollections/PeopleResourceCollection';
+
+export {
+    PersonDetails,
+    PersonAccountType,
+    PersonRole,
+    PersonBasePosition,
+    PersonContract,
+    PersonPosition,
+    PersonProject,
+    PersonRoleScope,
+    PersonODataExpand,
+};
 
 export default class PeopleClient extends BaseApiClient {
     constructor(httpClient: IHttpClient, resourceCollection: ResourceCollections) {
