@@ -75,6 +75,7 @@ export {
     PersonRole,
     PersonRoleScope,
     PersonAccountType,
+    PersonCompany,
 } from './http/apiClients/models/people/PersonDetails';
 
 export {
