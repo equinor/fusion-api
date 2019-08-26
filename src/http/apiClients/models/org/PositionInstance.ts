@@ -1,4 +1,5 @@
 import PositionLocation from './PositionLocation';
+import AssignedPerson from './AssignedPerson';
 
 type PositionInstance = {
     obs: string;
@@ -7,6 +8,7 @@ type PositionInstance = {
     appliesTo: string;
     type: string; // Normal/Offshore/Vacation etc.
     location: PositionLocation;
+    assignedPerson: AssignedPerson;
     properties: object; // dynamic metadata
 };
 

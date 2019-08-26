@@ -1,5 +1,6 @@
 import BaseResourceCollection from './BaseResourceCollection';
 import { combineUrls } from '../../utils/url';
+import buildQuery from 'odata-query';
 
 export default class PeopleResourceCollection extends BaseResourceCollection {
     protected getBaseUrl(): string {
@@ -10,11 +11,21 @@ export default class PeopleResourceCollection extends BaseResourceCollection {
         return combineUrls(this.getBaseUrl(), 'api-signin');
     }
 
-    getPersonDetails(id: string): string {
-        return combineUrls(this.getBaseUrl(), 'persons', id);
+    getPersonDetails(id: string, oDataExpand?: PersonODataExpand[]): string {
+        const expand = oDataExpand ? oDataExpand.map(s => s) : [];
+        const oDataQuery = buildQuery({ expand });
+        const url = combineUrls(this.getBaseUrl(), 'persons', id);
+
+        return `${url}${oDataQuery}`;
     }
 
     getPersonPhoto(id: string): string {
         return combineUrls(this.getBaseUrl(), 'persons', id, 'photo');
     }
+
+    searchPersons(query: string): string {
+        return combineUrls(this.getBaseUrl(), `persons?query=${query}`);
+    }
 }
+
+export type PersonODataExpand = 'positions' | 'roles' | 'contracts';
