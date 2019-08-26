@@ -22,6 +22,10 @@ export default class PeopleResourceCollection extends BaseResourceCollection {
     getPersonPhoto(id: string): string {
         return combineUrls(this.getBaseUrl(), 'persons', id, 'photo');
     }
+
+    searchPersons(query: string): string {
+        return combineUrls(this.getBaseUrl(), `persons?query=${query}`);
+    }
 }
 
 export type PersonODataExpand = 'positions' | 'roles' | 'contracts';

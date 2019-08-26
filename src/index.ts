@@ -66,7 +66,15 @@ export {
     AssignedPerson,
     PositionLocation,
 } from './http/apiClients/models/org/Position';
-export { default as PersonDetails } from './http/apiClients/models/people/PersonDetails';
+export {
+    default as PersonDetails,
+    PersonBasePosition,
+    PersonContract,
+    PersonPosition,
+    PersonProject,
+    PersonRole,
+    PersonRoleScope,
+} from './http/apiClients/models/people/PersonDetails';
 
 export {
     createPagination,
