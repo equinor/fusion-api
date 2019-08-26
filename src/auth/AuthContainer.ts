@@ -1,9 +1,9 @@
-import AuthApp from "./AuthApp";
-import AuthToken from "./AuthToken";
-import AuthNonce from "./AuthNonce";
-import AuthCache from "./AuthCache";
-import AuthUser from "./AuthUser";
-import { trimTrailingSlash } from "../utils/url";
+import AuthApp from './AuthApp';
+import AuthToken from './AuthToken';
+import AuthNonce from './AuthNonce';
+import AuthCache from './AuthCache';
+import AuthUser from './AuthUser';
+import { trimTrailingSlash } from '../utils/url';
 
 export class FusionAuthAppNotFoundError extends Error {
     constructor(clientId: string) {
@@ -39,7 +39,7 @@ export interface IAuthContainer {
      * @param clientId The AAD app client id
      * @throws {FusionAuthAppNotFoundError} When unable to match specified resource to a registered app
      */
-    login(clientId: string): void;
+    loginAsync(clientId: string): Promise<void>;
 
     /**
      * Log out
@@ -92,7 +92,7 @@ export default class AuthContainer implements IAuthContainer {
             this.apps.push(app);
 
             await this.updateTokenForAppAsync(app, token);
-            window.location.hash = "";
+            window.location.hash = '';
         } catch (e) {
             throw new FusionAuthLoginError();
             // Log?
@@ -114,7 +114,7 @@ export default class AuthContainer implements IAuthContainer {
 
         const refreshedToken = await this.refreshTokenAsync(resource);
 
-        if(!refreshedToken) {
+        if (!refreshedToken) {
             return null;
         }
 
@@ -126,7 +126,7 @@ export default class AuthContainer implements IAuthContainer {
     protected async refreshTokenAsync(resource: string): Promise<string | null> {
         // TODO: This should refresh the token instead of logging in
         // For now this is not possible because of iframes and crazy stuff
-        this.login(resource);
+        await this.loginAsync(resource);
         return null;
     }
 
@@ -150,7 +150,7 @@ export default class AuthContainer implements IAuthContainer {
         return false;
     }
 
-    login(clientId: string): void {
+    async loginAsync(clientId: string): Promise<void> {
         const app = this.resolveApp(clientId);
 
         if (app === null) {
@@ -162,7 +162,7 @@ export default class AuthContainer implements IAuthContainer {
 
         // Login page cannot be displayed within a frame
         // Get the top level window and redirect there
-        getTopLevelWindow(window).location.href = this.buildLoginUrl(app, nonce);
+        getTopLevelWindow(window).location.href = await this.buildLoginUrlAsync(app, nonce);
     }
 
     async logoutAsync(clientId?: string) {
@@ -197,7 +197,7 @@ export default class AuthContainer implements IAuthContainer {
         await this.cache.storeTokenAsync(app, parsedToken);
 
         const cachedUser =
-                (await this.getCachedUserAsync()) || AuthUser.createFromToken(parsedToken);
+            (await this.getCachedUserAsync()) || AuthUser.createFromToken(parsedToken);
 
         cachedUser.mergeWithToken(parsedToken);
         await this.cacheUserAsync(cachedUser);
@@ -213,39 +213,44 @@ export default class AuthContainer implements IAuthContainer {
             const url = new URL(resource);
             return trimTrailingSlash(url.origin.toLowerCase());
         } catch {
-            return "";
+            return '';
         }
     }
 
     protected static getTokenFromHash(hash: string): string | null {
-        const parts = hash.substr(1).split("&");
-        const tokenPart = parts.find(part => part.indexOf("id_token=") === 0);
+        const parts = hash.substr(1).split('&');
+        const tokenPart = parts.find(part => part.indexOf('id_token=') === 0);
 
-        if (typeof tokenPart === "undefined") {
+        if (typeof tokenPart === 'undefined') {
             return null;
         }
 
-        return tokenPart.replace("id_token=", "");
+        return tokenPart.replace('id_token=', '');
     }
 
-    protected buildLoginUrl(app: AuthApp, nonce: AuthNonce, customParams: object = {}) {
+    protected async buildLoginUrlAsync(app: AuthApp, nonce: AuthNonce, customParams: object = {}) {
+        const cachedUser = await this.getCachedUserAsync();
+
         const base =
-            "https://login.microsoftonline.com/3aa4a235-b6e2-48d5-9195-7fcf05b459b0/oauth2/authorize";
+            'https://login.microsoftonline.com/3aa4a235-b6e2-48d5-9195-7fcf05b459b0/oauth2/authorize';
         const params: any = {
             ...customParams,
             client_id: app.clientId,
-            response_type: "id_token",
+            response_type: 'id_token',
             redirect_uri: getTopLevelWindow(window).location.href,
-            domain_hint: "@equinor.com",
             nonce: nonce.getKey(),
+            login_hint: cachedUser ? cachedUser.upn : null,
         };
 
-        const queryString = Object.keys(params).reduce(
-            (query, key) => query + `${query ? "&" : ""}${key}=${encodeURIComponent(params[key])}`,
-            ""
-        );
+        const queryString = Object.keys(params)
+            .filter(key => params[key])
+            .reduce(
+                (query, key) =>
+                    query + `${query ? '&' : ''}${key}=${encodeURIComponent(params[key])}`,
+                ''
+            );
 
-        return base + "?" + queryString;
+        return base + '?' + queryString;
     }
 
     protected resolveApp(resource: string): AuthApp | null {
@@ -257,7 +262,7 @@ export default class AuthContainer implements IAuthContainer {
                 app.clientId === resource
         );
 
-        if (typeof app === "undefined") {
+        if (typeof app === 'undefined') {
             return null;
         }
 
