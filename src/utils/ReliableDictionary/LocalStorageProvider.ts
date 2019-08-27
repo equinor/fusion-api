@@ -1,4 +1,5 @@
 import IReliableDictionaryStorageProvider from "./IReliableDictionaryStorageProvider";
+import JSON from '../JSON';
 
 type LocalCache = { [key: string]: any };
 
@@ -10,7 +11,7 @@ export default class LocalStorageProvider implements IReliableDictionaryStorageP
         this.baseKey = baseKey;
 
         const cachedJson = localStorage.getItem(this.baseKey);
-        const cachedValue = cachedJson ? JSON.parse(cachedJson) : null;
+        const cachedValue = cachedJson ? JSON.parse<LocalCache>(cachedJson) : null;
         this.localCache = cachedValue;
 
         if (!cachedValue && defaultValue) {
@@ -50,7 +51,7 @@ export default class LocalStorageProvider implements IReliableDictionaryStorageP
     async toObjectAsync(): Promise<LocalCache> {
         if (this.localCache === null) {
             const cachedJson = localStorage.getItem(this.baseKey);
-            const cachedValue = cachedJson ? JSON.parse(cachedJson) : {};
+            const cachedValue = cachedJson ? JSON.parse<LocalCache>(cachedJson) : {};
             this.localCache = cachedValue;
         }
 
