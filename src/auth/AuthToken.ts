@@ -1,3 +1,5 @@
+import JSON from '../utils/JSON';
+
 const b64DecodeUnicode = (str: string) =>
     decodeURIComponent(
         Array.prototype.map
@@ -14,7 +16,7 @@ export class FusionAuthTokenParseError extends Error {
 export default class AuthToken {
     static parse(token: string): AuthToken {
         const userPart = token.split(".")[1];
-        const parsedToken = JSON.parse(b64DecodeUnicode(userPart)) as ParsedBearerToken;
+        const parsedToken = JSON.parse<ParsedBearerToken>(b64DecodeUnicode(userPart));
 
         if (!parsedToken) {
             throw new FusionAuthTokenParseError(token);

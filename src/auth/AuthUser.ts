@@ -1,4 +1,5 @@
 import AuthToken from "./AuthToken";
+import JSON from '../utils/JSON';
 
 class UserTokenMissmatchError extends Error {}
 
