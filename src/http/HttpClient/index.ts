@@ -12,6 +12,7 @@ import {
 import ensureRequestInit from './ensureRequestInit';
 import { useFusionContext } from '../../core/FusionContext';
 import RequestBody from '../models/RequestBody';
+import JSON from '../../utils/JSON';
 
 // Export interface, response and error types
 export {
@@ -210,7 +211,8 @@ export default class HttpClient implements IHttpClient {
     // Response parsers
     private async parseResponseJSONAsync<TResponse>(response: Response) {
         try {
-            const json = await response.json();
+            const text = await response.text();
+            const json = JSON.parse<TResponse>(text);
             return json as TResponse;
         } catch (parseError) {
             // Add more info
