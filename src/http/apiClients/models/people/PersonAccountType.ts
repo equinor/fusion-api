@@ -3,6 +3,6 @@
 /// External users has a GUEST account in azure ad, AKA affiliate access account.
 /// Local users only exists in the fusion database. - These users can not log in.
 
-type PersonAccountType = 'consultant' | 'employee' | 'external' | 'local';
+type PersonAccountType = 'Consultant' | 'Employee' | 'External' | 'Local';
 
 export default PersonAccountType;
