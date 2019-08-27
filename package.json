@@ -6,7 +6,9 @@
     "types": "lib/index.d.ts",
     "scripts": {
         "update-version-definition": "echo \"export default '$npm_package_version';\" > src/version.ts",
-        "build": "npm run update-version-definition && tsc",
+        "build": "npm run update-version-definition && npm run tsc",
+        "tsc": "tsc -p ./tsconfig.json",
+        "tsc:version": "tsc --version",
         "prepack": "tsc"
     },
     "repository": {
@@ -32,12 +34,13 @@
         "@types/react-router": "^5.0.0",
         "@types/react-router-dom": "^4.3.3",
         "@types/uuid": "^3.4.4",
-        "tslib": "^1.9.3",
-        "tslint-config-prettier": "^1.18.0",
         "history": "^4.9.0",
         "react": "^16.8.6",
         "react-router": "^5.0.0",
-        "react-router-dom": "^5.0.0"
+        "react-router-dom": "^5.0.0",
+        "tslib": "^1.9.3",
+        "tslint-config-prettier": "^1.18.0",
+        "typescript": "^3.5.3"
     },
     "peerDependencies": {
         "@types/history": "^4.7.2",
