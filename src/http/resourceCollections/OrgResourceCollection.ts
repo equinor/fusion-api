@@ -9,4 +9,19 @@ export default class OrgResourceCollection extends BaseResourceCollection {
     positions(projectId: string) {
         return combineUrls(this.getBaseUrl(), 'projects', projectId, 'positions');
     }
+
+    position(projectId: string, positionId: string) {
+        const url = combineUrls(this.positions(projectId), positionId);
+
+        const query = `?$expand=taskOwners.instances, reportsTo.instances, parentPosition, project, contract`;
+        return `${url}${query}`;
+    }
+
+    jobDescription(projectId: string, positionId: string) {
+        return combineUrls(this.position(projectId, positionId), 'jobDescription');
+    }
+
+    reportsTo(projectId: string, positionId: string) {
+        return combineUrls(this.position(projectId, positionId), 'reportsTo');
+    }
 }

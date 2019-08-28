@@ -213,7 +213,7 @@ export default class HttpClient implements IHttpClient {
         try {
             const text = await response.text();
             const json = JSON.parse<TResponse>(text);
-            return json as TResponse;
+            return json;
         } catch (parseError) {
             // Add more info
             throw new HttpClientParseError(response);
