@@ -78,6 +78,9 @@ export {
     PersonCompany,
 } from './http/apiClients/models/people/PersonDetails';
 
+export { default as useApiClient } from './http/hooks/useApiClient';
+export { default as useApiClients } from './http/hooks/useApiClients';
+
 export {
     createPagination,
     applyPagination,
@@ -110,6 +113,9 @@ export {
 } from './core/NotificationCenter';
 
 export { default as useDebouncedAbortable } from './hooks/useDebouncedAbortable';
+export { default as useDebounce } from './hooks/useDebounce';
+export { default as useEffectAsync } from './hooks/useEffectAsync';
+export { default as useAsyncData } from './hooks/useAsyncData';
 
 export { Day, Month, Calendar, CalendarDate, createCalendar, isSameDate } from './utils/Calendar';
 

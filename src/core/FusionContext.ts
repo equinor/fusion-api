@@ -24,6 +24,7 @@ export type Http = {
     resourceCollections: ResourceCollections;
     apiClients: ApiClients;
     resourceCache: ResourceCache;
+    serviceResolver: ServiceResolver;
 };
 
 export type Refs = {
@@ -134,6 +135,7 @@ export const createFusionContext = (
             resourceCollections,
             apiClients,
             resourceCache,
+            serviceResolver,
         },
         refs,
         history,
