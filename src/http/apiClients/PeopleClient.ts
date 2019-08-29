@@ -41,6 +41,8 @@ export default class PeopleClient extends BaseApiClient {
 
     async searchPersons(query: string) {
         const url = this.resourceCollections.people.searchPersons(query);
-        return await this.httpClient.getAsync<PersonDetails[], FusionApiHttpErrorResponse>(url);
+        return await this.httpClient.getAsync<PersonDetails[], FusionApiHttpErrorResponse>(url, {
+            headers: { 'api-version': '2.0' },
+        });
     }
 }
