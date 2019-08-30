@@ -21,11 +21,11 @@ export {
 type PersonDetails = {
     azureUniqueId: string;
     name: string;
-    mail: string;
-    jobTitle: string;
-    department: string;
-    mobilePhone: string;
-    officeLocation: string;
+    mail: string | null;
+    jobTitle: string | null;
+    department: string | null;
+    mobilePhone: string | null;
+    officeLocation: string | null;
     upn: string;
     accountType: PersonAccountType;
     company: PersonCompany;
