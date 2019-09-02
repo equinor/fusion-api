@@ -7,10 +7,16 @@ type Position = {
     id: string;
     externalId: string;
     name: string;
-    parentPositionId: string;
+    parentPositionId: string | null;
     basePosition: BasePosition;
     instances: PositionInstance[];
-    isSupport: boolean;
+    properties: {
+        isSupport?: boolean;
+    };
+    directChildCount: number;
+    totalChildCount: number;
+    projectId: string;
+    contractId: string | null;
 };
 
 export { BasePosition, PositionInstance, AssignedPerson, PositionLocation };
