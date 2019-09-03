@@ -10,18 +10,22 @@ export default class OrgResourceCollection extends BaseResourceCollection {
         return combineUrls(this.getBaseUrl(), 'projects', projectId, 'positions');
     }
 
-    position(projectId: string, positionId: string) {
+    position(projectId: string, positionId: string, expand: boolean = true) {
         const url = combineUrls(this.positions(projectId), positionId);
+
+        if (!expand) {
+            return url;
+        }
 
         const query = `?$expand=taskOwners.instances, reportsTo.instances, parentPosition, project, contract`;
         return `${url}${query}`;
     }
 
     jobDescription(projectId: string, positionId: string) {
-        return combineUrls(this.position(projectId, positionId), 'jobDescription');
+        return combineUrls(this.position(projectId, positionId, false), 'jobDescription');
     }
 
     reportsTo(projectId: string, positionId: string) {
-        return combineUrls(this.position(projectId, positionId), 'reportsTo');
+        return combineUrls(this.position(projectId, positionId, false), 'reportsTo');
     }
 }

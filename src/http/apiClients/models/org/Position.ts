@@ -17,6 +17,7 @@ type Position = {
     totalChildCount: number;
     projectId: string;
     contractId: string | null;
+    reportsTo?: Position[];
 };
 
 export { BasePosition, PositionInstance, AssignedPerson, PositionLocation };

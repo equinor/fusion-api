@@ -1,6 +1,6 @@
 type Parser = (key: string, value: any) => any;
 
-const dateRegex = /[0-9]{4}-[0-9]{2}-[0-9]{2}[a-zA-Z]{1}[0-9]{2}:[0-9]{2}:[0-9]{2}/igm;
+const dateRegex = /[0-9]{4}-[0-9]{2}-[0-9]{2}[a-zA-Z]{1}[0-9]{2}:[0-9]{2}:[0-9]{2}/im;
 
 const revivers: Parser[] = [
     (key: string, value: any) => {
