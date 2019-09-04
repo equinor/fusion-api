@@ -21,8 +21,8 @@ export default class OrgClient extends BaseApiClient {
         });
     }
 
-    async getJobDescriptionAsync(projectId: string, positionId: string) {
-        const url = this.resourceCollections.org.jobDescription(projectId, positionId);
+    async getRoleDescriptionAsync(projectId: string, positionId: string) {
+        const url = this.resourceCollections.org.roleDescription(projectId, positionId);
         return this.httpClient.getAsync<string, FusionApiHttpErrorResponse>(
             url,
             null,
