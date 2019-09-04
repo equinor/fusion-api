@@ -22,7 +22,7 @@ export default class OrgResourceCollection extends BaseResourceCollection {
     }
 
     jobDescription(projectId: string, positionId: string) {
-        return combineUrls(this.position(projectId, positionId, false), 'jobDescription');
+        return combineUrls(this.position(projectId, positionId, false), 'jobDescription/content');
     }
 
     reportsTo(projectId: string, positionId: string) {
