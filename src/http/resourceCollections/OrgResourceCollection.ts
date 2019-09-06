@@ -6,6 +6,10 @@ export default class OrgResourceCollection extends BaseResourceCollection {
         return combineUrls(this.serviceResolver.getOrgBaseUrl());
     }
 
+    project(projectId: string) {
+        return combineUrls(this.getBaseUrl(), 'projects', projectId);
+    }
+
     positions(projectId: string) {
         return combineUrls(this.getBaseUrl(), 'projects', projectId, 'positions');
     }
@@ -27,5 +31,11 @@ export default class OrgResourceCollection extends BaseResourceCollection {
 
     reportsTo(projectId: string, positionId: string) {
         return combineUrls(this.position(projectId, positionId, false), 'reportsTo');
+    }
+
+    disciplineNetwork(projectId: string, discipline: string) {
+        const url = combineUrls(this.project(projectId), 'positions', 'networks');
+        const query = `?discipline=${discipline}`;
+        return `${url}${query}`;
     }
 }

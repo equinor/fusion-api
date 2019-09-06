@@ -60,12 +60,13 @@ export {
 } from './http/apiClients/models/tasks/Task';
 
 export {
-    default as Position,
+    default as OrgProject,
     BasePosition,
+    Position,
     PositionInstance,
     AssignedPerson,
     PositionLocation,
-} from './http/apiClients/models/org/Position';
+} from './http/apiClients/models/org/OrgProject';
 export {
     default as PersonDetails,
     PersonBasePosition,
