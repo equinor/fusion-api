@@ -53,4 +53,15 @@ export default interface IHttpClient {
         init?: RequestInit | null,
         responseParser?: ResponseParser<TResponse>
     ): Promise<HttpResponse<TResponse>>;
+
+    /**
+     * Perform a OPTIONS request
+     * @param url Request url
+     * @param init Optional request init object
+     */
+    optionsAsync<TResponse, TExpectedErrorResponse>(
+        url: string,
+        init?: RequestInit | null,
+        responseParser?: ResponseParser<TResponse>
+    ): Promise<HttpResponse<TResponse>>;
 }

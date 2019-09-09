@@ -147,6 +147,24 @@ export default class HttpClient implements IHttpClient {
         );
     }
 
+    async optionsAsync<TResponse, TExpectedErrorResponse>(
+        url: string,
+        init?: RequestInit | null,
+        responseParser?: ResponseParser<TResponse>
+    ) {
+        init = ensureRequestInit(init, init => ({
+            ...init,
+            method: "OPTIONS",
+        }));
+
+        const response = await this.performFetchAsync<TExpectedErrorResponse>(url, init);
+        return await this.parseResponseAsync<TResponse, TExpectedErrorResponse>(
+            init,
+            response,
+            responseParser
+        );
+    }
+
     private async performFetchAsync<TExpectedErrorResponse>(
         url: string,
         init: RequestInit

@@ -26,7 +26,21 @@ export default class OrgResourceCollection extends BaseResourceCollection {
     }
 
     roleDescription(projectId: string, positionId: string) {
-        return combineUrls(this.position(projectId, positionId, false), 'roleDescription', 'content');
+        return combineUrls(
+            this.position(projectId, positionId, false),
+            'roleDescription',
+            'content'
+        );
+    }
+
+    basePositionRoleDescription(basePositionId: string) {
+        return combineUrls(
+            'positions',
+            'basepositions',
+            basePositionId,
+            'roleDescription',
+            'content'
+        );
     }
 
     reportsTo(projectId: string, positionId: string) {
