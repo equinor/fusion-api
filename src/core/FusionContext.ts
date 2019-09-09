@@ -100,7 +100,7 @@ const FusionContext = ensureGlobalFusionContextType();
 export const createFusionContext = (
     authContainer: IAuthContainer,
     serviceResolver: ServiceResolver,
-    refs: Refs,
+    refs: ExternalRefs,
     options?: FusionContextOptions
 ): IFusionContext => {
     const abortControllerManager = new AbortControllerManager();
