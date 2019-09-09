@@ -1,4 +1,4 @@
-import { createContext, useContext, MutableRefObject } from 'react';
+import { createContext, useContext, MutableRefObject, useRef } from 'react';
 import { History, createBrowserHistory } from 'history';
 import { IAuthContainer } from '../auth/AuthContainer';
 import { matchPath } from 'react-router';
@@ -27,9 +27,13 @@ export type Http = {
     serviceResolver: ServiceResolver;
 };
 
-export type Refs = {
+export type ExternalRefs = {
     root: MutableRefObject<HTMLElement | null>;
     overlay: MutableRefObject<HTMLElement | null>;
+};
+
+export type Refs = ExternalRefs & {
+    headerContent: MutableRefObject<HTMLElement | null>;
 };
 
 export type AppSettings = {
@@ -137,7 +141,10 @@ export const createFusionContext = (
             resourceCache,
             serviceResolver,
         },
-        refs,
+        refs: {
+            ...refs,
+            headerContent: useRef<HTMLDivElement>(null),
+        },
         history,
         settings: {
             core: coreSettings,
