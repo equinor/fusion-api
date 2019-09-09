@@ -10,6 +10,10 @@ export default class OrgResourceCollection extends BaseResourceCollection {
         return combineUrls(this.getBaseUrl(), 'projects', projectId);
     }
 
+    projectQuery(query: string){
+        return combineUrls(this.getBaseUrl(), `projects?query=${query}`);
+    }
+
     positions(projectId: string) {
         return combineUrls(this.getBaseUrl(), 'projects', projectId, 'positions');
     }
