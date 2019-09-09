@@ -2,6 +2,7 @@ import BaseApiClient from './BaseApiClient';
 import { FusionApiHttpErrorResponse } from './models/common/FusionApiHttpErrorResponse';
 import Position from './models/org/Position';
 import OrgProject from './models/org/OrgProject';
+import { combineUrls } from '../../utils/url';
 
 export default class OrgClient extends BaseApiClient {
     async getProjectAsync(projectId: string) {
@@ -31,18 +32,48 @@ export default class OrgClient extends BaseApiClient {
         });
     }
 
+    // TODO: Replaced with the commented method below when backend is ready
     async updatePositionAsync(projectId: string, position: Position) {
-        const url = this.resourceCollections.org.position(projectId, position.id);
-        return await this.httpClient.putAsync<Position, Position, FusionApiHttpErrorResponse>(
-            url,
-            position,
-            {
-                headers: {
-                    'api-version': '2.0',
-                },
-            }
-        );
+        const isSupport = position.properties.isSupport === true;
+        const parentPositionId = position.parentPositionId;
+
+        if (parentPositionId) {
+            await this.httpClient.postAsync<null, Position, FusionApiHttpErrorResponse>(
+                combineUrls(
+                    this.resourceCollections.org.position(projectId, position.id, false),
+                    'parentPositionId',
+                    parentPositionId
+                ),
+                null
+            );
+        }
+
+        type UpdatePositionBody = {
+            isSupport: boolean;
+        };
+
+        return await this.httpClient.patchAsync<
+            UpdatePositionBody,
+            Position,
+            FusionApiHttpErrorResponse
+        >(this.resourceCollections.org.position(projectId, position.id), {
+            isSupport,
+        });
     }
+
+    // TODO: Backend not implemented for v2.0 yet
+    // async updatePositionAsync(projectId: string, position: Position) {
+    //     const url = this.resourceCollections.org.position(projectId, position.id);
+    //     return await this.httpClient.putAsync<Position, Position, FusionApiHttpErrorResponse>(
+    //         url,
+    //         position,
+    //         {
+    //             headers: {
+    //                 'api-version': '2.0',
+    //             },
+    //         }
+    //     );
+    // }
 
     async getRoleDescriptionAsync(projectId: string, positionId: string) {
         const url = this.resourceCollections.org.roleDescription(projectId, positionId);
@@ -56,9 +87,7 @@ export default class OrgClient extends BaseApiClient {
     }
 
     async getBasePositionRoleDescriptionAsync(basePositionId: string) {
-        const url = this.resourceCollections.org.basePositionRoleDescription(
-            basePositionId
-        );
+        const url = this.resourceCollections.org.basePositionRoleDescription(basePositionId);
         return await this.httpClient.getAsync<string, FusionApiHttpErrorResponse>(
             url,
             null,
