@@ -10,6 +10,7 @@ type Position = {
     instances: PositionInstance[];
     properties: {
         isSupport?: boolean;
+        hideInTree?: boolean;
     };
     directChildCount: number;
     totalChildCount: number;
