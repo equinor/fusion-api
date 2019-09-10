@@ -23,7 +23,7 @@ export default class FusionClient extends BaseApiClient {
         const url = this.resourceCollections.fusion.appIcon(appKey);
         return await this.httpClient.getAsync<string, Error>(
             url,
-            null,
+            { credentials: 'include' },
             async (response: Response) => {
                 return await response.text();
             }
