@@ -18,13 +18,13 @@ export default class AuthNonce {
     static createNew(app: AuthApp): AuthNonce {
         const id = uuid();
         const nonce = new AuthNonce(id, app.clientId);
-        sessionStorage.setItem(AuthNonce.createCacheKey(nonce.key), nonce.toString());
+        localStorage.setItem(AuthNonce.createCacheKey(nonce.key), nonce.toString());
         return nonce;
     }
 
     static resolve(key: string): AuthNonce {
         const cacheKey = AuthNonce.createCacheKey(key);
-        const value = sessionStorage.getItem(cacheKey);
+        const value = localStorage.getItem(cacheKey);
 
         if (!value) {
             throw new FusionNonceNotFoundError(key);
@@ -32,7 +32,7 @@ export default class AuthNonce {
 
         const nonce = new AuthNonce(key, value);
 
-        sessionStorage.removeItem(cacheKey);
+        localStorage.removeItem(cacheKey);
 
         return nonce;
     }
