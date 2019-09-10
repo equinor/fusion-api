@@ -94,8 +94,8 @@ export default class AuthContainer implements IAuthContainer {
             await this.updateTokenForAppAsync(app, token);
             window.location.hash = '';
         } catch (e) {
+            console.error(e);
             throw new FusionAuthLoginError();
-            // Log?
         }
     }
 
