@@ -29,7 +29,7 @@ export default class PeopleClient extends BaseApiClient {
     constructor(httpClient: IHttpClient, resourceCollection: ResourceCollections) {
         super(httpClient, resourceCollection);
 
-        httpClient.getAsync(resourceCollection.people.apiSignin(), { credentials: 'include' });
+        httpClient.getAsync<void,unknown>(resourceCollection.people.apiSignin(), { credentials: 'include' }, async () => Promise.resolve());
     }
 
     async getPersonDetailsAsync(id: string, oDataExpand?: PersonODataExpand[]) {
