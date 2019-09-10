@@ -66,6 +66,7 @@ export {
     PositionInstance,
     AssignedPerson,
     PositionLocation,
+    FusionProject,
 } from './http/apiClients/models/org/OrgProject';
 export {
     default as PersonDetails,
