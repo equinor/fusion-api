@@ -108,7 +108,7 @@ export default class OrgClient extends BaseApiClient {
     }
 
     async canEditPosition(projectId: string, positionId: string) {
-        const url = this.resourceCollections.org.position(projectId, positionId);
+        const url = this.resourceCollections.org.position(projectId, positionId, false);
 
         try {
             const response = await this.httpClient.optionsAsync<void, FusionApiHttpErrorResponse>(
@@ -122,7 +122,7 @@ export default class OrgClient extends BaseApiClient {
             );
 
             const allowHeader = response.headers.get('Allow');
-            if (allowHeader !== null && allowHeader.indexOf('POST') !== -1) {
+            if (allowHeader !== null && allowHeader.indexOf('PUT') !== -1) {
                 return true;
             }
 
