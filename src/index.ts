@@ -29,6 +29,11 @@ export { default as ApiClients, createApiClients } from './http/apiClients';
 export { default as useCoreSettings } from './settings/useCoreSettings';
 export { default as useAppSettings } from './settings/useAppSettings';
 
+export {
+    FusionApiHttpErrorResponse,
+    FusionApiErrorMessage,
+} from './http/apiClients/models/common/FusionApiHttpErrorResponse';
+
 export { Context, ContextType, ContextTypes } from './http/apiClients/models/context';
 export { useContextManager, useCurrentContext, useContextQuery } from './core/ContextManager';
 
