@@ -45,6 +45,7 @@ export default class OrgClient extends BaseApiClient {
             {
                 headers: {
                     'api-version': '2.0',
+                    'Content-Type': 'application/json',
                 },
             }
         );
