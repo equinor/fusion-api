@@ -56,6 +56,9 @@ export {
     useTaskTypes,
     useTaskPrioritySetter,
 } from './core/TasksContainer';
+
+export { usePeopleContainer, usePersonDetails, usePersonImage } from './core/PeopleContainer';
+
 export {
     default as Task,
     TaskType,
@@ -130,4 +133,3 @@ export * from './intl/DateTime';
 export * from './intl/Number';
 
 export * from './http/hooks/dataProxy/useHandover';
-export * from './http/hooks/people/usePersonDetails';

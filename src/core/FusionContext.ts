@@ -14,6 +14,7 @@ import ContextManager from './ContextManager';
 import AbortControllerManager from '../utils/AbortControllerManager';
 import TasksContainer from './TasksContainer';
 import NotificationCenter from './NotificationCenter';
+import PeopleContainer from './PeopleContainer';
 
 export type Auth = {
     container: IAuthContainer;
@@ -64,6 +65,7 @@ export interface IFusionContext {
     tasksContainer: TasksContainer;
     abortControllerManager: AbortControllerManager;
     notificationCenter: NotificationCenter;
+    peopleContainer: PeopleContainer;
 }
 
 export type CoreSettings = {
@@ -131,6 +133,7 @@ export const createFusionContext = (
     const contextManager = new ContextManager(apiClients, contextId);
     const tasksContainer = new TasksContainer(apiClients);
     const notificationCenter = new NotificationCenter();
+    const peopleContainer = new PeopleContainer(apiClients, resourceCollections);
 
     return {
         auth: { container: authContainer },
@@ -157,6 +160,7 @@ export const createFusionContext = (
         tasksContainer,
         abortControllerManager,
         notificationCenter,
+        peopleContainer,
     };
 };
 
