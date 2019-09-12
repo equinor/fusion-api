@@ -25,6 +25,14 @@ export default class PeopleContainer {
         this.resourceCollection = resourceCollections.people;
     }
 
+    getPersonDetails(personId: string): PersonDetails | null {
+        if (this.persons[personId]) {
+            return this.persons[personId];
+        }
+
+        return null;
+    }
+
     async getPersonDetailsAsync(personId: string): Promise<PersonDetails> {
         const cachedPerson = this.persons[personId];
 
@@ -41,6 +49,14 @@ export default class PeopleContainer {
         this.persons[personId] = response.data;
 
         return this.persons[personId];
+    }
+
+    getPersonImage(personId: string): HTMLImageElement | null {
+        if (this.images[personId]) {
+            return this.images[personId];
+        }
+
+        return null;
     }
 
     async getPersonImageAsync(personId: string): Promise<HTMLImageElement> {
@@ -70,7 +86,9 @@ const usePersonDetails = (personId: string) => {
 
     const [isFetching, setFetching] = React.useState<boolean>(false);
     const [error, setError] = React.useState(null);
-    const [personDetails, setPersonDetails] = React.useState<PersonDetails | null>();
+    const [personDetails, setPersonDetails] = React.useState<PersonDetails | null>(
+        peopleContainer.getPersonDetails(personId)
+    );
 
     const getPersonAsync = async (personId: string) => {
         try {
@@ -97,11 +115,27 @@ const usePersonDetails = (personId: string) => {
 const usePersonImageUrl = (personId: string) => {
     const peopleContainer = usePeopleContainer();
 
+    const getCachedPersonImageUrl = React.useCallback((personId: string) => {
+        const personImage = peopleContainer.getPersonImage(personId);
+
+        if (personImage) {
+            return personImage.src;
+        }
+
+        return '';
+    }, []);
+
     const [isFetching, setFetching] = React.useState<boolean>(false);
     const [error, setError] = React.useState(null);
-    const [imageUrl, setImageUrl] = React.useState<string>('');
+    const [imageUrl, setImageUrl] = React.useState<string>(getCachedPersonImageUrl(personId));
 
     const getImageAsync = async (personId: string) => {
+        const cachedImageUrl = getCachedPersonImageUrl(personId);
+
+        if (cachedImageUrl !== '') {
+            return cachedImageUrl;
+        }
+
         try {
             setFetching(true);
 
