@@ -66,13 +66,17 @@ export default class PeopleContainer {
             return cachedImage;
         }
 
-        const urlToImage = this.resourceCollection.getPersonPhoto(personId);
-        const image = new Image();
-        image.src = urlToImage;
+        return new Promise((resolve, reject) => {
+            const urlToImage = this.resourceCollection.getPersonPhoto(personId);
+            const image = new Image();
+            image.src = urlToImage;
 
-        this.images[personId] = image;
-
-        return image;
+            image.onerror = () => reject(`Could not load image ${urlToImage}.`);
+            image.onload = () => {
+                this.images[personId] = image;
+                resolve(image);
+            };
+        });
     }
 }
 
