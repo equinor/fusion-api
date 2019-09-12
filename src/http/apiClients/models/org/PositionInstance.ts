@@ -6,7 +6,7 @@ type PositionInstanceType = 'Normal';
 type PositionInstance = {
     id: string;
     obs: string;
-    percent: number;
+    workload: number;
     appliesFrom: Date;
     appliesTo: Date;
     type: PositionInstanceType; // Normal/Offshore/Vacation etc.
