@@ -57,7 +57,7 @@ export {
     useTaskPrioritySetter,
 } from './core/TasksContainer';
 
-export { usePeopleContainer, usePersonDetails, usePersonImage } from './core/PeopleContainer';
+export { usePeopleContainer, usePersonDetails, usePersonImageUrl } from './core/PeopleContainer';
 
 export {
     default as Task,

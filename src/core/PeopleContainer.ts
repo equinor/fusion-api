@@ -3,6 +3,7 @@ import ApiClients from '../http/apiClients';
 import PeopleResourceCollection from '../http/resourceCollections/PeopleResourceCollection';
 import ResourceCollections from '../http/resourceCollections';
 import { useFusionContext } from './FusionContext';
+import * as React from 'react';
 
 interface IPersonImage {
     [personId: string]: HTMLImageElement;
@@ -24,7 +25,7 @@ export default class PeopleContainer {
         this.resourceCollection = resourceCollections.people;
     }
 
-    async getPersonDetails(personId: string): Promise<PersonDetails> {
+    async getPersonDetailsAsync(personId: string): Promise<PersonDetails> {
         const cachedPerson = this.persons[personId];
 
         if (cachedPerson) {
@@ -42,7 +43,7 @@ export default class PeopleContainer {
         return this.persons[personId];
     }
 
-    async getPersonImage(personId: string): Promise<HTMLImageElement> {
+    async getPersonImageAsync(personId: string): Promise<HTMLImageElement> {
         const cachedImage = this.images[personId];
 
         if (cachedImage) {
@@ -66,19 +67,60 @@ const usePeopleContainer = () => {
 
 const usePersonDetails = (personId: string) => {
     const peopleContainer = usePeopleContainer();
-    return peopleContainer.getPersonDetails(personId);
+
+    const [isFetching, setFetching] = React.useState<boolean>(false);
+    const [error, setError] = React.useState(null);
+    const [personDetails, setPersonDetails] = React.useState<PersonDetails | null>();
+
+    const getPersonAsync = async (personId: string) => {
+        try {
+            setFetching(true);
+
+            const personDetails = await peopleContainer.getPersonDetailsAsync(personId);
+
+            setPersonDetails(personDetails);
+            setFetching(false);
+        } catch (error) {
+            setError(error);
+            setPersonDetails(null);
+            setFetching(false);
+        }
+    };
+
+    React.useEffect(() => {
+        getPersonAsync(personId);
+    }, [personId]);
+
+    return { isFetching, error, personDetails };
 };
 
-const usePersonImage = (personId?: string, person?: PersonDetails) => {
+const usePersonImageUrl = (personId: string) => {
     const peopleContainer = usePeopleContainer();
 
-    if (personId) {
-        return peopleContainer.getPersonImage(personId);
-    } else if (person) {
-        return peopleContainer.getPersonImage(person.azureUniqueId);
-    } else {
-        throw new Error('You must specify at least one of personId or person');
-    }
+    const [isFetching, setFetching] = React.useState<boolean>(false);
+    const [error, setError] = React.useState(null);
+    const [imageUrl, setImageUrl] = React.useState<string>('');
+
+    const getImageAsync = async (personId: string) => {
+        try {
+            setFetching(true);
+
+            const image = await peopleContainer.getPersonImageAsync(personId);
+
+            setImageUrl(image.src);
+            setFetching(false);
+        } catch (error) {
+            setFetching(false);
+            setError(error);
+            setImageUrl('');
+        }
+    };
+
+    React.useEffect(() => {
+        getImageAsync(personId);
+    }, [personId]);
+
+    return { isFetching, error, imageUrl };
 };
 
-export { usePeopleContainer, usePersonDetails, usePersonImage };
+export { usePeopleContainer, usePersonDetails, usePersonImageUrl };
