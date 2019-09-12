@@ -26,6 +26,14 @@ export default class PeopleResourceCollection extends BaseResourceCollection {
         return combineUrls(this.getBaseUrl(), 'persons', id, 'photo');
     }
 
+    roleDefinitions() {
+        return combineUrls(this.getBaseUrl(), 'roles');
+    }
+
+    groupRoleMappings() {
+        return combineUrls(this.getBaseUrl(), 'roles', 'mappings');
+    }
+
     searchPersons(query: string): string {
         const oDataQuery = buildQuery({ search: query });
         const url = combineUrls(this.getBaseUrl(), 'persons');

@@ -85,6 +85,9 @@ export {
     PersonCompany,
 } from './http/apiClients/models/people/PersonDetails';
 
+export { default as RoleDefinition } from './http/apiClients/models/people/RoleDefinition';
+export { default as GroupRoleMapping } from './http/apiClients/models/people/GroupRoleMapping';
+
 export { default as useApiClient } from './http/hooks/useApiClient';
 export { default as useApiClients } from './http/hooks/useApiClients';
 
