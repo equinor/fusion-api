@@ -1,25 +1,23 @@
 import version from '../../version';
 
-const defaultHeaders = new Headers({
+const defaultHeaders: { [key: string]: string } = {
     Accept: 'application/json',
     'Content-Type': 'application/json',
     'x-fusion-api-version': version,
-});
+};
 
 type RequestInitTransformer = (init: RequestInit) => RequestInit;
 
 export default (init?: RequestInit | null, transform?: RequestInitTransformer): RequestInit => {
+    const headers = new Headers(init && init.headers ? init.headers : new Headers());
     init = {
         ...init,
-        headers: new Headers(
-            init
-                ? {
-                      ...defaultHeaders,
-                      ...init.headers,
-                  }
-                : { ...defaultHeaders }
-        ),
+        headers,
     };
+
+    for (let key in defaultHeaders) {
+        headers.append(key, defaultHeaders[key]);
+    }
 
     if (typeof transform === 'undefined') {
         return init;
