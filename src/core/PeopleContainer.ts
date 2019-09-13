@@ -135,7 +135,8 @@ const usePersonImageUrl = (personId: string) => {
         const cachedImageUrl = getCachedPersonImageUrl(personId);
 
         if (cachedImageUrl !== '') {
-            return cachedImageUrl;
+            setImageUrl(cachedImageUrl);
+            return;
         }
 
         try {
