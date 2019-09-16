@@ -1,10 +1,10 @@
 import BasePosition from "./BasePosition";
 
-type PositionFoundation = {
+type PositionRef = {
     id: string;
     externalId: string;
     name: string;
     parentPositionId: string | null;
     basePosition: BasePosition;
 }
-export default PositionFoundation;
+export default PositionRef;
