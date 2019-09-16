@@ -1,12 +1,7 @@
-import BasePosition from './BasePosition';
 import PositionInstance from './PositionInstance';
+import PositionRef from './PositionRef';
 
-type Position = {
-    id: string;
-    externalId: string;
-    name: string;
-    parentPositionId: string | null;
-    basePosition: BasePosition;
+type Position = PositionRef & {
     instances: PositionInstance[];
     properties: {
         isSupport?: boolean;
@@ -16,7 +11,7 @@ type Position = {
     totalChildCount: number;
     projectId: string;
     contractId: string | null;
-    reportsTo?: Position[];
+    reportsTo?: PositionRef[];
 };
 
 export default Position;
