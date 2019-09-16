@@ -75,7 +75,6 @@ export {
     AssignedPerson,
     PositionLocation,
     FusionProject,
-    PositionRef
 } from './http/apiClients/models/org/OrgProject';
 export {
     default as PersonDetails,
