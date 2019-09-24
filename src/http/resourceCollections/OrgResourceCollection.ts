@@ -20,7 +20,7 @@ export default class OrgResourceCollection extends BaseResourceCollection {
         if (!expandProperties || !expandProperties.length) {
             return url;
         }
-        const query = `?$expand=${expandProperties.join(', ')}`;
+        const query = `?$expand=${expandProperties.join(',')}`;
         return `${url}${query}`;
     }
 
