@@ -19,8 +19,8 @@ export default class OrgClient extends BaseApiClient {
         return await this.httpClient.getAsync<FusionProject[], FusionApiHttpErrorResponse>(url);
     }
 
-    async getPositionsAsync(projectId: string) {
-        const url = this.resourceCollections.org.positions(projectId);
+    async getPositionsAsync(projectId: string, expandProperties?: string[]) {
+        const url = this.resourceCollections.org.positions(projectId, expandProperties);
         return await this.httpClient.getAsync<Position[], FusionApiHttpErrorResponse>(url, {
             headers: {
                 'api-version': '2.0',
