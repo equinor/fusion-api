@@ -10,12 +10,18 @@ export default class OrgResourceCollection extends BaseResourceCollection {
         return combineUrls(this.getBaseUrl(), 'projects', projectId);
     }
 
-    projectQuery(query: string){
+    projectQuery(query: string) {
         return combineUrls(this.getBaseUrl(), `projects?query=${query}`);
     }
 
-    positions(projectId: string) {
-        return combineUrls(this.getBaseUrl(), 'projects', projectId, 'positions');
+    positions(projectId: string, expandProperties?: string[]) {
+        const url = combineUrls(this.getBaseUrl(), 'projects', projectId, 'positions');
+
+        if (!expandProperties || !expandProperties.length) {
+            return url;
+        }
+        const query = `?$expand=${expandProperties.join(', ')}`;
+        return `${url}${query}`;
     }
 
     position(projectId: string, positionId: string, expand: boolean = true) {
