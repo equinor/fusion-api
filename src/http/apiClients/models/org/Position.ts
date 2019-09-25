@@ -19,7 +19,6 @@ type Position = {
     reportsTo?: Position[];
     taskOwners?: Position[];
     disciplineManagerId: string | null;
-    disciplineManager?: Position[];
 };
 
 export default Position;
