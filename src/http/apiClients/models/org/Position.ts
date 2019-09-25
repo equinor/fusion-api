@@ -18,7 +18,6 @@ type Position = {
     contractId: string | null;
     reportsTo?: Position[];
     taskOwners?: Position[];
-    disciplineManagerId: string | null;
 };
 
 export default Position;
