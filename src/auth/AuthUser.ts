@@ -1,4 +1,4 @@
-import AuthToken from "./AuthToken";
+import AuthToken from './AuthToken';
 import JSON from '../utils/JSON';
 
 class UserTokenMissmatchError extends Error {}
@@ -36,10 +36,10 @@ export default class AuthUser {
     }
 
     private _id: string;
-    private _fullName: string = "";
-    private _givenName: string = "";
-    private _familyName: string = "";
-    private _upn: string = "";
+    private _fullName: string = '';
+    private _givenName: string = '';
+    private _familyName: string = '';
+    private _upn: string = '';
     private _roles: string[] = [];
 
     get id(): string {
@@ -75,12 +75,14 @@ export default class AuthUser {
         this._givenName = token.givenName;
         this._familyName = token.familyName;
         this._upn = token.upn;
-
-        token.roles.forEach(role => {
-            if (this._roles.indexOf(role) === -1) {
-                this._roles.push(role);
-            }
-        });
+        
+        if (token.roles) {
+            token.roles.forEach(role => {
+                if (this._roles.indexOf(role) === -1) {
+                    this._roles.push(role);
+                }
+            });
+        }
     }
 
     toObject(): AuthUserJSON {
