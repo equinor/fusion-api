@@ -1,1 +1,1 @@
-export default '0.4.35';
+"export default '$npm_package_version';"  
