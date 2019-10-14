@@ -1,6 +1,5 @@
 import BaseResourceCollection from './BaseResourceCollection';
 import {
-    AccumulatedContainer,
     HandoverMcpkg,
     HandoverWorkOrder,
     HandoverUnsignedTask,
@@ -10,16 +9,23 @@ import {
     HandoverDetails,
     HandoverNCR,
     HandoverQuery,
+    AccumulatedMCCRContainer,
+    AccumulatedCommpkgContainer,
+    AccumulatedPunchContainer,
+    AccumulatedProductivityContainer,
+    AccumulatedWOMaterialContainer,
+    AccumulatedInstallationContainer,
+    AccumulatedEarnedPlannedContainer,
 } from '../apiClients/models/dataProxy';
 
 export type AccumulatedActions = {
-    mccr: AccumulatedContainer;
-    punch: AccumulatedContainer;
-    commpkg: AccumulatedContainer;
-    productivity: AccumulatedContainer;
-    womaterial: AccumulatedContainer;
-    installation: AccumulatedContainer;
-    earnedplanned: AccumulatedContainer;
+    mccr: AccumulatedMCCRContainer;
+    punch: AccumulatedPunchContainer;
+    commpkg: AccumulatedCommpkgContainer;
+    productivity: AccumulatedProductivityContainer;
+    womaterial: AccumulatedWOMaterialContainer;
+    installation: AccumulatedInstallationContainer;
+    earnedplanned: AccumulatedEarnedPlannedContainer;
 };
 
 export type HandoverActions = {
