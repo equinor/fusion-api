@@ -4,6 +4,7 @@ import PositionInstance from './PositionInstance';
 import AssignedPerson from './AssignedPerson';
 import PositionLocation from './PositionLocation';
 import FusionProject from './FusionProject';
+import OrgProjectType from "./OrgProjectType";
 
 type OrgProject = {
     dates: {
@@ -15,9 +16,7 @@ type OrgProject = {
     domainId: string;
     name: string;
     projectId: string;
-    projectType: {
-        typeName: 'PRD';
-    };
+    projectType: OrgProjectType
 };
 
 export {
@@ -27,6 +26,7 @@ export {
     AssignedPerson,
     PositionLocation,
     FusionProject,
+    OrgProjectType,
 };
 
 export default OrgProject;
