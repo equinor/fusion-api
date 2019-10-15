@@ -11,7 +11,7 @@ export default class OrgResourceCollection extends BaseResourceCollection {
     }
 
     projectQuery(query: string) {
-        return combineUrls(this.getBaseUrl(), `projects?query=${query}`);
+        return combineUrls(this.getBaseUrl(), `projects?search=${query}`);
     }
 
     positions(projectId: string, expandProperties?: string[]) {
