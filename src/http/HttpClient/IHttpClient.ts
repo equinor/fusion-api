@@ -55,6 +55,18 @@ export default interface IHttpClient {
     ): Promise<HttpResponse<TResponse>>;
 
     /**
+     * Perform a DELETE request
+     * @param url Request url
+     * @param init Optional request init object
+     * @param responseParser Optional response parser
+     */
+    deleteAsync<TResponse, TExpectedErrorResponse>(
+        url: string,
+        init?: RequestInit | null,
+        responseParser?: ResponseParser<TResponse>
+    ): Promise<HttpResponse<TResponse>>;
+
+    /**
      * Perform a OPTIONS request
      * @param url Request url
      * @param init Optional request init object
