@@ -1,9 +1,9 @@
-import AppManifest from "./AppManifest";
-import EventEmitter, { useEventEmitterValue } from "../utils/EventEmitter";
-import ApiClients from "../http/apiClients";
-import FusionClient from "../http/apiClients/FusionClient";
-import { useFusionContext } from "../core/FusionContext";
-import { useEffect, useState } from "react";
+import AppManifest from './AppManifest';
+import EventEmitter, { useEventEmitterValue } from '../utils/EventEmitter';
+import ApiClients from '../http/apiClients';
+import FusionClient from '../http/apiClients/FusionClient';
+import { useFusionContext } from '../core/FusionContext';
+import { useEffect, useState } from 'react';
 
 type AppRegistration = {
     AppComponent: React.ComponentType;
@@ -54,7 +54,7 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
     async setCurrentAppAsync(appKey: string | null): Promise<void> {
         if (!appKey) {
             this.currentApp = null;
-            this.emit("change", null);
+            this.emit('change', null);
             return;
         }
 
@@ -73,7 +73,7 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
         }
 
         this.currentApp = app;
-        this.emit("change", app);
+        this.emit('change', app);
     }
 
     async getAllAsync() {
@@ -106,16 +106,18 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
             this.apps = [...this.apps, app];
         }
 
-        this.emit("update", app);
+        this.emit('update', app);
     }
 }
 
-let appContainerSingleton: AppContainer | null = null;
+const global = window as any;
+
+global['EQUINOR_FUSION_APP_CONTAINER'] = null;
 
 let appContainerPromise: Promise<AppContainer> | null = null;
 let setAppContainerSingleton: ((appContainer: AppContainer) => void) | null;
 const appContainerFactory = (appContainer: AppContainer) => {
-    appContainerSingleton = appContainer;
+    global['EQUINOR_FUSION_APP_CONTAINER'] = appContainer;
 
     if (setAppContainerSingleton) {
         setAppContainerSingleton(appContainer);
@@ -124,8 +126,8 @@ const appContainerFactory = (appContainer: AppContainer) => {
 };
 
 const getAppContainer = (): Promise<AppContainer> => {
-    if (appContainerSingleton) {
-        return Promise.resolve(appContainerSingleton);
+    if (global['EQUINOR_FUSION_APP_CONTAINER']) {
+        return Promise.resolve(global['EQUINOR_FUSION_APP_CONTAINER']);
     }
 
     if (appContainerPromise) {
@@ -147,7 +149,7 @@ const registerApp = (appKey: string, manifest: AppRegistration): void => {
 
 const useCurrentApp = () => {
     const { app } = useFusionContext();
-    const [currentApp] = useEventEmitterValue(app.container, "change");
+    const [currentApp] = useEventEmitterValue(app.container, 'change');
     return currentApp;
 };
 
@@ -172,7 +174,7 @@ const useApps = (): [Error | null, boolean, AppManifest[]] => {
 
     useEffect(() => {
         fetchApps();
-        return app.container.on("update", () => setApps(app.container.getAll()));
+        return app.container.on('update', () => setApps(app.container.getAll()));
     }, []);
 
     return [error, isFetching, apps];
