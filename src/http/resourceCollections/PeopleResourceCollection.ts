@@ -40,6 +40,14 @@ export default class PeopleResourceCollection extends BaseResourceCollection {
 
         return `${url}${oDataQuery}`;
     }
+
+    roleStatusCurrentUser(roleName: string): string {
+        return combineUrls(this.getBaseUrl(), 'persons', 'me', 'roles', roleName);
+    }
+
+    roleStatus(userId: string, roleName: string): string {
+        return combineUrls(this.getBaseUrl(), 'persons', userId, 'roles', roleName);
+    }
 }
 
 export type PersonODataExpand = 'positions' | 'roles' | 'contracts';
