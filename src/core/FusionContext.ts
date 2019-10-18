@@ -15,7 +15,7 @@ import AbortControllerManager from '../utils/AbortControllerManager';
 import TasksContainer from './TasksContainer';
 import NotificationCenter from './NotificationCenter';
 import PeopleContainer from './PeopleContainer';
-import UserMenuContainer from './UserMenuSections';
+import UserMenuContainer from './UserMenuContainer';
 
 export type Auth = {
     container: IAuthContainer;

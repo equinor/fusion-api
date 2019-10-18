@@ -22,17 +22,21 @@ type SectionEvents = {
 };
 
 export default class UserMenuContainer extends EventEmitter<SectionEvents> {
-    private sections: UserMenuSection[] = [];
+    private _sections: UserMenuSection[] = [];
+
+    get sections() {
+        return [...this._sections];
+    }
 
     registerSection(section: UserMenuSection) {
-        this.sections = [...this.sections, section];
+        this._sections = [...this.sections, section];
         this.emit('change', this.sections);
 
         return () => this.unregisterSection(section);
     }
 
     private unregisterSection(section: UserMenuSection) {
-        this.sections = this.sections.filter(s => s.key !== section.key);
+        this._sections = this.sections.filter(s => s.key !== section.key);
         this.emit('change', this.sections);
     }
 }
