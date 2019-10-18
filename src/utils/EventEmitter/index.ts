@@ -62,7 +62,7 @@ export const useEventEmitterValue = <
     transform: (value: TData) => TData | null = value => value,
     defaultData: TData | null = null
 ): [TData | null, Dispatch<SetStateAction<TData | null>>] => {
-    const [value, setValue] = useState<TData | null>(null);
+    const [value, setValue] = useState<TData | null>(defaultData);
 
     useEffect(() => {
         return emitter.on(event, data => setValue(transform(data)));
