@@ -136,7 +136,7 @@ export const createFusionContext = (
     const tasksContainer = new TasksContainer(apiClients);
     const notificationCenter = new NotificationCenter();
     const peopleContainer = new PeopleContainer(apiClients, resourceCollections);
-    const userMenuSectionContainer = new UserMenuContainer();
+    const userMenuSectionsContainer = new UserMenuContainer();
 
     return {
         auth: { container: authContainer },
@@ -164,7 +164,7 @@ export const createFusionContext = (
         abortControllerManager,
         notificationCenter,
         peopleContainer,
-        userMenuSectionContainer,
+        userMenuSectionsContainer,
     };
 };
 
