@@ -126,6 +126,8 @@ export {
     useNotificationCenter,
 } from './core/NotificationCenter';
 
+export { default as UserMenuContainer, useCustomUserMenuSection } from './core/UserMenuSections';
+
 export { default as useDebouncedAbortable } from './hooks/useDebouncedAbortable';
 export { default as useDebounce } from './hooks/useDebounce';
 export { default as useEffectAsync } from './hooks/useEffectAsync';
