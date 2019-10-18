@@ -8,6 +8,7 @@ export type UserMenuSectionItem = {
     aside?: string | React.ReactNode;
     isSelected?: boolean;
     isDisabled?: boolean;
+    onClick?: (item: UserMenuSectionItem) => void;
 };
 
 export type UserMenuSection = {
