@@ -14,6 +14,7 @@ import RoleDefinition from './models/people/RoleDefinition';
 import { FusionApiHttpErrorResponse } from './models/common/FusionApiHttpErrorResponse';
 import { PersonODataExpand } from '../resourceCollections/PeopleResourceCollection';
 import GroupRoleMapping from './models/people/GroupRoleMapping';
+import RoleStatus from './models/people/RoleStatus';
 
 export {
     PersonDetails,
@@ -60,5 +61,25 @@ export default class PeopleClient extends BaseApiClient {
         return await this.httpClient.getAsync<PersonDetails[], FusionApiHttpErrorResponse>(url, {
             headers: { 'api-version': '2.0' },
         });
+    }
+
+    async setRoleStatusForCurrentUser(roleName: string, active: boolean) {
+        const url = this.resourceCollections.people.roleStatusCurrentUser(roleName);
+        return await this.httpClient.patchAsync<RoleStatus, PersonRole, FusionApiHttpErrorResponse>(
+            url,
+            {
+                isActive: active,
+            }
+        );
+    }
+
+    async setRoleStatusForUser(userId: string, roleName: string, active: boolean) {
+        const url = this.resourceCollections.people.roleStatus(userId, roleName);
+        return await this.httpClient.patchAsync<RoleStatus, PersonRole, FusionApiHttpErrorResponse>(
+            url,
+            {
+                isActive: active,
+            }
+        );
     }
 }
