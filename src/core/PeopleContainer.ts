@@ -69,7 +69,7 @@ export default class PeopleContainer extends EventEmitter<PersonContainerEvents>
         const roles = this.persons[personId].roles;
         if (roles) {
             const roleIndex = roles.findIndex(role => role.name === roleName);
-            if (roleIndex) {
+            if (roleIndex !== -1) {
                 roles[roleIndex] = response.data;
                 this.emit('updated', { ...this.persons[personId] });
             }
