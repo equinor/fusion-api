@@ -70,3 +70,17 @@ export const useEventEmitterValue = <
 
     return [value, setValue];
 };
+
+export const useEventEmitter = <
+    TEvents extends Events,
+    TKey extends keyof TEvents,
+    TData = EventHandlerParameter<TEvents, TKey>
+>(
+    emitter: EventEmitter<TEvents>,
+    event: TKey,
+    handler: (arg: TData) => void
+) => {
+    useEffect(() => {
+        return emitter.on(event, handler);
+    }, [emitter, event, handler]);
+};
