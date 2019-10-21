@@ -144,3 +144,9 @@ export * from './intl/DateTime';
 export * from './intl/Number';
 
 export * from './http/hooks/dataProxy/useHandover';
+
+export {
+    default as EventEmitter,
+    useEventEmitterValue,
+    useEventEmitter,
+} from './utils/EventEmitter';

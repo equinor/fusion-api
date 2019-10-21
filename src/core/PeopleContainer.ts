@@ -1,9 +1,10 @@
-import PeopleClient, { PersonDetails } from '../http/apiClients/PeopleClient';
+import PeopleClient, { PersonDetails, PersonRole } from '../http/apiClients/PeopleClient';
 import ApiClients from '../http/apiClients';
 import PeopleResourceCollection from '../http/resourceCollections/PeopleResourceCollection';
 import ResourceCollections from '../http/resourceCollections';
 import { useFusionContext } from './FusionContext';
 import * as React from 'react';
+import EventEmitter, { useEventEmitter } from '../utils/EventEmitter';
 
 interface IPersonImage {
     [personId: string]: HTMLImageElement;
@@ -13,7 +14,11 @@ interface IPersonDetails {
     [personId: string]: PersonDetails;
 }
 
-export default class PeopleContainer {
+type PersonContainerEvents = {
+    updated: (updatedPerson: PersonDetails) => void;
+};
+
+export default class PeopleContainer extends EventEmitter<PersonContainerEvents> {
     private peopleClient: PeopleClient;
     private resourceCollection: PeopleResourceCollection;
 
@@ -21,6 +26,7 @@ export default class PeopleContainer {
     private images: IPersonImage = {};
 
     constructor(apiClients: ApiClients, resourceCollections: ResourceCollections) {
+        super();
         this.peopleClient = apiClients.people;
         this.resourceCollection = resourceCollections.people;
     }
@@ -49,6 +55,27 @@ export default class PeopleContainer {
         this.persons[personId] = response.data;
 
         return this.persons[personId];
+    }
+
+    async setRoleStatusForUser(
+        personId: string,
+        roleName: string,
+        isActive: boolean
+    ): Promise<PersonRole> {
+        const response = await this.peopleClient.setRoleStatusForUser(personId, roleName, isActive);
+
+        if (!this.persons[personId] || !this.persons[personId].roles) return response.data;
+
+        const roles = this.persons[personId].roles;
+        if (roles) {
+            const roleIndex = roles.findIndex(role => role.name === roleName);
+            if (roleIndex) {
+                roles[roleIndex] = response.data;
+                this.emit('updated', { ...this.persons[personId] });
+            }
+        }
+
+        return response.data;
     }
 
     getPersonImage(personId: string): HTMLImageElement | null {
@@ -110,6 +137,17 @@ const usePersonDetails = (personId: string) => {
     React.useEffect(() => {
         getPersonAsync(personId);
     }, [personId]);
+
+    const updatedPersonHandler = React.useCallback(
+        (updatedPerson: PersonDetails) => {
+            if (personId === updatedPerson.azureUniqueId) {
+                setPersonDetails(updatedPerson);
+            }
+        },
+        [personId]
+    );
+
+    useEventEmitter(peopleContainer, 'updated', updatedPersonHandler);
 
     return { isFetching, error, personDetails };
 };
