@@ -68,6 +68,7 @@ export interface IFusionContext {
     notificationCenter: NotificationCenter;
     peopleContainer: PeopleContainer;
     userMenuSectionsContainer: UserMenuContainer;
+    environment: FusionEnvironment;
 }
 
 export type CoreSettings = {
@@ -82,8 +83,14 @@ type ContextRouteMatch = {
     contextId: string;
 };
 
+export type FusionEnvironment = {
+    env: string;
+    pullRequest?: string;
+};
+
 export type FusionContextOptions = {
     loadBundlesFromDisk: boolean;
+    environment: FusionEnvironment;
 };
 
 const ensureGlobalFusionContextType = () => {
@@ -105,7 +112,7 @@ export const createFusionContext = (
     authContainer: IAuthContainer,
     serviceResolver: ServiceResolver,
     refs: ExternalRefs,
-    options?: FusionContextOptions
+    options: FusionContextOptions
 ): IFusionContext => {
     const abortControllerManager = new AbortControllerManager();
     const resourceCollections = createResourceCollections(serviceResolver, options);
@@ -165,6 +172,7 @@ export const createFusionContext = (
         notificationCenter,
         peopleContainer,
         userMenuSectionsContainer,
+        environment: options.environment,
     };
 };
 
