@@ -90,7 +90,7 @@ export type FusionEnvironment = {
 
 export type FusionContextOptions = {
     loadBundlesFromDisk: boolean;
-    environment: FusionEnvironment;
+    environment?: FusionEnvironment;
 };
 
 const ensureGlobalFusionContextType = () => {
@@ -108,11 +108,21 @@ const ensureGlobalFusionContextType = () => {
 
 const FusionContext = ensureGlobalFusionContextType();
 
+const ensureFusionEnvironment = (options?: FusionContextOptions): FusionEnvironment => {
+    if (options && options.environment) {
+        return options.environment;
+    }
+
+    return {
+        env: 'ci',
+    };
+};
+
 export const createFusionContext = (
     authContainer: IAuthContainer,
     serviceResolver: ServiceResolver,
     refs: ExternalRefs,
-    options: FusionContextOptions
+    options?: FusionContextOptions
 ): IFusionContext => {
     const abortControllerManager = new AbortControllerManager();
     const resourceCollections = createResourceCollections(serviceResolver, options);
@@ -144,6 +154,7 @@ export const createFusionContext = (
     const notificationCenter = new NotificationCenter();
     const peopleContainer = new PeopleContainer(apiClients, resourceCollections);
     const userMenuSectionsContainer = new UserMenuContainer();
+    const environment = ensureFusionEnvironment(options);
 
     return {
         auth: { container: authContainer },
@@ -172,7 +183,7 @@ export const createFusionContext = (
         notificationCenter,
         peopleContainer,
         userMenuSectionsContainer,
-        environment: options.environment,
+        environment,
     };
 };
 

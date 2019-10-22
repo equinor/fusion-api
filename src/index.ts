@@ -138,7 +138,7 @@ export { default as useDebouncedAbortable } from './hooks/useDebouncedAbortable'
 export { default as useDebounce } from './hooks/useDebounce';
 export { default as useEffectAsync } from './hooks/useEffectAsync';
 export { default as useAsyncData } from './hooks/useAsyncData';
-export { default as useEnvironment } from './hooks/useEnvironment';
+export { default as useFusionEnvironment } from './hooks/useFusionEnvironment';
 
 export { Day, Month, Calendar, CalendarDate, createCalendar, isSameDate } from './utils/Calendar';
 
