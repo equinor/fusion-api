@@ -14,8 +14,8 @@ import { IAuthContainer } from '../auth/AuthContainer';
 export type TelemetryInitializer = (item: ITelemetryItem) => void | boolean;
 
 export default class TelemetryLogger {
-
-    private internalAppInsights: ApplicationInsights;
+    private isInitialized: boolean = false;
+    private readonly internalAppInsights: ApplicationInsights;
     private initializers: TelemetryInitializer[] = [];
 
     constructor(instrumentationKey: string, authContainer: IAuthContainer) {
@@ -25,8 +25,7 @@ export default class TelemetryLogger {
             },
         });
 
-        this.internalAppInsights.loadAppInsights();
-        this.trackPageView();
+        this.initializeAppInsights(instrumentationKey);        
 
         this.internalAppInsights.addTelemetryInitializer(this.telemetryInitializer);
         this.setAuthUserContextAsync(authContainer);
@@ -40,23 +39,53 @@ export default class TelemetryLogger {
     }
 
     trackEvent(event: IEventTelemetry) {
+        if(!this.isInitialized) {
+            return;
+        }
+
         this.internalAppInsights.trackEvent(event);
     }
 
     trackException(exception: IExceptionTelemetry) {
+        if(!this.isInitialized) {
+            return;
+        }
+        
         this.internalAppInsights.trackException(exception);
     }
 
     trackPageView(pageView?: IPageViewTelemetry) {
+        if(!this.isInitialized) {
+            return;
+        }
+        
         this.internalAppInsights.trackPageView(pageView);
     }
 
     trackTrace(trace: ITraceTelemetry) {
+        if(!this.isInitialized) {
+            return;
+        }
+        
         this.internalAppInsights.trackTrace(trace);
     }
 
     trackDependency(dependency: IDependencyTelemetry) {
+        if(!this.isInitialized) {
+            return;
+        }
+        
         this.internalAppInsights.trackDependencyData(dependency);
+    }
+
+    private initializeAppInsights(instrumentationKey: string) {
+        if(!instrumentationKey) {
+            return;
+        }
+
+        this.internalAppInsights.loadAppInsights();
+        this.trackPageView();
+        this.isInitialized = true;
     }
 
     private telemetryInitializer = (item: ITelemetryItem) => {

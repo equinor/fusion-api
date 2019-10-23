@@ -4,6 +4,7 @@ import ApiClients from '../http/apiClients';
 import FusionClient from '../http/apiClients/FusionClient';
 import { useFusionContext } from '../core/FusionContext';
 import { useEffect, useState } from 'react';
+import TelemetryLogger from '../utils/TelemetryLogger';
 
 type AppRegistration = {
     AppComponent: React.ComponentType;
@@ -18,10 +19,12 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
     currentApp: AppManifest | null = null;
     private apps: AppManifest[] = [];
     private readonly fusionClient: FusionClient;
+    private readonly telemetryLogger: TelemetryLogger;
 
-    constructor(apiClients: ApiClients) {
+    constructor(apiClients: ApiClients, telemetryLogger: TelemetryLogger) {
         super();
         this.fusionClient = apiClients.fusion;
+        this.telemetryLogger = telemetryLogger;
     }
 
     updateManifest(appKey: string, manifest: AppManifest): void {
@@ -71,6 +74,15 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
             await this.fusionClient.loadAppScriptAsync(appKey);
             return await this.setCurrentAppAsync(appKey);
         }
+
+        // Log custom event - new app and prev app
+        this.telemetryLogger.trackEvent({
+            name: 'App selected',
+            properties: {
+                previousApp: this.currentApp ? this.currentApp.name : null,
+                selectedApp: app.name,
+            },
+        });
 
         this.currentApp = app;
         this.emit('change', app);
