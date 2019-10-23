@@ -134,6 +134,12 @@ export {
     UserMenuSectionItem,
 } from './core/UserMenuContainer';
 
+export {
+    default as TelemetryLogger,
+    useTelemetryLogger,
+    useTelemetryInitializer,
+} from './utils/TelemetryLogger';
+
 export { default as useDebouncedAbortable } from './hooks/useDebouncedAbortable';
 export { default as useDebounce } from './hooks/useDebounce';
 export { default as useEffectAsync } from './hooks/useEffectAsync';
