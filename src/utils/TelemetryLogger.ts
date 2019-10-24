@@ -25,10 +25,7 @@ export default class TelemetryLogger {
             },
         });
 
-        this.initializeAppInsights(instrumentationKey);        
-
-        this.internalAppInsights.addTelemetryInitializer(this.telemetryInitializer);
-        this.setAuthUserContextAsync(authContainer);
+        this.initializeAppInsights(instrumentationKey, authContainer);
     }
 
     registerInitializer(initializer: TelemetryInitializer) {
@@ -78,12 +75,14 @@ export default class TelemetryLogger {
         this.internalAppInsights.trackDependencyData(dependency);
     }
 
-    private initializeAppInsights(instrumentationKey: string) {
+    private initializeAppInsights(instrumentationKey: string, authContainer: IAuthContainer) {
         if(!instrumentationKey) {
             return;
         }
 
         this.internalAppInsights.loadAppInsights();
+        this.internalAppInsights.addTelemetryInitializer(this.telemetryInitializer);
+        this.setAuthUserContextAsync(authContainer);
         this.trackPageView();
         this.isInitialized = true;
     }
