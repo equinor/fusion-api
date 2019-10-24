@@ -16,6 +16,7 @@ import TasksContainer from './TasksContainer';
 import NotificationCenter from './NotificationCenter';
 import PeopleContainer from './PeopleContainer';
 import UserMenuContainer from './UserMenuContainer';
+import TelemetryLogger from '../utils/TelemetryLogger';
 
 export type Auth = {
     container: IAuthContainer;
@@ -55,6 +56,10 @@ export type App = {
     container: AppContainer;
 };
 
+export type Logging = {
+    telemetry: TelemetryLogger;
+};
+
 export interface IFusionContext {
     auth: Auth;
     http: Http;
@@ -69,6 +74,7 @@ export interface IFusionContext {
     peopleContainer: PeopleContainer;
     userMenuSectionsContainer: UserMenuContainer;
     environment: FusionEnvironment;
+    logging: Logging;
 }
 
 export type CoreSettings = {
@@ -88,9 +94,14 @@ export type FusionEnvironment = {
     pullRequest?: string;
 };
 
+export type TelemetryOptions = {
+    instrumentationKey: string;
+}
+
 export type FusionContextOptions = {
     loadBundlesFromDisk: boolean;
     environment?: FusionEnvironment;
+    telemetry?: TelemetryOptions;
 };
 
 const ensureGlobalFusionContextType = () => {
@@ -123,12 +134,13 @@ export const createFusionContext = (
     serviceResolver: ServiceResolver,
     refs: ExternalRefs,
     options?: FusionContextOptions
-): IFusionContext => {
+    ): IFusionContext => {
+    const telemetryLogger = new TelemetryLogger(options && options.telemetry ? options.telemetry.instrumentationKey : '', authContainer);
     const abortControllerManager = new AbortControllerManager();
     const resourceCollections = createResourceCollections(serviceResolver, options);
 
     const resourceCache = new ResourceCache();
-    const httpClient = new HttpClient(authContainer, resourceCache, abortControllerManager);
+    const httpClient = new HttpClient(authContainer, resourceCache, abortControllerManager, telemetryLogger);
     const apiClients = createApiClients(httpClient, resourceCollections);
 
     const history = createBrowserHistory();
@@ -184,6 +196,9 @@ export const createFusionContext = (
         peopleContainer,
         userMenuSectionsContainer,
         environment,
+        logging: {
+            telemetry: telemetryLogger,
+        },
     };
 };
 

@@ -24,8 +24,9 @@
     },
     "homepage": "https://github.com/equinor/fusion#readme",
     "dependencies": {
-        "uuid": "^3.3.3",
-        "odata-query": "^5.7.0"
+        "@microsoft/applicationinsights-web": "^2.3.0",
+        "odata-query": "^5.7.0",
+        "uuid": "^3.3.3"
     },
     "devDependencies": {
         "@types/history": "^4.7.3",

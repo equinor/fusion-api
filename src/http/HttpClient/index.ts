@@ -13,6 +13,7 @@ import ensureRequestInit from './ensureRequestInit';
 import { useFusionContext } from '../../core/FusionContext';
 import RequestBody from '../models/RequestBody';
 import JSON from '../../utils/JSON';
+import TelemetryLogger from '../../utils/TelemetryLogger';
 
 // Export interface, response and error types
 export {
@@ -27,6 +28,7 @@ export default class HttpClient implements IHttpClient {
     private authContainer: IAuthContainer;
     private resourceCache: ResourceCache;
     private abortControllerManager: AbortControllerManager;
+    private telemetryLogger: TelemetryLogger;
 
     private requestsInProgress: { [key: string]: Promise<HttpResponse<any>> } = {};
     private sessionId = uuid();
@@ -34,11 +36,13 @@ export default class HttpClient implements IHttpClient {
     constructor(
         authContainer: IAuthContainer,
         resourceCache: ResourceCache,
-        abortControllerManager: AbortControllerManager
+        abortControllerManager: AbortControllerManager,
+        telemetryLogger: TelemetryLogger
     ) {
         this.authContainer = authContainer;
         this.resourceCache = resourceCache;
         this.abortControllerManager = abortControllerManager;
+        this.telemetryLogger = telemetryLogger;
     }
 
     async getAsync<TResponse, TExpectedErrorResponse>(
@@ -174,8 +178,6 @@ export default class HttpClient implements IHttpClient {
 
             const response = await fetch(url, options);
 
-            // TODO: Track dependency with app insight
-
             if (!response.ok) {
                 // Add more info
                 const errorResponse = await this.parseResponseJSONAsync<TExpectedErrorResponse>(
@@ -192,6 +194,8 @@ export default class HttpClient implements IHttpClient {
                 // TODO: Update cache status?
                 throw error;
             }
+
+            this.telemetryLogger.trackException({ exception: error });
 
             // Add more info
             throw error as HttpClientError;
