@@ -76,6 +76,7 @@ export interface IFusionContext {
     userMenuSectionsContainer: UserMenuContainer;
     environment: FusionEnvironment;
     logging: Logging;
+    options?: FusionContextOptions;
 }
 
 export type CoreSettings = {
@@ -97,7 +98,7 @@ export type FusionEnvironment = {
 
 export type TelemetryOptions = {
     instrumentationKey: string;
-}
+};
 
 export type FusionContextOptions = {
     loadBundlesFromDisk: boolean;
@@ -105,17 +106,24 @@ export type FusionContextOptions = {
     telemetry?: TelemetryOptions;
 };
 
+const globalEquinorFusionContextKey = '74b1613f-f22a-451b-a5c3-1c9391e91e68';
+
+const win = window as any;
+
 const ensureGlobalFusionContextType = () => {
-    const win = window as any;
-    const key = 'EQUINOR_FUSION_CONTEXT';
-
-    if (typeof win[key] !== undefined && win[key]) {
-        return win[key] as React.Context<IFusionContext>;
+    if (!win[globalEquinorFusionContextKey]) {
+        return createContext<IFusionContext>({} as IFusionContext);
     }
+    const existingFusionContext = win[globalEquinorFusionContextKey] as IFusionContext;
 
-    const fusionContext = createContext<IFusionContext>({} as IFusionContext);
-    win[key] = fusionContext;
-    return fusionContext;
+    return createContext<IFusionContext>(
+        createFusionContext(
+            existingFusionContext.auth.container,
+            existingFusionContext.http.serviceResolver,
+            existingFusionContext.refs,
+            existingFusionContext.options
+        )
+    );
 };
 
 const FusionContext = ensureGlobalFusionContextType();
@@ -135,13 +143,21 @@ export const createFusionContext = (
     serviceResolver: ServiceResolver,
     refs: ExternalRefs,
     options?: FusionContextOptions
-    ): IFusionContext => {
-    const telemetryLogger = new TelemetryLogger(options && options.telemetry ? options.telemetry.instrumentationKey : '', authContainer);
+): IFusionContext => {
+    const telemetryLogger = new TelemetryLogger(
+        options && options.telemetry ? options.telemetry.instrumentationKey : '',
+        authContainer
+    );
     const abortControllerManager = new AbortControllerManager();
     const resourceCollections = createResourceCollections(serviceResolver, options);
 
     const resourceCache = new ResourceCache();
-    const httpClient = new HttpClient(authContainer, resourceCache, abortControllerManager, telemetryLogger);
+    const httpClient = new HttpClient(
+        authContainer,
+        resourceCache,
+        abortControllerManager,
+        telemetryLogger
+    );
     const apiClients = createApiClients(httpClient, resourceCollections);
 
     const history = createBrowserHistory();
@@ -169,7 +185,7 @@ export const createFusionContext = (
     const userMenuSectionsContainer = new UserMenuContainer(new EventHub());
     const environment = ensureFusionEnvironment(options);
 
-    return {
+    const fusionContext = {
         auth: { container: authContainer },
         http: {
             client: httpClient,
@@ -200,7 +216,12 @@ export const createFusionContext = (
         logging: {
             telemetry: telemetryLogger,
         },
+        options,
     };
+    if (!win[globalEquinorFusionContextKey]) {
+        win[globalEquinorFusionContextKey] = fusionContext;
+    }
+    return fusionContext;
 };
 
 export const useFusionContext = () => useContext(FusionContext);
