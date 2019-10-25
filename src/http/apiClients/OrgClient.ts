@@ -39,7 +39,7 @@ export default class OrgClient extends BaseApiClient {
 
     async updatePositionAsync(projectId: string, position: Position) {
         const url = this.resourceCollections.org.position(projectId, position.id, false);
-        return await this.httpClient.putAsync<Position, void, FusionApiHttpErrorResponse>(
+        return await this.httpClient.putAsync<Position, Position, FusionApiHttpErrorResponse>(
             url,
             position,
             {
@@ -47,8 +47,7 @@ export default class OrgClient extends BaseApiClient {
                     'api-version': '2.0',
                     'Content-Type': 'application/json',
                 },
-            },
-            () => Promise.resolve()
+            }
         );
     }
 
