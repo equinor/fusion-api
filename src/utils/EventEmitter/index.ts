@@ -17,6 +17,13 @@ export type Events = {
     [key: string]: (arg: any) => void;
 };
 
+export interface IEventEmitter<TEvents extends Events> {
+    on<TKey extends keyof TEvents>(
+        key: TKey,
+        handler: (arg: EventHandlerParameter<TEvents, TKey>) => void
+    ): () => void ;
+}
+
 export default abstract class EventEmitter<TEvents extends Events> {
     private handlers: Handler<TEvents>[] = [];
 

@@ -155,6 +155,10 @@ export * from './http/hooks/dataProxy/useHandover';
 
 export {
     default as EventEmitter,
+    IEventEmitter,
     useEventEmitterValue,
     useEventEmitter,
 } from './utils/EventEmitter';
+
+export { default as EventHub, IEventHub } from './utils/EventHub';
+export { default as DistributedState, IDistributedState } from './utils/DistributedState';

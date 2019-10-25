@@ -17,6 +17,7 @@ import NotificationCenter from './NotificationCenter';
 import PeopleContainer from './PeopleContainer';
 import UserMenuContainer from './UserMenuContainer';
 import TelemetryLogger from '../utils/TelemetryLogger';
+import EventHub from '../utils/EventHub';
 
 export type Auth = {
     container: IAuthContainer;
@@ -165,7 +166,7 @@ export const createFusionContext = (
     const tasksContainer = new TasksContainer(apiClients);
     const notificationCenter = new NotificationCenter();
     const peopleContainer = new PeopleContainer(apiClients, resourceCollections);
-    const userMenuSectionsContainer = new UserMenuContainer();
+    const userMenuSectionsContainer = new UserMenuContainer(new EventHub());
     const environment = ensureFusionEnvironment(options);
 
     return {
