@@ -77,6 +77,10 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
             return await this.setCurrentAppAsync(appKey);
         }
 
+        if(this.currentApp) {
+            this.previousApp = this.currentApp;
+        }
+
         // Log custom event - new app and prev app
         this.telemetryLogger.trackEvent({
             name: 'App selected',
