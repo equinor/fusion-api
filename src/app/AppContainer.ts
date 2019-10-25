@@ -5,6 +5,8 @@ import FusionClient from '../http/apiClients/FusionClient';
 import { useFusionContext } from '../core/FusionContext';
 import { useEffect, useState } from 'react';
 import TelemetryLogger from '../utils/TelemetryLogger';
+import DistributedState,{ IDistributedState }  from '../utils/DistributedState';
+import { IEventHub } from 'src/utils/EventHub';
 
 type AppRegistration = {
     AppComponent: React.ComponentType;
@@ -16,15 +18,19 @@ type AppContainerEvents = {
 };
 
 export default class AppContainer extends EventEmitter<AppContainerEvents> {
-    currentApp: AppManifest | null = null;
-    private apps: AppManifest[] = [];
+    currentApp: IDistributedState<AppManifest | null> = null;
+    private apps: IDistributedState<AppManifest[]> = [];
     private readonly fusionClient: FusionClient;
     private readonly telemetryLogger: TelemetryLogger;
 
-    constructor(apiClients: ApiClients, telemetryLogger: TelemetryLogger) {
+    constructor(apiClients: ApiClients, telemetryLogger: TelemetryLogger, eventHub : IEventHub) {
         super();
         this.fusionClient = apiClients.fusion;
         this.telemetryLogger = telemetryLogger;
+        this.currentApp = new DistributedState<AppManifest | null>('currentApp',null,eventHub)
+        this.currentApp.on('change',(updatedApp:AppManifest | null) => {
+            this.emit('change',updatedApp)
+        })
     }
 
     updateManifest(appKey: string, manifest: AppManifest): void {
