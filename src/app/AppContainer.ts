@@ -16,6 +16,7 @@ type AppContainerEvents = {
 };
 
 export default class AppContainer extends EventEmitter<AppContainerEvents> {
+    previousApp: AppManifest | null = null;
     currentApp: AppManifest | null = null;
     private apps: AppManifest[] = [];
     private readonly fusionClient: FusionClient;
@@ -56,6 +57,7 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
 
     async setCurrentAppAsync(appKey: string | null): Promise<void> {
         if (!appKey) {
+            this.previousApp = this.currentApp;
             this.currentApp = null;
             this.emit('change', null);
             return;
@@ -79,8 +81,8 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
         this.telemetryLogger.trackEvent({
             name: 'App selected',
             properties: {
-                previousApp: this.currentApp ? this.currentApp.name : null,
-                selectedApp: app.name,
+                previousApp: this.previousApp ? this.previousApp.name : null,
+                currentApp: app.name,
             },
         });
 
@@ -161,7 +163,7 @@ const registerApp = (appKey: string, manifest: AppRegistration): void => {
 
 const useCurrentApp = () => {
     const { app } = useFusionContext();
-    const [currentApp] = useEventEmitterValue(app.container, 'change');
+    const [currentApp] = useEventEmitterValue(app.container, 'change', app => app, app.container.currentApp);
     return currentApp;
 };
 
