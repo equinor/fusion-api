@@ -98,9 +98,11 @@ export default class PeopleContainer extends EventEmitter<PersonContainerEvents>
             const image = new Image();
             image.src = urlToImage;
 
-            this.images[personId] = image;
             image.onerror = () => reject(`Could not load image ${urlToImage}.`);
-            image.onload = () => resolve(image);
+            image.onload = () => {
+                this.images[personId] = image;
+                resolve(image);
+            };
         });
     }
 }
