@@ -1,7 +1,7 @@
 import PositionLocation from './PositionLocation';
 import AssignedPerson from './AssignedPerson';
 
-type PositionInstanceType = 'Normal';
+type PositionInstanceType = 'Normal' | 'Rotation';
 
 type PositionInstance = {
     id: string;
