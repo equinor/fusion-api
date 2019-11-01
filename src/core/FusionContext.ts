@@ -161,7 +161,7 @@ export const createFusionContext = (
 
     const contextManager = new ContextManager(apiClients, contextId);
     const tasksContainer = new TasksContainer(apiClients);
-    const notificationCenter = new NotificationCenter();
+    const notificationCenter = new NotificationCenter(new EventHub());
     const peopleContainer = new PeopleContainer(apiClients, resourceCollections);
     const userMenuSectionsContainer = new UserMenuContainer(new EventHub());
     const environment = ensureFusionEnvironment(options);
