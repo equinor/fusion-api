@@ -167,8 +167,8 @@ export const createFusionContext = (
         authContainer.getCachedUser(),
         defaultSettings
     );
-
-    const appContainer = new AppContainer(apiClients, telemetryLogger);
+    
+    const appContainer = new AppContainer(apiClients, telemetryLogger, new EventHub());
     appContainerFactory(appContainer);
 
     // Try to get the current context id from the current route if a user navigates directly to the app/context
