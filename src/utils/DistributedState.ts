@@ -31,7 +31,7 @@ class DistributedState<T> extends EventEmitter<DistributedStateEvents<T>> implem
         this._eventHub.publish(this._key, state);
     }
 
-    private handleUpdatedState(state: T) {
+    private handleUpdatedState = (state: T) => {
         this._state = state;
         this.emit('change', this._state);
     }
