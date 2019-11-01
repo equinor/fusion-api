@@ -109,35 +109,6 @@ export type FusionContextOptions = {
 const globalEquinorFusionContextKey = '74b1613f-f22a-451b-a5c3-1c9391e91e68';
 
 const win = window as any;
-
-const ensureGlobalFusionContextType = () => {
-    if (!win[globalEquinorFusionContextKey]) {
-        return createContext<IFusionContext>({} as IFusionContext);
-    }
-    const existingFusionContext = win[globalEquinorFusionContextKey] as IFusionContext;
-
-    return createContext<IFusionContext>(
-        createFusionContext(
-            existingFusionContext.auth.container,
-            existingFusionContext.http.serviceResolver,
-            existingFusionContext.refs,
-            existingFusionContext.options
-        )
-    );
-};
-
-const FusionContext = ensureGlobalFusionContextType();
-
-const ensureFusionEnvironment = (options?: FusionContextOptions): FusionEnvironment => {
-    if (options && options.environment) {
-        return options.environment;
-    }
-
-    return {
-        env: 'ci',
-    };
-};
-
 export const createFusionContext = (
     authContainer: IAuthContainer,
     serviceResolver: ServiceResolver,
@@ -167,7 +138,7 @@ export const createFusionContext = (
         authContainer.getCachedUser(),
         defaultSettings
     );
-    
+
     const appContainer = new AppContainer(apiClients, telemetryLogger, new EventHub());
     appContainerFactory(appContainer);
 
@@ -222,6 +193,34 @@ export const createFusionContext = (
         win[globalEquinorFusionContextKey] = fusionContext;
     }
     return fusionContext;
+};
+
+const ensureGlobalFusionContextType = () => {
+    if (!win[globalEquinorFusionContextKey]) {
+        return createContext<IFusionContext>({} as IFusionContext);
+    }
+    const existingFusionContext = win[globalEquinorFusionContextKey] as IFusionContext;
+
+    return createContext<IFusionContext>(
+        createFusionContext(
+            existingFusionContext.auth.container,
+            existingFusionContext.http.serviceResolver,
+            existingFusionContext.refs,
+            existingFusionContext.options
+        )
+    );
+};
+
+const FusionContext = ensureGlobalFusionContextType();
+
+const ensureFusionEnvironment = (options?: FusionContextOptions): FusionEnvironment => {
+    if (options && options.environment) {
+        return options.environment;
+    }
+
+    return {
+        env: 'ci',
+    };
 };
 
 export const useFusionContext = () => useContext(FusionContext);
