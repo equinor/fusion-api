@@ -122,7 +122,7 @@ const ensureFusionEnvironment = (options?: FusionContextOptions): FusionEnvironm
 export const createFusionContext = (
     authContainer: IAuthContainer,
     serviceResolver: ServiceResolver,
-    refs: ExternalRefs,
+    refs: Refs,
     options?: FusionContextOptions
 ): IFusionContext => {
     const telemetryLogger = new TelemetryLogger(
@@ -175,10 +175,7 @@ export const createFusionContext = (
             resourceCache,
             serviceResolver,
         },
-        refs: {
-            ...refs,
-            headerContent: useRef<HTMLDivElement>(null),
-        },
+        refs,
         history,
         settings: {
             core: coreSettings,
