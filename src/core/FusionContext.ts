@@ -107,8 +107,18 @@ export type FusionContextOptions = {
 };
 
 const globalEquinorFusionContextKey = '74b1613f-f22a-451b-a5c3-1c9391e91e68';
-
 const win = window as any;
+
+const ensureFusionEnvironment = (options?: FusionContextOptions): FusionEnvironment => {
+    if (options && options.environment) {
+        return options.environment;
+    }
+
+    return {
+        env: 'ci',
+    };
+};
+
 export const createFusionContext = (
     authContainer: IAuthContainer,
     serviceResolver: ServiceResolver,
@@ -212,16 +222,6 @@ const ensureGlobalFusionContextType = () => {
 };
 
 const FusionContext = ensureGlobalFusionContextType();
-
-const ensureFusionEnvironment = (options?: FusionContextOptions): FusionEnvironment => {
-    if (options && options.environment) {
-        return options.environment;
-    }
-
-    return {
-        env: 'ci',
-    };
-};
 
 export const useFusionContext = () => useContext(FusionContext);
 
