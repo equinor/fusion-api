@@ -1,7 +1,7 @@
 import PositionLocation from './PositionLocation';
 import AssignedPerson from './AssignedPerson';
 
-type PositionInstanceType = 'Normal';
+type PositionInstanceType = 'Normal' | 'Rotation';
 
 type PositionInstance = {
     id: string;
@@ -13,6 +13,7 @@ type PositionInstance = {
     location: PositionLocation;
     assignedPerson: AssignedPerson;
     properties: object; // dynamic metadata
+    rotationId: string | null;
 };
 
 export default PositionInstance;
