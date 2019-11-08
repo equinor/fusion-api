@@ -1,16 +1,17 @@
-import AuthApp from "./AuthApp";
-import AuthToken from "./AuthToken";
-import AuthUser, { AuthUserJSON } from "./AuthUser";
-import ReliableDirctionary, { LocalStorageProvider } from "../utils/ReliableDictionary";
+import AuthApp from './AuthApp';
+import AuthToken from './AuthToken';
+import AuthUser, { AuthUserJSON } from './AuthUser';
+import ReliableDirctionary, { LocalStorageProvider } from '../utils/ReliableDictionary';
+import EventHub from '../utils/EventHub';
 
 enum TokenCacheKey {
-    TOKEN = "TOKEN",
-    USER = "USER"
-};
+    TOKEN = 'TOKEN',
+    USER = 'USER',
+}
 
 export default class AuthCache extends ReliableDirctionary {
     constructor() {
-        super(new LocalStorageProvider("FUSION_AUTH_CACHE"));
+        super(new LocalStorageProvider('FUSION_AUTH_CACHE', new EventHub()));
     }
 
     private static createAppCacheKey(app: AuthApp, key: TokenCacheKey) {

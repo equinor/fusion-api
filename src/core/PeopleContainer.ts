@@ -5,13 +5,15 @@ import ResourceCollections from '../http/resourceCollections';
 import { useFusionContext } from './FusionContext';
 import * as React from 'react';
 import EventEmitter, { useEventEmitter } from '../utils/EventEmitter';
+import DistributedState, { IDistributedState } from '../utils/DistributedState';
+import { IEventHub } from '../utils/EventHub';
 
 interface IPersonImage {
-    [personId: string]: HTMLImageElement;
+    [personId: string]: IDistributedState<HTMLImageElement>;
 }
 
 interface IPersonDetails {
-    [personId: string]: PersonDetails;
+    [personId: string]: IDistributedState<PersonDetails>;
 }
 
 type PersonContainerEvents = {
@@ -24,16 +26,22 @@ export default class PeopleContainer extends EventEmitter<PersonContainerEvents>
 
     private persons: IPersonDetails = {};
     private images: IPersonImage = {};
+    private eventHub: IEventHub;
 
-    constructor(apiClients: ApiClients, resourceCollections: ResourceCollections) {
+    constructor(
+        apiClients: ApiClients,
+        resourceCollections: ResourceCollections,
+        eventHub: IEventHub
+    ) {
         super();
         this.peopleClient = apiClients.people;
         this.resourceCollection = resourceCollections.people;
+        this.eventHub = eventHub;
     }
 
     getPersonDetails(personId: string): PersonDetails | null {
         if (this.persons[personId]) {
-            return this.persons[personId];
+            return this.persons[personId].state;
         }
 
         return null;
@@ -43,7 +51,7 @@ export default class PeopleContainer extends EventEmitter<PersonContainerEvents>
         const cachedPerson = this.persons[personId];
 
         if (cachedPerson) {
-            return cachedPerson;
+            return cachedPerson.state;
         }
 
         const response = await this.peopleClient.getPersonDetailsAsync(personId, [
@@ -52,9 +60,15 @@ export default class PeopleContainer extends EventEmitter<PersonContainerEvents>
             'roles',
         ]);
 
-        this.persons[personId] = response.data;
-
-        return this.persons[personId];
+        this.persons[personId] = new DistributedState<PersonDetails>(
+            `PeopleContainer.person.${personId}`,
+            response.data,
+            this.eventHub
+        );
+        this.persons[personId].on('change', personDetails => {
+            this.emit('updated', personDetails);
+        });
+        return this.persons[personId].state;
     }
 
     async setRoleStatusForUser(
@@ -64,15 +78,13 @@ export default class PeopleContainer extends EventEmitter<PersonContainerEvents>
     ): Promise<PersonRole> {
         const response = await this.peopleClient.setRoleStatusForUser(personId, roleName, isActive);
 
-        if (!this.persons[personId] || !this.persons[personId].roles) return response.data;
+        if (!this.persons[personId] || !this.persons[personId].state.roles) return response.data;
+        const person = this.persons[personId].state;
 
-        const roles = this.persons[personId].roles;
+        const roles = person.roles;
         if (roles) {
-            const roleIndex = roles.findIndex(role => role.name === roleName);
-            if (roleIndex !== -1) {
-                roles[roleIndex] = response.data;
-                this.emit('updated', { ...this.persons[personId] });
-            }
+            const newRoles = roles.map(role => (role.name === roleName ? response.data : role));
+            this.persons[personId].state = { ...person, roles: newRoles };
         }
 
         return response.data;
@@ -80,7 +92,7 @@ export default class PeopleContainer extends EventEmitter<PersonContainerEvents>
 
     getPersonImage(personId: string): HTMLImageElement | null {
         if (this.images[personId]) {
-            return this.images[personId];
+            return this.images[personId].state;
         }
 
         return null;
@@ -90,7 +102,7 @@ export default class PeopleContainer extends EventEmitter<PersonContainerEvents>
         const cachedImage = this.images[personId];
 
         if (cachedImage) {
-            return cachedImage;
+            return cachedImage.state;
         }
 
         return new Promise((resolve, reject) => {
@@ -98,7 +110,7 @@ export default class PeopleContainer extends EventEmitter<PersonContainerEvents>
             const image = new Image();
             image.src = urlToImage;
 
-            this.images[personId] = image;
+            this.images[personId].state = image;
             image.onerror = () => reject(`Could not load image ${urlToImage}.`);
             image.onload = () => resolve(image);
         });

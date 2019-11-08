@@ -132,7 +132,7 @@ export const createFusionContext = (
     const abortControllerManager = new AbortControllerManager();
     const resourceCollections = createResourceCollections(serviceResolver, options);
 
-    const resourceCache = new ResourceCache();
+    const resourceCache = new ResourceCache(new EventHub());
     const httpClient = new HttpClient(
         authContainer,
         resourceCache,
@@ -146,6 +146,7 @@ export const createFusionContext = (
     const coreSettings = new SettingsContainer<CoreSettings>(
         'core',
         authContainer.getCachedUser(),
+        new EventHub(),
         defaultSettings
     );
 

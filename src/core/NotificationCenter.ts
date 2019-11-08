@@ -2,7 +2,7 @@ import uuid from 'uuid/v1';
 import ReliableDictionary, { LocalStorageProvider } from '../utils/ReliableDictionary';
 import { useFusionContext } from './FusionContext';
 import DistributedState, { IDistributedState } from '../utils/DistributedState';
-import { IEventHub } from '../utils/EventHub';
+import EventHub, { IEventHub } from '../utils/EventHub';
 
 export type NotificationLevel = 'low' | 'medium' | 'high';
 export type NotificationPriority = 'low' | 'medium' | 'high';
@@ -73,7 +73,9 @@ export default class NotificationCenter extends ReliableDictionary<
     private presenters: IDistributedState<NotificationPresenterRegistration[]>;
 
     constructor(eventHub: IEventHub) {
-        super(new LocalStorageProvider('NOTIFICATION_CENTER', { notifications: [] }));
+        super(
+            new LocalStorageProvider('NOTIFICATION_CENTER', new EventHub(), { notifications: [] })
+        );
         this.presenters = new DistributedState<NotificationPresenterRegistration[]>(
             'NotificationCenter.presenters',
             [],
