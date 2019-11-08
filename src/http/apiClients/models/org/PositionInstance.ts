@@ -13,6 +13,7 @@ type PositionInstance = {
     location: PositionLocation;
     assignedPerson: AssignedPerson;
     properties: object; // dynamic metadata
+    rotationId: string | null;
 };
 
 export default PositionInstance;
