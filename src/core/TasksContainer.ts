@@ -4,6 +4,8 @@ import EventEmitter, { useEventEmitterValue, EventHandlerParameter } from '../ut
 import Task, { TaskType, TaskSourceSystem, TaskTypes } from '../http/apiClients/models/tasks/Task';
 import { useState, useEffect } from 'react';
 import { useFusionContext } from './FusionContext';
+import DistributedState, { IDistributedState } from '../utils/DistributedState';
+import { IEventHub } from '../utils/EventHub';
 
 type TasksEvents = {
     'tasks-updated': (tasks: Task[]) => void;
@@ -14,12 +16,32 @@ type TasksEvents = {
 export default class TasksContainer extends EventEmitter<TasksEvents> {
     private tasksClient: TasksClient;
 
-    private tasks: Task[] = [];
-    private taskTypes: TaskType[] = [];
-    private sourceSystems: TaskSourceSystem[] = [];
+    private tasks: IDistributedState<Task[]>;
 
-    constructor(apiClients: ApiClients) {
+    private taskTypes: IDistributedState<TaskType[]>;
+    private sourceSystems: IDistributedState<TaskSourceSystem[]>;
+
+    constructor(apiClients: ApiClients, eventHub: IEventHub) {
         super();
+        this.tasks = new DistributedState<Task[]>('TaskContainer.Tasks', [], eventHub);
+        this.tasks.on('change', (tasks: Task[]) => {
+            this.emit('tasks-updated', tasks);
+        });
+
+        this.taskTypes = new DistributedState<TaskType[]>('TaskContainer.TaskTypes', [], eventHub);
+        this.taskTypes.on('change', (taskTypes: TaskType[]) => {
+            this.emit('task-types-updated', taskTypes);
+        });
+
+        this.sourceSystems = new DistributedState<TaskSourceSystem[]>(
+            'TaskContainer.SourceSysytems',
+            [],
+            eventHub
+        );
+        this.sourceSystems.on('change', (sourceSystems: TaskSourceSystem[]) => {
+            this.emit('source-systems-updated', sourceSystems);
+        });
+
         this.tasksClient = apiClients.tasks;
     }
 
@@ -28,7 +50,7 @@ export default class TasksContainer extends EventEmitter<TasksEvents> {
 
         const taskPromises = taskTypes.map(taskType => this.getTasksAsync(taskType.key));
         await Promise.all(taskPromises);
-        return this.tasks;
+        return this.tasks.state;
     }
 
     async getTasksAsync(taskType: TaskTypes) {
@@ -85,18 +107,18 @@ export default class TasksContainer extends EventEmitter<TasksEvents> {
 
     getTasks(taskType?: TaskTypes) {
         if (!taskType) {
-            return [...this.tasks];
+            return [...this.tasks.state];
         }
 
-        return this.tasks.filter(t => t.taskTypeKey == taskType);
+        return this.tasks.state.filter(t => t.taskTypeKey == taskType);
     }
 
     getTaskTypes() {
-        return [...this.taskTypes];
+        return [...this.taskTypes.state];
     }
 
     getSourceSystems() {
-        return [...this.sourceSystems];
+        return [...this.sourceSystems.state];
     }
 
     private async refreshTasksAsync(taskType: TaskTypes, refreshRequest: RequestInit) {
@@ -107,23 +129,23 @@ export default class TasksContainer extends EventEmitter<TasksEvents> {
 
     private mergeTasks(tasks: Task[]) {
         // Extract new tasks from the list of tasks
-        const newTasks = tasks.filter(t => !this.tasks.find(e => e.id === t.id));
+        const newTasks = tasks.filter(t => !this.tasks.state.find(e => e.id === t.id));
 
         // Merge new tasks with the existing
-        const mergedTasks = [...this.tasks, ...newTasks];
+        const mergedTasks = [...this.tasks.state, ...newTasks];
 
         // Overwrite existing tasks with updated tasks
-        this.tasks = mergedTasks.map(t => tasks.find(n => n.id === t.id) || t);
+        this.tasks.state = mergedTasks.map(t => tasks.find(n => n.id === t.id) || t);
         this.emit('tasks-updated', this.tasks);
     }
 
     private setTaskTypes(taskTypes: TaskType[]) {
-        this.taskTypes = taskTypes;
+        this.taskTypes.state = taskTypes;
         this.emit('task-types-updated', taskTypes);
     }
 
     private setSourceSystems(sourceSystems: TaskSourceSystem[]) {
-        this.sourceSystems = sourceSystems;
+        this.sourceSystems.state = sourceSystems;
         this.emit('source-systems-updated', sourceSystems);
     }
 }

@@ -1,5 +1,8 @@
-import { HttpResponse } from "../HttpClient";
-import EventEmitter from "../../utils/EventEmitter";
+import { HttpResponse } from '../HttpClient';
+import EventEmitter from '../../utils/EventEmitter';
+import { IDistributedState } from '../../utils/DistributedState';
+import { IEventHub } from '../../utils/EventHub';
+import DistributedState from '../../utils/DistributedState';
 
 type CacheStatus = {
     age: Date | null;
@@ -20,7 +23,11 @@ export type ReadonlyCachedResource<T> = Readonly<CachedResource<T>> & {
 
 type ResourceCacheEvents = {
     update: <T>(changedResource: ReadonlyCachedResource<T>) => void;
-}
+};
+
+type CachedResources = {
+    [key: string]: CachedResource<any>;
+};
 
 export interface IResourceCache {
     setIsFetchingAsync<T>(resource: string): Promise<void>;
@@ -28,8 +35,22 @@ export interface IResourceCache {
     getAsync<T>(resource: string): Promise<ReadonlyCachedResource<T>>;
 }
 
-export default class ResourceCache extends EventEmitter<ResourceCacheEvents> implements IResourceCache {
-    private cachedResources: { [key: string]: CachedResource<any> } = {};
+export default class ResourceCache extends EventEmitter<ResourceCacheEvents>
+    implements IResourceCache {
+    private cachedResources: IDistributedState<CachedResources>;
+
+    constructor(eventHub: IEventHub) {
+        super();
+        this.cachedResources = new DistributedState<CachedResources>(
+            'ResourceCache.CachedResources',
+            {},
+            eventHub
+        );
+
+        this.cachedResources.on('change', (cachedResources: CachedResources) => {
+            this.emit('update', cachedResources);
+        });
+    }
 
     async setIsFetchingAsync<T>(resource: string): Promise<void> {
         const cachedResource = await this.getAsync<T>(resource);
@@ -39,12 +60,12 @@ export default class ResourceCache extends EventEmitter<ResourceCacheEvents> imp
     async updateAsync<T>(resource: string, response: HttpResponse<T>): Promise<void> {
         const cachedResource = await this.getAsync<T>(resource);
 
-        const cacheAgeHeader = response.headers.get("x-pp-cache-age");
+        const cacheAgeHeader = response.headers.get('x-pp-cache-age');
         const age = cacheAgeHeader !== null ? new Date(cacheAgeHeader) : null;
 
-        const cacheDurationHeader = response.headers.get("x-pp-cache-duration-minutes");
+        const cacheDurationHeader = response.headers.get('x-pp-cache-duration-minutes');
         const duration = cacheDurationHeader !== null ? parseInt(cacheDurationHeader, 10) : -1;
-        const source = response.headers.get("x-pp-cache-source");
+        const source = response.headers.get('x-pp-cache-source');
 
         const updatedResource = {
             ...cachedResource,
@@ -62,7 +83,7 @@ export default class ResourceCache extends EventEmitter<ResourceCacheEvents> imp
     }
 
     async getAsync<T>(resource: string): Promise<ReadonlyCachedResource<T>> {
-        if (typeof this.cachedResources[resource] === "undefined") {
+        if (typeof this.cachedResources.state[resource] === 'undefined') {
             await this.setResourceAsync(resource, {
                 resource,
                 data: null,
@@ -75,14 +96,14 @@ export default class ResourceCache extends EventEmitter<ResourceCacheEvents> imp
             });
         }
 
-        return this.cachedResources[resource] as ReadonlyCachedResource<T>;
+        return this.cachedResources.state[resource] as ReadonlyCachedResource<T>;
     }
 
     private async setResourceAsync<T>(
         resource: string,
         updatedResource: CachedResource<T>
     ): Promise<void> {
-        this.cachedResources[resource] = updatedResource;
-        this.emit("update", updatedResource);
+        this.cachedResources.state[resource] = updatedResource;
+        this.emit('update', updatedResource);
     }
 }
