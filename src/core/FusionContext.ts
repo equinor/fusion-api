@@ -129,7 +129,7 @@ export const createFusionContext = (
         options && options.telemetry ? options.telemetry.instrumentationKey : '',
         authContainer
     );
-    const abortControllerManager = new AbortControllerManager();
+    const abortControllerManager = new AbortControllerManager(new EventHub());
     const resourceCollections = createResourceCollections(serviceResolver, options);
 
     const resourceCache = new ResourceCache(new EventHub());
@@ -163,7 +163,7 @@ export const createFusionContext = (
     const contextManager = new ContextManager(apiClients, contextId);
     const tasksContainer = new TasksContainer(apiClients, new EventHub());
     const notificationCenter = new NotificationCenter(new EventHub());
-    const peopleContainer = new PeopleContainer(apiClients, resourceCollections);
+    const peopleContainer = new PeopleContainer(apiClients, resourceCollections, new EventHub());
     const userMenuSectionsContainer = new UserMenuContainer(new EventHub());
     const environment = ensureFusionEnvironment(options);
 
