@@ -7,27 +7,27 @@ import BaseApiClient from './BaseApiClient';
 
 export default class ReportClient extends BaseApiClient {
     async getReportsAsync() {
-        const url = this.resourceCollections.report.getReports();
+        const url = this.resourceCollections.report.reports();
         return await this.httpClient.getAsync<Report[], FusionApiHttpErrorResponse>(url);
     }
 
     async getReportAsync(id: string) {
-        const url = this.resourceCollections.report.getReport(id);
+        const url = this.resourceCollections.report.report(id);
         return await this.httpClient.getAsync<Report, FusionApiHttpErrorResponse>(url);
     }
 
     async getEmbedInfo(reportId: string) {
-        const url = this.resourceCollections.report.getEmbedInfo(reportId);
+        const url = this.resourceCollections.report.embedInfo(reportId);
         return await this.httpClient.getAsync<EmbedInfo, FusionApiHttpErrorResponse>(url);
     }
 
     async getAccessToken(reportId: string) {
-        const url = this.resourceCollections.report.getAccessToken(reportId);
+        const url = this.resourceCollections.report.accessToken(reportId);
         return await this.httpClient.getAsync<AccessToken, FusionApiHttpErrorResponse>(url);
     }
 
     async getDescription(reportId: string) {
-        const url = this.resourceCollections.report.getDescription(reportId);
+        const url = this.resourceCollections.report.description(reportId);
         return await this.httpClient.getAsync<string, FusionApiHttpErrorResponse>(
             url,
             null,
@@ -36,7 +36,7 @@ export default class ReportClient extends BaseApiClient {
     }
 
     async getAccessDescription(reportId: string) {
-        const url = this.resourceCollections.report.getAccessDescription(reportId);
+        const url = this.resourceCollections.report.accessDescription(reportId);
         return await this.httpClient.getAsync<string, FusionApiHttpErrorResponse>(
             url,
             null,
@@ -45,7 +45,7 @@ export default class ReportClient extends BaseApiClient {
     }
 
     async getTechnicalDocument(reportId: string) {
-        const url = this.resourceCollections.report.getTechnicalDocument(reportId);
+        const url = this.resourceCollections.report.technicalDocument(reportId);
         return await this.httpClient.getAsync<string, FusionApiHttpErrorResponse>(
             url,
             null,
@@ -54,7 +54,7 @@ export default class ReportClient extends BaseApiClient {
     }
 
     async addReport(report: Report) {
-        const url = this.resourceCollections.report.addReport();
+        const url = this.resourceCollections.report.reports();
         return await this.httpClient.postAsync<Report, Report, FusionApiHttpErrorResponse>(
             url,
             report
@@ -62,7 +62,7 @@ export default class ReportClient extends BaseApiClient {
     }
 
     async updateReport(report: Report) {
-        const url = this.resourceCollections.report.updateReport(report.id);
+        const url = this.resourceCollections.report.report(report.id);
         return await this.httpClient.putAsync<Report, Report, FusionApiHttpErrorResponse>(
             url,
             report
@@ -96,7 +96,7 @@ export default class ReportClient extends BaseApiClient {
     }
 
     async deleteReport(reportId: string) {
-        const url = this.resourceCollections.report.deleteReport(reportId);
+        const url = this.resourceCollections.report.report(reportId);
 
         return await this.httpClient.deleteAsync<void, FusionApiHttpErrorResponse>(url, null, () =>
             Promise.resolve()

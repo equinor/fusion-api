@@ -36,7 +36,7 @@ export default class PowerBIClient extends BaseApiClient {
         if (this.groups.length) return this.groups;
 
         const options = await this.buildRequestOptionsWithToken();
-        const response = await fetch(this.resourceCollections.powerBI.getGroups(), options);
+        const response = await fetch(this.resourceCollections.powerBI.groups(), options);
         this.groups = await this.handleResponse(response);
         return this.groups;
     }
@@ -46,7 +46,7 @@ export default class PowerBIClient extends BaseApiClient {
         if (cached) return cached;
 
         const options = await this.buildRequestOptionsWithToken();
-        const response = await fetch(this.resourceCollections.powerBI.getReports(groupId), options);
+        const response = await fetch(this.resourceCollections.powerBI.reports(groupId), options);
         this.reports[groupId] = await this.handleResponse(response);
         return this.reports[groupId];
     }
@@ -56,10 +56,7 @@ export default class PowerBIClient extends BaseApiClient {
         if (cached) return cached;
 
         const options = await this.buildRequestOptionsWithToken();
-        const response = await fetch(
-            this.resourceCollections.powerBI.getDashboards(groupId),
-            options
-        );
+        const response = await fetch(this.resourceCollections.powerBI.dashboards(groupId), options);
 
         this.dashboards[groupId] = await this.handleResponse(response);
         return this.dashboards[groupId];
