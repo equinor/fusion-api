@@ -8,6 +8,8 @@ type ServiceResolver = {
     getProjectsBaseUrl: () => string;
     getMeetingsBaseUrl: () => string;
     getPeopleBaseUrl: () => string;
+    getReportsBaseUrl: () => string;
+    getPowerBiApiBaseUrl: () => string;
 };
 
 export default ServiceResolver;

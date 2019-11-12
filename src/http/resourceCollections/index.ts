@@ -6,6 +6,8 @@ import ServiceResolver from './ServiceResolver';
 import { FusionContextOptions } from '../../core/FusionContext';
 import PeopleResourceCollection from './PeopleResourceCollection';
 import OrgResourceCollection from './OrgResourceCollection';
+import ReportResourceCollection from './ReportResourceCollection';
+import PowerBIResourceCollection from './PowerBIResourceCollection';
 
 type ResourceCollections = {
     dataProxy: DataProxyResourceCollection;
@@ -14,6 +16,8 @@ type ResourceCollections = {
     tasks: TasksResourceCollection;
     people: PeopleResourceCollection;
     org: OrgResourceCollection;
+    report: ReportResourceCollection;
+    powerBI: PowerBIResourceCollection;
 };
 
 export { DataProxyResourceCollection };
@@ -28,6 +32,8 @@ export const createResourceCollections = (
     tasks: new TasksResourceCollection(serviceResolver),
     people: new PeopleResourceCollection(serviceResolver),
     org: new OrgResourceCollection(serviceResolver),
+    report: new ReportResourceCollection(serviceResolver),
+    powerBI: new PowerBIResourceCollection(serviceResolver),
 });
 
 export default ResourceCollections;

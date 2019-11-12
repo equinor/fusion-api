@@ -1,7 +1,7 @@
 import BaseApiClient from './BaseApiClient';
 import { FusionApiHttpErrorResponse } from './models/common/FusionApiHttpErrorResponse';
 import Position from './models/org/Position';
-import OrgProject, { FusionProject } from './models/org/OrgProject';
+import OrgProject, { FusionProject, BasePosition } from './models/org/OrgProject';
 import { combineUrls } from '../../utils/url';
 
 export default class OrgClient extends BaseApiClient {
@@ -99,6 +99,29 @@ export default class OrgClient extends BaseApiClient {
 
             return false;
         } catch (e) {
+            return false;
+        }
+    }
+
+    async getDisciplines() {
+        const url = this.resourceCollections.org.basePositions();
+
+        try {
+            const res = await this.httpClient.getAsync<BasePosition[], FusionApiHttpErrorResponse>(
+                url
+            );
+
+            const disciplines = res.data.map(d => d.discipline);
+            const distinct = disciplines.reduce((acc: string[], curr: string) => {
+                if (curr && acc.indexOf(curr) === -1 && curr.trim().length > 0) {
+                    acc.push(curr);
+                }
+
+                return acc;
+            }, []);
+
+            return distinct;
+        } catch (error) {
             return false;
         }
     }
