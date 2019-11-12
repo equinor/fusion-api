@@ -11,3 +11,5 @@ type EmbedConfig = {
     reportId?: string;
     tileId?: string;
 };
+
+export default EmbedConfig;

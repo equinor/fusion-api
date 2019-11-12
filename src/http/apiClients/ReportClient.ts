@@ -1,6 +1,7 @@
 import { FusionApiHttpErrorResponse } from './models/common/FusionApiHttpErrorResponse';
 import Report from './models/report/Report';
 import EmbedInfo from './models/report/EmbedInfo';
+import EmbedConfig from './models/report/EmbedConfig';
 import AccessToken from './models/report/AccessToken';
 import ConfigValidation from './models/report/ConfigValidation';
 import BaseApiClient from './BaseApiClient';
