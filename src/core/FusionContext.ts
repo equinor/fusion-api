@@ -129,11 +129,12 @@ export const createFusionContext = (
         options && options.telemetry ? options.telemetry.instrumentationKey : '',
         authContainer
     );
-    const resourceCollections = createResourceCollections(serviceResolver, options);
     
-    const resourceCache = new ResourceCache(new EventHub());
     const abortControllerManager = new AbortControllerManager(new EventHub());
-    
+    const resourceCollections = createResourceCollections(serviceResolver, options);
+
+    const resourceCache = new ResourceCache(new EventHub());
+
     const httpClient = new HttpClient(
         authContainer,
         resourceCache,

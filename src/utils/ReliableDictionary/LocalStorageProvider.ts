@@ -61,11 +61,11 @@ export default class LocalStorageProvider implements IReliableDictionaryStorageP
             this.localCache.state = cachedValue;
         }
 
-        return this.localCache as LocalCache;
+        return this.localCache.state as LocalCache;
     }
 
     toObject(): LocalCache | null {
-        return this.localCache;
+        return this.localCache.state;
     }
 
     private async persistAsync() {
