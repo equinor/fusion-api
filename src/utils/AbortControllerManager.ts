@@ -1,7 +1,7 @@
 import { useFusionContext } from '../core/FusionContext';
 import { IEventHub } from './EventHub';
 import DistributedState from './DistributedState';
-import { EventEmitter } from '..';
+import EventEmitter from './EventEmitter';
 
 type AbortDispatcher = () => void;
 
