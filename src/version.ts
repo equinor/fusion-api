@@ -1,1 +1,1 @@
-export default '$npm_package_version';
+export default '1.0.0-beta.6';
