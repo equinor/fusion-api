@@ -43,6 +43,10 @@ export default class OrgResourceCollection extends BaseResourceCollection {
         );
     }
 
+    basePositions(): string {
+        return combineUrls(this.getBaseUrl(), 'positions', 'basepositions');
+    }
+
     basePositionRoleDescription(basePositionId: string) {
         return combineUrls(
             this.getBaseUrl(),
