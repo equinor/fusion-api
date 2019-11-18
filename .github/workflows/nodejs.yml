@@ -22,7 +22,7 @@ jobs:
       run: |
         npm ci
         npm run update-version-definition:no-commit
-        npm run tsc"
+        npm run tsc
     - name: Commit changes and push
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
