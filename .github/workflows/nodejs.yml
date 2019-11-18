@@ -21,7 +21,7 @@ jobs:
     - name: npm install, build, and test
       run: |
         npm ci
-        npm run builds
+        npm run build
     - name: npm publish
       run: | 
         npm config set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN
