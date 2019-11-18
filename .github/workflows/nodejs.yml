@@ -27,7 +27,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       run: |
-        git config --local user.email "eslsa@equinor.com"
+        git config --local user.email "fusion@equinor.com"
         git config --local user.name "GitHub Action by Eskil Sand"
         git commit -m "Update version.ts" -a
         git push "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git" HEAD:master
