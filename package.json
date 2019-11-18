@@ -6,6 +6,7 @@
     "types": "lib/index.d.ts",
     "scripts": {
         "update-version-definition": "echo \"export default '$npm_package_version';\" > src/version.ts && git commit -am \"Update version.ts\"",
+        "update-version-definition:no-commit": "echo \"export default '$npm_package_version';\" > src/version.ts ",
         "build": "npm run update-version-definition && npm run tsc",
         "tsc": "tsc -p ./tsconfig.json",
         "tsc:version": "tsc --version"
