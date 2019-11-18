@@ -18,10 +18,19 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: npm install, build, and test
+    - name: npm install, update version.ts, run tsc
       run: |
         npm ci
-        npm run build
+        npm run update-version-definition:no-commit
+        npm run tsc"
+    - name: Commit changes and push
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      run: |
+        git config --local user.email "eslsa@equinor.com"
+        git config --local user.name "GitHub Action by Eskil Sand"
+        git commit -m "Update version.ts" -a
+        git push "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"
     - name: npm publish
       run: | 
         npm config set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN
