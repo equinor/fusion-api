@@ -1,8 +1,9 @@
 name: Node CI
 
-on: push:
-  branches:
-    - master
+on: 
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -20,7 +21,7 @@ jobs:
     - name: npm install, build, and test
       run: |
         npm ci
-        npm run build
+        npm run builds
     - name: npm publish
       run: | 
         npm config set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN
