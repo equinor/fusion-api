@@ -238,7 +238,7 @@ export default class AuthContainer implements IAuthContainer {
             ...customParams,
             client_id: app.clientId,
             response_type: 'id_token',
-            redirect_uri: getTopLevelWindow(window).location.href,
+            redirect_uri: getTopLevelWindow(window).location.href.split("#")[0],
             nonce: nonce.getKey(),
             login_hint: cachedUser ? cachedUser.upn : null,
         };
