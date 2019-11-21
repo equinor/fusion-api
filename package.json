@@ -1,11 +1,12 @@
 {
     "name": "@equinor/fusion",
-    "version": "0.4.57",
+    "version": "0.4.58",
     "description": "Everything a Fusion app needs to communicate with the core",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
         "update-version-definition": "echo \"export default '$npm_package_version';\" > src/version.ts && git commit -am \"Update version.ts\"",
+        "update-version-definition:no-commit": "echo \"export default '$npm_package_version';\" > src/version.ts ",
         "build": "npm run update-version-definition && npm run tsc",
         "tsc": "tsc -p ./tsconfig.json",
         "tsc:version": "tsc --version"
