@@ -5,7 +5,8 @@ import ReliableDirctionary, { LocalStorageProvider } from "../utils/ReliableDict
 
 enum TokenCacheKey {
     TOKEN = "TOKEN",
-    USER = "USER"
+    USER = "USER",
+    REDIRECT_URL = "REDIRECT_URL",
 };
 
 export default class AuthCache extends ReliableDirctionary {
@@ -52,5 +53,15 @@ export default class AuthCache extends ReliableDirctionary {
         }
 
         return AuthUser.fromJSON(cachedUser);
+    }
+
+    async storeRedirectUrl(redirectUrl: string) {
+        await this.setAsync(TokenCacheKey.REDIRECT_URL, redirectUrl);
+    }
+
+    async getRedirectUrl() {
+        const redirectUrl = await this.getAsync<string, string>(TokenCacheKey.REDIRECT_URL);
+        await this.removeAsync(TokenCacheKey.REDIRECT_URL);
+        return redirectUrl;
     }
 }
