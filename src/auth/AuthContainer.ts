@@ -108,6 +108,14 @@ export default class AuthContainer implements IAuthContainer {
 
             await this.updateTokenForAppAsync(app, token);
             window.location.hash = '';
+
+            const redirectUrl = await this.cache.getRedirectUrl();
+            if (
+                redirectUrl &&
+                AuthContainer.getResourceOrigin(redirectUrl) === window.location.origin
+            ) {
+                window.location.href = redirectUrl;
+            }
         } catch (e) {
             this.logError(e);
             throw new FusionAuthLoginError();
@@ -174,7 +182,7 @@ export default class AuthContainer implements IAuthContainer {
         }
 
         const nonce = AuthNonce.createNew(app);
-        // Store redirect url
+        this.cache.storeRedirectUrl(getTopLevelWindow(window).location.href);
 
         // Login page cannot be displayed within a frame
         // Get the top level window and redirect there
@@ -193,7 +201,7 @@ export default class AuthContainer implements IAuthContainer {
         }
 
         await this.cache.clearAsync();
-        // TODO: Redirect to sign out page to clear cookies
+        // TODO: Redirect to sign out page to clear cookies?
     }
 
     async getCachedUserAsync(): Promise<AuthUser | null> {
@@ -271,7 +279,7 @@ export default class AuthContainer implements IAuthContainer {
             ...customParams,
             client_id: app.clientId,
             response_type: 'id_token',
-            redirect_uri: getTopLevelWindow(window).location.href.split('#')[0],
+            redirect_uri: getTopLevelWindow(window).location.origin.split('#')[0],
             nonce: nonce.getKey(),
             login_hint: cachedUser ? cachedUser.upn : null,
         };
