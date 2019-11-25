@@ -136,6 +136,7 @@ export const createFusionContext = (
     options?: FusionContextOptions
     ): IFusionContext => {
     const telemetryLogger = new TelemetryLogger(options && options.telemetry ? options.telemetry.instrumentationKey : '', authContainer);
+    authContainer.setTelemetryLogger(telemetryLogger);
     const abortControllerManager = new AbortControllerManager();
     const resourceCollections = createResourceCollections(serviceResolver, options);
 
