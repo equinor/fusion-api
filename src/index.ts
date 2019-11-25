@@ -36,7 +36,12 @@ export {
 } from './http/apiClients/models/common/FusionApiHttpErrorResponse';
 
 export { Context, ContextType, ContextTypes } from './http/apiClients/models/context';
-export { useContextManager, useCurrentContext, useContextQuery } from './core/ContextManager';
+export {
+    useContextManager,
+    useCurrentContext,
+    useContextQuery,
+    useCurrentContextTypes,
+} from './core/ContextManager';
 
 export { withAbortController, useAbortControllerManager } from './utils/AbortControllerManager';
 

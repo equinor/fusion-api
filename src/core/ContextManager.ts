@@ -1,11 +1,12 @@
-import { useState, useCallback, useEffect } from "react";
-import ApiClients from "../http/apiClients";
-import ContextClient from "../http/apiClients/ContextClient";
-import { useFusionContext } from "./FusionContext";
-import { Context, ContextTypes } from "../http/apiClients/models/context";
-import ReliableDictionary, { LocalStorageProvider } from "../utils/ReliableDictionary";
-import useDebouncedAbortable from "../hooks/useDebouncedAbortable";
-import useApiClients from "../http/hooks/useApiClients";
+import { useState, useCallback, useEffect } from 'react';
+import ApiClients from '../http/apiClients';
+import ContextClient from '../http/apiClients/ContextClient';
+import { useFusionContext } from './FusionContext';
+import { Context, ContextTypes } from '../http/apiClients/models/context';
+import ReliableDictionary, { LocalStorageProvider } from '../utils/ReliableDictionary';
+import useDebouncedAbortable from '../hooks/useDebouncedAbortable';
+import useApiClients from '../http/hooks/useApiClients';
+import { useCurrentApp } from '../app/AppContainer';
 
 type ContextCache = {
     current: Context | null;
@@ -29,7 +30,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
     async setCurrentContextAsync(context: Context) {
         const currentContext = await this.getCurrentContextAsync();
 
-        await this.setAsync("current", context);
+        await this.setAsync('current', context);
 
         if (!currentContext) {
             return;
@@ -42,7 +43,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
     private async updateHistoryAsync(currentContext: Context) {
         const newHistory = [currentContext];
 
-        const history = await this.getAsync("history");
+        const history = await this.getAsync('history');
         if (history) {
             history
                 // Remove the current context from the previous history (it's added to the start of the history)
@@ -52,31 +53,31 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
                 .forEach(c => newHistory.push(c));
         }
 
-        await this.setAsync("history", newHistory);
+        await this.setAsync('history', newHistory);
     }
 
     private async updateLinksAsync(currentContext: Context, newContext: Context) {
-        const links = await this.getAsync("links");
+        const links = await this.getAsync('links');
 
-        await this.setAsync("links", {
+        await this.setAsync('links', {
             ...(links || {}),
             [currentContext.id]: newContext.id,
         });
     }
 
     async getLinkedContextAsync(context: Context) {
-        const links = await this.getAsync("links");
+        const links = await this.getAsync('links');
 
-        if(!links || !links[context.id]) {
+        if (!links || !links[context.id]) {
             return null;
         }
 
         const linkedContextId = links[context.id];
 
-        const history = await this.getAsync("history");
+        const history = await this.getAsync('history');
         const contextFromHistory = history ? history.find(c => c.id === linkedContextId) : null;
 
-        if(contextFromHistory) {
+        if (contextFromHistory) {
             return contextFromHistory;
         }
 
@@ -106,7 +107,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
             return null;
         }
 
-        const currentContext = await this.getAsync("current");
+        const currentContext = await this.getAsync('current');
 
         if (!currentContext) {
             return null;
@@ -160,6 +161,11 @@ const useContextManager = () => {
     return fusionContext.contextManager;
 };
 
+const useCurrentContextTypes = () => {
+    const app = useCurrentApp();
+    return app && app.context ? app.context.types : [];
+};
+
 const useContextHistory = () => {
     const contextManager = useContextManager();
     const [history, setHistory] = useState<Context[]>(contextManager.getHistory());
@@ -173,14 +179,15 @@ const useContextHistory = () => {
     useEffect(() => {
         contextManager.toObjectAsync().then(setHistoryFromCache);
 
-        return contextManager.on("change", setHistoryFromCache);
+        return contextManager.on('change', setHistoryFromCache);
     }, []);
 
     return history;
 };
 
-const useCurrentContext = (...types: ContextTypes[]): Context | null => {
+const useCurrentContext = () => {
     const contextManager = useContextManager();
+    const currentTypes = useCurrentContextTypes();
     const [currentContext, setCurrentContext] = useState(contextManager.getCurrentContext());
 
     const setContext = useCallback((contextCache: ContextCache) => {
@@ -192,23 +199,23 @@ const useCurrentContext = (...types: ContextTypes[]): Context | null => {
     useEffect(() => {
         contextManager.toObjectAsync().then(setContext);
 
-        return contextManager.on("change", setContext);
+        return contextManager.on('change', setContext);
     }, []);
 
     const history = useContextHistory();
     if (
         currentContext &&
-        types.length > 0 &&
-        !types.find(type => currentContext.type.id === type)
+        currentTypes.length > 0 &&
+        !currentTypes.find(type => currentContext.type.id === type.id)
     ) {
         return null;
     }
 
     // We don't have a context at all, but we could try to find the first context in the history
     // that matches the given types (if any)
-    if (!currentContext && types.length > 0 && history.length > 0) {
+    if (!currentContext && currentTypes.length > 0 && history.length > 0) {
         const historicalContext =
-            history.find(c => types.findIndex(type => c.type.id === type) > 0) || null;
+            history.find(c => currentTypes.findIndex(type => c.type.id === type.id) > 0) || null;
 
         if (historicalContext) {
             contextManager.setCurrentContextAsync(historicalContext);
@@ -219,14 +226,14 @@ const useCurrentContext = (...types: ContextTypes[]): Context | null => {
     return currentContext || null;
 };
 
-const useContextQuery = (
-    ...types: ContextTypes[]
-): [Error | null, boolean, Context[], (query: string) => void] => {
+const useContextQuery = (): [Error | null, boolean, Context[], (query: string) => void] => {
     const [contexts, setContexts] = useState<Context[]>([]);
-    const [queryText, setQueryText] = useState("");
+    const [queryText, setQueryText] = useState('');
     const [isQuerying, setIsQuerying] = useState(false);
     const [error, setError] = useState<Error | null>(null);
     const apiClients = useApiClients();
+    const contextManager = useContextManager();
+    const currentTypes = useCurrentContextTypes();
 
     const canQueryWithText = (text: string) => !!text && text.length > 2;
 
@@ -234,7 +241,10 @@ const useContextQuery = (
         if (canQueryWithText(query)) {
             setContexts([]);
             try {
-                var response = await apiClients.context.queryContextsAsync(query, ...types);
+                var response = await apiClients.context.queryContextsAsync(
+                    query,
+                    ...currentTypes.map(t => t.id)
+                );
                 setContexts(response.data);
                 setIsQuerying(false);
             } catch (e) {
@@ -255,4 +265,4 @@ const useContextQuery = (
     return [error, isQuerying, contexts, search];
 };
 
-export { useContextManager, useCurrentContext, useContextQuery };
+export { useContextManager, useCurrentContext, useContextQuery, useCurrentContextTypes };
