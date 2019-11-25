@@ -226,13 +226,17 @@ const useCurrentContext = () => {
     return currentContext || null;
 };
 
-const useContextQuery = (): [Error | null, boolean, Context[], (query: string) => void] => {
+const useContextQuery = (): {
+    error: Error | null;
+    isQuerying: boolean;
+    contexts: Context[];
+    search: (query: string) => void;
+} => {
     const [contexts, setContexts] = useState<Context[]>([]);
     const [queryText, setQueryText] = useState('');
     const [isQuerying, setIsQuerying] = useState(false);
     const [error, setError] = useState<Error | null>(null);
     const apiClients = useApiClients();
-    const contextManager = useContextManager();
     const currentTypes = useCurrentContextTypes();
 
     const canQueryWithText = (text: string) => !!text && text.length > 2;
@@ -261,8 +265,7 @@ const useContextQuery = (): [Error | null, boolean, Context[], (query: string) =
         setIsQuerying(canQueryWithText(query));
         setQueryText(query);
     };
-
-    return [error, isQuerying, contexts, search];
+    return { error, isQuerying, contexts, search };
 };
 
 export { useContextManager, useCurrentContext, useContextQuery, useCurrentContextTypes };
