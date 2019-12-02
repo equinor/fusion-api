@@ -206,7 +206,7 @@ const useCurrentContext = () => {
     if (
         currentContext &&
         currentTypes.length > 0 &&
-        !currentTypes.find(type => currentContext.type.id === type.id)
+        !currentTypes.find(type => currentContext.type.id === type)
     ) {
         return null;
     }
@@ -215,7 +215,7 @@ const useCurrentContext = () => {
     // that matches the given types (if any)
     if (!currentContext && currentTypes.length > 0 && history.length > 0) {
         const historicalContext =
-            history.find(c => currentTypes.findIndex(type => c.type.id === type.id) > 0) || null;
+            history.find(c => currentTypes.findIndex(type => c.type.id === type) > 0) || null;
 
         if (historicalContext) {
             contextManager.setCurrentContextAsync(historicalContext);
@@ -245,10 +245,7 @@ const useContextQuery = (): {
         if (canQueryWithText(query)) {
             setContexts([]);
             try {
-                var response = await apiClients.context.queryContextsAsync(
-                    query,
-                    ...currentTypes.map(t => t.id)
-                );
+                var response = await apiClients.context.queryContextsAsync(query, ...currentTypes);
                 setContexts(response.data);
                 setIsQuerying(false);
             } catch (e) {
