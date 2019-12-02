@@ -5,9 +5,11 @@ import FusionClient from '../http/apiClients/FusionClient';
 import { useFusionContext } from '../core/FusionContext';
 import { useEffect, useState } from 'react';
 import TelemetryLogger from '../utils/TelemetryLogger';
+import { ContextManifest } from '../http/apiClients/models/context/ContextManifest';
 
 type AppRegistration = {
     AppComponent: React.ComponentType;
+    context: ContextManifest;
 };
 
 type AppContainerEvents = {
@@ -77,7 +79,7 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
             return await this.setCurrentAppAsync(appKey);
         }
 
-        if(this.currentApp) {
+        if (this.currentApp) {
             this.previousApp = this.currentApp;
         }
 
@@ -167,7 +169,12 @@ const registerApp = (appKey: string, manifest: AppRegistration): void => {
 
 const useCurrentApp = () => {
     const { app } = useFusionContext();
-    const [currentApp] = useEventEmitterValue(app.container, 'change', app => app, app.container.currentApp);
+    const [currentApp] = useEventEmitterValue(
+        app.container,
+        'change',
+        app => app,
+        app.container.currentApp
+    );
     return currentApp;
 };
 

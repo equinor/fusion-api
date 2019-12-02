@@ -1,9 +1,9 @@
-import { ContextType } from './ContextTypes';
+import { ContextTypes } from './ContextTypes';
 
 export class ContextManifest {
-    readonly types: ContextType[];
+    readonly types: ContextTypes[];
 
-    constructor(types: ContextType[]) {
+    constructor(types: ContextTypes[]) {
         this.types = types;
     }
 }
