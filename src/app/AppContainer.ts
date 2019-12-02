@@ -9,7 +9,7 @@ import { ContextManifest } from '../http/apiClients/models/context/ContextManife
 
 type AppRegistration = {
     AppComponent: React.ComponentType;
-    context: ContextManifest;
+    context?: ContextManifest;
 };
 
 type AppContainerEvents = {
