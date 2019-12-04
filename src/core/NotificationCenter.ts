@@ -22,6 +22,9 @@ export type NotificationRequest = {
     body?: string;
     cancelLabel?: string;
     confirmLabel?: string;
+    onConfirm?: () => void;
+    onCancel?: () => void;
+    onDismiss?: () => void;
 };
 
 export type NotificationResponse = {
@@ -85,11 +88,15 @@ export default class NotificationCenter extends ReliableDictionary<
         const response = await this.presentAsync(notification);
 
         if (response.confirmed) {
+            notificationRequest.onConfirm && notificationRequest.onConfirm();
             this.emit('confirmed', notificationRequest);
         } else if (response.dismissed) {
+            notificationRequest.onDismiss && notificationRequest.onDismiss();
             this.emit('dismissed', notificationRequest);
         } else if (response.cancelled) {
+            notificationRequest.onCancel && notificationRequest.onCancel();
             this.emit('cancelled', notificationRequest);
+
         }
 
         this.emit('finished', notificationRequest);
