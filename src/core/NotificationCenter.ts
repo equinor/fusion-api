@@ -96,7 +96,6 @@ export default class NotificationCenter extends ReliableDictionary<
         } else if (response.cancelled) {
             notificationRequest.onCancel && notificationRequest.onCancel();
             this.emit('cancelled', notificationRequest);
-
         }
 
         this.emit('finished', notificationRequest);
