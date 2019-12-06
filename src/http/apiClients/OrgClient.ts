@@ -1,7 +1,7 @@
 import BaseApiClient from './BaseApiClient';
 import { FusionApiHttpErrorResponse } from './models/common/FusionApiHttpErrorResponse';
 import Position from './models/org/Position';
-import OrgProject, { FusionProject, BasePosition, NewOrgProject } from './models/org/OrgProject';
+import OrgProject, { FusionProject, BasePosition, CreateOrgProject } from './models/org/OrgProject';
 
 export default class OrgClient extends BaseApiClient {
     async getProjectsAsync() {
@@ -23,10 +23,10 @@ export default class OrgClient extends BaseApiClient {
         return await this.httpClient.getAsync<FusionProject[], FusionApiHttpErrorResponse>(url);
     }
 
-    async newProjectAsync(newProject: NewOrgProject) {
+    async newProjectAsync(newProject: CreateOrgProject) {
         const url = this.resourceCollections.org.projects();
         return await this.httpClient.postAsync<
-            NewOrgProject,
+        CreateOrgProject,
             OrgProject,
             FusionApiHttpErrorResponse
         >(url, newProject, {

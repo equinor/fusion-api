@@ -82,7 +82,7 @@ export {
     PositionLocation,
     FusionProject,
     OrgProjectType,
-    NewOrgProject,
+    CreateOrgProject,
 } from './http/apiClients/models/org/OrgProject';
 export {
     default as PersonDetails,
