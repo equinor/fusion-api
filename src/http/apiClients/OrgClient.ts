@@ -24,12 +24,14 @@ export default class OrgClient extends BaseApiClient {
     }
 
     async newProjectAsync(newProject: CreateOrgProject) {
-        const url = this.resourceCollections.org.projects();
+        const baseUrl = this.resourceCollections.org.projects();
+        const apiVersion = '?api-version=2.0';
+
         return await this.httpClient.postAsync<
             CreateOrgProject,
             OrgProject,
             FusionApiHttpErrorResponse
-        >(url, newProject);
+        >(`${baseUrl}${apiVersion}`, newProject);
     }
 
     async getPositionsAsync(projectId: string, expandProperties?: string[]) {

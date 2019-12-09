@@ -7,7 +7,7 @@ export default class OrgResourceCollection extends BaseResourceCollection {
     }
 
     projects() {
-        return combineUrls(this.getBaseUrl(), 'projects?api-version=2.0');
+        return combineUrls(this.getBaseUrl(), 'projects');
     }
 
     project(projectId: string) {
