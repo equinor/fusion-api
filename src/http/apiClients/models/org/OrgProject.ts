@@ -5,6 +5,7 @@ import AssignedPerson from './AssignedPerson';
 import PositionLocation from './PositionLocation';
 import FusionProject from './FusionProject';
 import OrgProjectType from './OrgProjectType';
+import CreateOrgProject from './CreateOrgProject';
 
 type OrgProject = {
     dates: {
@@ -27,6 +28,7 @@ export {
     PositionLocation,
     FusionProject,
     OrgProjectType,
+    CreateOrgProject
 };
 
 export default OrgProject;

@@ -6,6 +6,10 @@ export default class OrgResourceCollection extends BaseResourceCollection {
         return combineUrls(this.serviceResolver.getOrgBaseUrl());
     }
 
+    projects() {
+        return combineUrls(this.getBaseUrl(), 'projects');
+    }
+
     project(projectId: string) {
         return combineUrls(this.getBaseUrl(), 'projects', projectId);
     }
