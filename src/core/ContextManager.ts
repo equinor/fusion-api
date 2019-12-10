@@ -6,7 +6,7 @@ import { Context, ContextTypes } from '../http/apiClients/models/context';
 import ReliableDictionary, { LocalStorageProvider } from '../utils/ReliableDictionary';
 import useDebouncedAbortable from '../hooks/useDebouncedAbortable';
 import useApiClients from '../http/hooks/useApiClients';
-import { useCurrentApp } from '../app/AppContainer';
+import AppContainer, { useCurrentApp } from '../app/AppContainer';
 
 type ContextCache = {
     current: Context | null;
@@ -18,12 +18,32 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
     private readonly contextClient: ContextClient;
     private isSettingFromRoute: boolean = false;
 
-    constructor(apiClients: ApiClients, contextId: string | null) {
+    constructor(apiClients: ApiClients, appContainer: AppContainer) {
         super(new LocalStorageProvider(`FUSION_CURRENT_CONTEXT`));
         this.contextClient = apiClients.context;
+        const { history } = useFusionContext();
+        const { currentApp } = appContainer;
+
+        console.log('ACTION');
+        const contextId =
+            currentApp &&
+            currentApp.getContextFromUrl &&
+            history.location &&
+            history.location.pathname
+                ? currentApp.getContextFromUrl(history.location.pathname)
+                : null;
+
+        currentApp && currentApp.getContextFromUrl && currentApp.getContextFromUrl('ID');
 
         if (contextId) {
             this.setCurrentContextFromIdAsync(contextId);
+        }
+
+        if (!contextId && currentApp && currentApp.buildURL) {
+            const buildURL = currentApp.buildURL;
+            this.getCurrentContextAsync().then(c => {
+                c && history.push(buildURL(c));
+            });
         }
     }
 

@@ -96,7 +96,7 @@ export type FusionEnvironment = {
 
 export type TelemetryOptions = {
     instrumentationKey: string;
-}
+};
 
 export type FusionContextOptions = {
     loadBundlesFromDisk: boolean;
@@ -134,14 +134,22 @@ export const createFusionContext = (
     serviceResolver: ServiceResolver,
     refs: ExternalRefs,
     options?: FusionContextOptions
-    ): IFusionContext => {
-    const telemetryLogger = new TelemetryLogger(options && options.telemetry ? options.telemetry.instrumentationKey : '', authContainer);
+): IFusionContext => {
+    const telemetryLogger = new TelemetryLogger(
+        options && options.telemetry ? options.telemetry.instrumentationKey : '',
+        authContainer
+    );
     authContainer.setTelemetryLogger(telemetryLogger);
     const abortControllerManager = new AbortControllerManager();
     const resourceCollections = createResourceCollections(serviceResolver, options);
 
     const resourceCache = new ResourceCache();
-    const httpClient = new HttpClient(authContainer, resourceCache, abortControllerManager, telemetryLogger);
+    const httpClient = new HttpClient(
+        authContainer,
+        resourceCache,
+        abortControllerManager,
+        telemetryLogger
+    );
     const apiClients = createApiClients(httpClient, resourceCollections);
 
     const history = createBrowserHistory();
@@ -162,7 +170,7 @@ export const createFusionContext = (
     const contextId =
         contextRouteMatch && contextRouteMatch.params ? contextRouteMatch.params.contextId : null;
 
-    const contextManager = new ContextManager(apiClients, contextId);
+    const contextManager = new ContextManager(apiClients, appContainer);
     const tasksContainer = new TasksContainer(apiClients);
     const notificationCenter = new NotificationCenter();
     const peopleContainer = new PeopleContainer(apiClients, resourceCollections);

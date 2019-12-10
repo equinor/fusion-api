@@ -1,4 +1,4 @@
-import { ContextManifest } from '../../context';
+import { ContextManifest, Context } from '../../context';
 
 export type AppAuth = {
     clientId: string;
@@ -15,6 +15,8 @@ type AppManifest = {
     context?: ContextManifest;
     auth?: AppAuth;
     icon?: string;
+    buildURL?: (context: Context) => string;
+    getContextFromUrl?: (url: string) => string;
 };
 
 export default AppManifest;

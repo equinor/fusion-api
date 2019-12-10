@@ -6,10 +6,13 @@ import { useFusionContext } from '../core/FusionContext';
 import { useEffect, useState } from 'react';
 import TelemetryLogger from '../utils/TelemetryLogger';
 import { ContextManifest } from '../http/apiClients/models/context/ContextManifest';
+import { Context } from '../http/apiClients/models/context/Context';
 
 type AppRegistration = {
     AppComponent: React.ComponentType;
     context?: ContextManifest;
+    buildURL?: (context: Context) => string;
+    getContextFromUrl?: (url: string) => string;
 };
 
 type AppContainerEvents = {
