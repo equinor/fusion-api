@@ -18,7 +18,7 @@ type AppContainerEvents = {
 };
 
 export default class AppContainer extends EventEmitter<AppContainerEvents> {
-    previousApp: AppManifest | null = null;
+    previousApps: AppManifest[] = [];
     currentApp: AppManifest | null = null;
     private apps: AppManifest[] = [];
     private readonly fusionClient: FusionClient;
@@ -58,8 +58,12 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
     }
 
     async setCurrentAppAsync(appKey: string | null): Promise<void> {
+        const previousApp = this.previousApps[0];
+        if(this.currentApp && previousApp && previousApp.key !== appKey) {
+            this.previousApps = [this.currentApp, ...this.previousApps];
+        }
+
         if (!appKey) {
-            this.previousApp = this.currentApp;
             this.currentApp = null;
             this.emit('change', null);
             return;
@@ -79,15 +83,11 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
             return await this.setCurrentAppAsync(appKey);
         }
 
-        if (this.currentApp) {
-            this.previousApp = this.currentApp;
-        }
-
         // Log custom event - new app and prev app
         this.telemetryLogger.trackEvent({
             name: 'App selected',
             properties: {
-                previousApp: this.previousApp ? this.previousApp.name : null,
+                previousApps: this.previousApps.map(pa => pa.name),
                 currentApp: app.name,
             },
         });
