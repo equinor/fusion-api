@@ -41,7 +41,7 @@
         "react-router-dom": "^5.0.1",
         "tslib": "^1.10.0",
         "tslint-config-prettier": "^1.18.0",
-        "typescript": "^3.5.3"
+        "typescript": "^3.7.3"
     },
     "peerDependencies": {
         "@types/history": "^4.7.3",
