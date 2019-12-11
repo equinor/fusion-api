@@ -233,9 +233,9 @@ export default class HttpClient implements IHttpClient {
         init?: RequestInit | null
     ): Promise<File> {
         if (!init) {
-            {
-                new Headers({ Accept: '*/*' });
-            }
+            init = {
+                headers: new Headers({ Accept: '*/*' }),
+            };
         }
 
         init = ensureRequestInit(init, init => ({
