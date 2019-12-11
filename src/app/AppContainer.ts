@@ -88,6 +88,7 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
             name: 'App selected',
             properties: {
                 previousApps: this.previousApps.map(pa => pa.name),
+                previousApp: previousApp ? previousApp.name : null,
                 currentApp: app.name,
             },
         });
