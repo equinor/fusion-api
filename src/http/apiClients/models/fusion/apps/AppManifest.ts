@@ -15,8 +15,6 @@ type AppManifest = {
     context?: ContextManifest;
     auth?: AppAuth;
     icon?: string;
-    buildURL?: (context: Context) => string;
-    getContextFromUrl?: (url: string) => string;
 };
 
 export default AppManifest;

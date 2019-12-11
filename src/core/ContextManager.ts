@@ -22,22 +22,23 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         super(new LocalStorageProvider(`FUSION_CURRENT_CONTEXT`));
         this.contextClient = apiClients.context;
         const { history } = useFusionContext();
-        const { currentApp } = appContainer;
+
+        const context =
+            appContainer && appContainer.currentApp && appContainer.currentApp.context
+                ? appContainer.currentApp.context
+                : null;
 
         const contextId =
-            currentApp &&
-            currentApp.getContextFromUrl &&
-            history.location &&
-            history.location.pathname
-                ? currentApp.getContextFromUrl(history.location.pathname)
+            context && context.getContextFromUrl && history.location && history.location.pathname
+                ? context.getContextFromUrl(history.location.pathname)
                 : null;
 
         if (contextId) {
             this.setCurrentContextFromIdAsync(contextId);
         }
 
-        if (!contextId && currentApp && currentApp.buildURL) {
-            const buildURL = currentApp.buildURL;
+        if (!contextId && context && context.buildURL) {
+            const buildURL = context.buildURL;
             this.getCurrentContextAsync().then(currentContext => {
                 currentContext && history.push(buildURL(currentContext));
             });
