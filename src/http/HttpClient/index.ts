@@ -246,23 +246,13 @@ export default class HttpClient implements IHttpClient {
         const response = await this.performFetchAsync<TExpectedErrorResponse>(url, init);
         const blob = await response.blob();
 
-        const contentDisposition = response.headers.get('Content-Disposition');
-        let filename;
-        if (contentDisposition != null) {
-            const parts = contentDisposition.split(';');
-            for (const part of parts) {
-                if (part.indexOf('filename=') !== -1) {
-                    filename = part.split('=')[1];
-                    break;
-                }
-            }
-        }
+        const fileName = this.resolveFileNameFromHeader(response);
 
-        if (!filename) {
+        if (!fileName) {
             throw new Error('Cannot download file without filename');
         }
 
-        return new File([blob], filename);
+        return new File([blob], fileName);
     }
 
     private async performFetchAsync<TExpectedErrorResponse>(
@@ -445,6 +435,19 @@ export default class HttpClient implements IHttpClient {
         }
 
         return JSON.stringify(body);
+    }
+
+    private resolveFileNameFromHeader(response: Response): string | null {
+        const contentDisposition = response.headers.get('Content-Disposition');
+
+        if (!contentDisposition) return null;
+
+        const parts = contentDisposition.split(';');
+        const fileNamePart = parts.find(part => part.indexOf('filename=') !== -1);
+
+        if (!fileNamePart) return null;
+
+        return fileNamePart.split('=')[1];
     }
 }
 
