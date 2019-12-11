@@ -5,6 +5,7 @@ import ResourceCollections from '../http/resourceCollections';
 import { useFusionContext } from './FusionContext';
 import * as React from 'react';
 import EventEmitter, { useEventEmitter } from '../utils/EventEmitter';
+import useCurrentUser from '../auth/useCurrentUser';
 
 interface IPersonImage {
     [personId: string]: HTMLImageElement;
@@ -122,6 +123,10 @@ const usePersonDetails = (personId: string) => {
     );
 
     const getPersonAsync = async (personId: string) => {
+        if(!personId) {
+            return;
+        }
+        
         try {
             setFetching(true);
 
@@ -200,4 +205,9 @@ const usePersonImageUrl = (personId: string) => {
     return { isFetching, error, imageUrl };
 };
 
-export { usePeopleContainer, usePersonDetails, usePersonImageUrl };
+const useCurrentPersonDetails = () => {
+    const currentUser = useCurrentUser();
+    return usePersonDetails(currentUser?.id || "");
+};
+
+export { usePeopleContainer, usePersonDetails, usePersonImageUrl, useCurrentPersonDetails };
