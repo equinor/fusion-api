@@ -24,7 +24,6 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         const { history } = useFusionContext();
         const { currentApp } = appContainer;
 
-        console.log('ACTION');
         const contextId =
             currentApp &&
             currentApp.getContextFromUrl &&
@@ -33,16 +32,14 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
                 ? currentApp.getContextFromUrl(history.location.pathname)
                 : null;
 
-        currentApp && currentApp.getContextFromUrl && currentApp.getContextFromUrl('ID');
-
         if (contextId) {
             this.setCurrentContextFromIdAsync(contextId);
         }
 
         if (!contextId && currentApp && currentApp.buildURL) {
             const buildURL = currentApp.buildURL;
-            this.getCurrentContextAsync().then(c => {
-                c && history.push(buildURL(c));
+            this.getCurrentContextAsync().then(currentContext => {
+                currentContext && history.push(buildURL(currentContext));
             });
         }
     }
