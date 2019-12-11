@@ -4,6 +4,10 @@ import AppManifest from './models/fusion/apps/AppManifest';
 import getScript from '../../utils/getScript';
 
 export default class FusionClient extends BaseApiClient {
+    protected getBaseUrl() {
+        return this.serviceResolver.getFusionBaseUrl();
+    }
+    
     async getAppsAsync() {
         const url = this.resourceCollections.fusion.apps();
         return await this.httpClient.getAsync<AppManifest[], FusionApiHttpErrorResponse>(url);
