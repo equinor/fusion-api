@@ -142,7 +142,7 @@ export const createFusionContext = (
 
     const resourceCache = new ResourceCache();
     const httpClient = new HttpClient(authContainer, resourceCache, abortControllerManager, telemetryLogger);
-    const apiClients = createApiClients(httpClient, resourceCollections);
+    const apiClients = createApiClients(httpClient, resourceCollections, serviceResolver);
 
     const history = createBrowserHistory();
 

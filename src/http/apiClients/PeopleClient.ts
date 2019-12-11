@@ -15,6 +15,7 @@ import { FusionApiHttpErrorResponse } from './models/common/FusionApiHttpErrorRe
 import { PersonODataExpand } from '../resourceCollections/PeopleResourceCollection';
 import GroupRoleMapping from './models/people/GroupRoleMapping';
 import RoleStatus from './models/people/RoleStatus';
+import ServiceResolver from '../resourceCollections/ServiceResolver';
 
 export {
     PersonDetails,
@@ -29,8 +30,8 @@ export {
 };
 
 export default class PeopleClient extends BaseApiClient {
-    constructor(httpClient: IHttpClient, resourceCollection: ResourceCollections) {
-        super(httpClient, resourceCollection);
+    constructor(httpClient: IHttpClient, resourceCollection: ResourceCollections, serviceResolver: ServiceResolver) {
+        super(httpClient, resourceCollection, serviceResolver);
 
         httpClient.getAsync<void, unknown>(
             resourceCollection.people.apiSignin(),
@@ -39,6 +40,10 @@ export default class PeopleClient extends BaseApiClient {
         );
     }
 
+    protected getBaseUrl() {
+        return this.serviceResolver.getPeopleBaseUrl();
+    }
+    
     async getPersonDetailsAsync(id: string, oDataExpand?: PersonODataExpand[]) {
         const url = this.resourceCollections.people.getPersonDetails(id, oDataExpand);
         return await this.httpClient.getAsync<PersonDetails, FusionApiHttpErrorResponse>(url, {
