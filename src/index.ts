@@ -88,6 +88,7 @@ export {
     FusionProject,
     OrgProjectType,
     CreateOrgProject,
+    OrgProjectDates,
 } from './http/apiClients/models/org/OrgProject';
 export {
     default as PersonDetails,
