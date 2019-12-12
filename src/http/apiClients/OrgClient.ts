@@ -4,6 +4,10 @@ import Position from './models/org/Position';
 import OrgProject, { FusionProject, BasePosition, CreateOrgProject } from './models/org/OrgProject';
 
 export default class OrgClient extends BaseApiClient {
+    protected getBaseUrl() {
+        return this.serviceResolver.getOrgBaseUrl();
+    }
+    
     async getProjectsAsync() {
         const url = this.resourceCollections.org.projects();
         return await this.httpClient.getAsync<OrgProject[], FusionApiHttpErrorResponse>(url);

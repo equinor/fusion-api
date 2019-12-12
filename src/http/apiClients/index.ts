@@ -8,6 +8,7 @@ import PeopleClient from './PeopleClient';
 import OrgClient from './OrgClient';
 import ReportClient from './ReportClient';
 import PowerBIClient from './PowerBIClient';
+import ServiceResolver from '../resourceCollections/ServiceResolver';
 
 export { FusionApiHttpErrorResponse } from './models/common/FusionApiHttpErrorResponse';
 
@@ -24,16 +25,17 @@ type ApiClients = {
 
 export const createApiClients = (
     httpClient: IHttpClient,
-    resources: ResourceCollections
+    resources: ResourceCollections,
+    serviceResolver: ServiceResolver
 ): ApiClients => ({
-    dataProxy: new DataProxyClient(httpClient, resources),
-    fusion: new FusionClient(httpClient, resources),
-    context: new ContextClient(httpClient, resources),
-    tasks: new TasksClient(httpClient, resources),
-    people: new PeopleClient(httpClient, resources),
-    org: new OrgClient(httpClient, resources),
-    report: new ReportClient(httpClient, resources),
-    powerBI: new PowerBIClient(httpClient, resources),
+    dataProxy: new DataProxyClient(httpClient, resources, serviceResolver),
+    fusion: new FusionClient(httpClient, resources, serviceResolver),
+    context: new ContextClient(httpClient, resources, serviceResolver),
+    tasks: new TasksClient(httpClient, resources, serviceResolver),
+    people: new PeopleClient(httpClient, resources, serviceResolver),
+    org: new OrgClient(httpClient, resources, serviceResolver),
+    report: new ReportClient(httpClient, resources, serviceResolver),
+    powerBI: new PowerBIClient(httpClient, resources, serviceResolver),
 });
 
 export default ApiClients;

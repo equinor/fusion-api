@@ -3,6 +3,10 @@ import { FusionApiHttpErrorResponse } from "./models/common/FusionApiHttpErrorRe
 import { Context, ContextTypes } from "./models/context";
 
 export default class ContextClient extends BaseApiClient {
+    protected getBaseUrl() {
+        return this.serviceResolver.getContextBaseUrl();
+    }
+    
     async getContextsAsync() {
         const url = this.resourceCollections.context.contexts();
         return await this.httpClient.getAsync<Context[], FusionApiHttpErrorResponse>(url);
