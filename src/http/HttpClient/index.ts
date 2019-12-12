@@ -450,7 +450,18 @@ export default class HttpClient implements IHttpClient {
 
         if (!fileNamePart) return null;
 
-        return fileNamePart.split('=')[1];
+        const fileName = fileNamePart.split('=')[1];
+
+        // The API returns filename wrapped in double qutoes to preserve spaces.
+        // These should be replaced when parsing the filename to prevent the browser
+        // from prefixing and postfixing the filname with underscores during download.
+
+        // If we do not replace the quotes, the parsed filename would be a double quoted
+        // string (e.g. ""file.pdf""). The browser would likely create the following
+        // filename when the file is downloaded: _file.pdf_. This would result in the
+        // client not recognising the file format and the user will not be able to open
+        // the file.
+        return fileName.replace(/["]/g, '');
     }
 }
 
