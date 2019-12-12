@@ -191,13 +191,13 @@ export default class HttpClient implements IHttpClient {
                 const headerLines = xhr.getAllResponseHeaders();
                 const headers = headerLines.trim().split(/[\r\n]+/);
 
-                var headerMap = new Headers();
-                headers.forEach(function(line) {
+                const headerMap = headers.reduce((headerMap, line) => {
                     const parts = line.split(': ');
                     const header = parts.shift();
                     const value = parts.join(': ');
                     if (header) headerMap.append(header, value);
-                });
+                    return headerMap;
+                }, new Headers());
 
                 const response: HttpResponse<TResponse> = {
                     data: JSON.parse<TResponse>(xhr.responseText),
