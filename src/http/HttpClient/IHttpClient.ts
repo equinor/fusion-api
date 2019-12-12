@@ -82,11 +82,13 @@ export default interface IHttpClient {
      * @param url Request url
      * @param form Optional request init object
      * @param onProgress Callback for progress updates
+     * @param responseParser Optional custom response parser
      */
     postFormAsync<TResponse, TExpectedErrorResponse>(
         url: string,
         form: FormData,
-        onProgress?: (percentage: number, event: ProgressEvent<XMLHttpRequestEventTarget>) => void
+        onProgress?: (percentage: number, event: ProgressEvent<XMLHttpRequestEventTarget>) => void,
+        responseParser?: (response: string) => TResponse
     ): Promise<HttpResponse<TResponse>>;
 
     /**

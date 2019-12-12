@@ -172,7 +172,8 @@ export default class HttpClient implements IHttpClient {
     async postFormAsync<TResponse, TExpectedErrorResponse>(
         url: string,
         form: FormData,
-        onProgress?: (percentage: number, event: ProgressEvent<XMLHttpRequestEventTarget>) => void
+        onProgress?: (percentage: number, event: ProgressEvent<XMLHttpRequestEventTarget>) => void,
+        responseParser?: (response: string) => TResponse
     ): Promise<HttpResponse<TResponse>> {
         const token = await this.authContainer.acquireTokenAsync(url);
         return new Promise((resolve, reject) => {
@@ -200,7 +201,9 @@ export default class HttpClient implements IHttpClient {
                 }, new Headers());
 
                 const response: HttpResponse<TResponse> = {
-                    data: JSON.parse<TResponse>(xhr.responseText),
+                    data: responseParser
+                        ? responseParser(xhr.responseText)
+                        : JSON.parse<TResponse>(xhr.responseText),
                     status: xhr.status,
                     headers: headerMap,
                     refreshRequest: null,
