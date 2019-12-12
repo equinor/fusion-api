@@ -37,10 +37,10 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
             this.setCurrentContextFromIdAsync(contextId);
         }
 
-        if (!contextId && context && context.buildURL) {
-            const buildURL = context.buildURL;
+        if (!contextId && context && context.buildUrl) {
+            const buildUrl = context.buildUrl;
             this.getCurrentContextAsync().then(currentContext => {
-                currentContext && history.push(buildURL(currentContext));
+                currentContext && history.push(buildUrl(currentContext));
             });
         }
     }

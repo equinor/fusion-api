@@ -1,4 +1,4 @@
-import { ContextManifest, Context } from '../../context';
+import { ContextManifest } from '../../context';
 
 export type AppAuth = {
     clientId: string;
