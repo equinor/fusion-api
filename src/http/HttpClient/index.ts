@@ -158,7 +158,7 @@ export default class HttpClient implements IHttpClient {
     ) {
         init = ensureRequestInit(init, init => ({
             ...init,
-            method: "OPTIONS",
+            method: 'OPTIONS',
         }));
 
         const response = await this.performFetchAsync<TExpectedErrorResponse>(url, init);
@@ -167,6 +167,92 @@ export default class HttpClient implements IHttpClient {
             response,
             responseParser
         );
+    }
+
+    async postFormAsync<TResponse, TExpectedErrorResponse>(
+        url: string,
+        form: FormData,
+        onProgress?: (percentage: number, event: ProgressEvent<XMLHttpRequestEventTarget>) => void
+    ): Promise<HttpResponse<TResponse>> {
+        const token = await this.authContainer.acquireTokenAsync(url);
+        return new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+
+            if (onProgress) {
+                xhr.upload.addEventListener('progress', e => {
+                    if (e.lengthComputable) {
+                        const percentage = Math.round((e.loaded * 100) / e.total);
+                        onProgress(percentage, e);
+                    }
+                });
+            }
+
+            xhr.addEventListener('load', () => {
+                const headerLines = xhr.getAllResponseHeaders();
+                const headers = headerLines.trim().split(/[\r\n]+/);
+
+                const headerMap = headers.reduce((headerMap, line) => {
+                    const parts = line.split(': ');
+                    const header = parts.shift();
+                    const value = parts.join(': ');
+                    if (header) headerMap.append(header, value);
+                    return headerMap;
+                }, new Headers());
+
+                const response: HttpResponse<TResponse> = {
+                    data: JSON.parse<TResponse>(xhr.responseText),
+                    status: xhr.status,
+                    headers: headerMap,
+                    refreshRequest: null,
+                };
+                resolve(response);
+            });
+
+            xhr.upload.addEventListener('error', () => {
+                const response = xhr.responseText;
+                if (response) {
+                    const errorResponse = JSON.parse<TExpectedErrorResponse>(response);
+                    reject(new HttpClientRequestFailedError(url, xhr.status, errorResponse));
+                }
+                reject(new HttpClientRequestFailedError(url, xhr.status, null));
+            });
+
+            xhr.setRequestHeader('X-Session-Id', this.sessionId);
+            xhr.setRequestHeader('Accept', 'application/json');
+            xhr.setRequestHeader('x-pp-refresh', 'true');
+            xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+
+            xhr.open('POST', url, true);
+
+            xhr.send(form);
+        });
+    }
+
+    async getBlobAsync<TExpectedErrorResponse>(
+        url: string,
+        init?: RequestInit | null
+    ): Promise<File> {
+        if (!init) {
+            init = {
+                headers: new Headers({ Accept: '*/*' }),
+            };
+        }
+
+        init = ensureRequestInit(init, init => ({
+            ...init,
+            method: 'GET',
+        }));
+
+        const response = await this.performFetchAsync<TExpectedErrorResponse>(url, init);
+        const blob = await response.blob();
+
+        const fileName = this.resolveFileNameFromHeader(response);
+
+        if (!fileName) {
+            throw new Error('Cannot download file without filename');
+        }
+
+        return new File([blob], fileName);
     }
 
     private async performFetchAsync<TExpectedErrorResponse>(
@@ -349,6 +435,19 @@ export default class HttpClient implements IHttpClient {
         }
 
         return JSON.stringify(body);
+    }
+
+    private resolveFileNameFromHeader(response: Response): string | null {
+        const contentDisposition = response.headers.get('Content-Disposition');
+
+        if (!contentDisposition) return null;
+
+        const parts = contentDisposition.split(';');
+        const fileNamePart = parts.find(part => part.indexOf('filename=') !== -1);
+
+        if (!fileNamePart) return null;
+
+        return fileNamePart.split('=')[1];
     }
 }
 
