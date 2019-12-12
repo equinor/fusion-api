@@ -217,12 +217,12 @@ export default class HttpClient implements IHttpClient {
                 reject(new HttpClientRequestFailedError(url, xhr.status, null));
             });
 
+            xhr.open('POST', url, true);
+
             xhr.setRequestHeader('X-Session-Id', this.sessionId);
             xhr.setRequestHeader('Accept', 'application/json');
             xhr.setRequestHeader('x-pp-refresh', 'true');
             xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-
-            xhr.open('POST', url, true);
 
             xhr.send(form);
         });
