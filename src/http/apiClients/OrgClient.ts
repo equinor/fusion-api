@@ -1,7 +1,7 @@
 import BaseApiClient from './BaseApiClient';
 import { FusionApiHttpErrorResponse } from './models/common/FusionApiHttpErrorResponse';
 import Position from './models/org/Position';
-import OrgProject, { FusionProject, BasePosition, CreateOrgProject } from './models/org/OrgProject';
+import OrgProject, { BasePosition, CreateOrgProject } from './models/org/OrgProject';
 
 export default class OrgClient extends BaseApiClient {
     protected getBaseUrl() {
@@ -22,9 +22,14 @@ export default class OrgClient extends BaseApiClient {
         });
     }
 
-    async searchProjectsAsync(query: string) {
+    async searchProjectsAsync(query: string, apiVersion?: string) {
+        const requestHeader: RequestInit = {
+            headers: {
+                'api-version': apiVersion ? apiVersion : "1.0"
+            }
+        }
         const url = this.resourceCollections.org.projectQuery(query);
-        return await this.httpClient.getAsync<FusionProject[], FusionApiHttpErrorResponse>(url);
+        return await this.httpClient.getAsync<OrgProject[], FusionApiHttpErrorResponse>(url, requestHeader);
     }
 
     async newProjectAsync(newProject: CreateOrgProject) {

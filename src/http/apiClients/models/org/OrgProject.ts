@@ -6,12 +6,10 @@ import PositionLocation from './PositionLocation';
 import FusionProject from './FusionProject';
 import OrgProjectType from './OrgProjectType';
 import CreateOrgProject from './CreateOrgProject';
+import OrgProjectDates from './OrgProjectDates';
 
 type OrgProject = {
-    dates: {
-        endDate: Date;
-        startDate: Date;
-    };
+    dates: OrgProjectDates;
     director: Position;
     directorPositionId: string;
     domainId: string;
@@ -28,7 +26,8 @@ export {
     PositionLocation,
     FusionProject,
     OrgProjectType,
-    CreateOrgProject
+    CreateOrgProject,
+    OrgProjectDates
 };
 
 export default OrgProject;
