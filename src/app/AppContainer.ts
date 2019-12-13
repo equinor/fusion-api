@@ -133,8 +133,6 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
 
 const global = window as any;
 
-global['EQUINOR_FUSION_APP_CONTAINER'] = null;
-
 let appContainerPromise: Promise<AppContainer> | null = null;
 let setAppContainerSingleton: ((appContainer: AppContainer) => void) | null;
 const appContainerFactory = (appContainer: AppContainer) => {
