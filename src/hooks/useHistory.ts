@@ -19,7 +19,7 @@ const ensureGlobalFusionHistoryContextType = () => {
     return fusionContext;
 };
 
-const HistoryContext = ensureGlobalFusionHistoryContextType();
+export const HistoryContext = ensureGlobalFusionHistoryContextType();
 
 export default (): History => {
     const fusionContext = useFusionContext();
