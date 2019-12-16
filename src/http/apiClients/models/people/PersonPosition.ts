@@ -8,6 +8,9 @@ type PersonPosition = {
     obs: string;
     project: PersonProject;
     basePosition: PersonBasePosition;
+    appliesFrom: Date | null;
+    appliesTo: Date | null;
+    workload: number | null;
 };
 
 export default PersonPosition;
