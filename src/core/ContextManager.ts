@@ -7,6 +7,7 @@ import ReliableDictionary, { LocalStorageProvider } from '../utils/ReliableDicti
 import useDebouncedAbortable from '../hooks/useDebouncedAbortable';
 import useApiClients from '../http/hooks/useApiClients';
 import AppContainer, { useCurrentApp } from '../app/AppContainer';
+import AppManifest from '../http/apiClients/models/fusion/apps/AppManifest';
 
 type ContextCache = {
     current: Context | null;
@@ -21,28 +22,30 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
     constructor(apiClients: ApiClients, appContainer: AppContainer) {
         super(new LocalStorageProvider(`FUSION_CURRENT_CONTEXT`));
         this.contextClient = apiClients.context;
-        const { history } = useFusionContext();
 
-        const context =
-            appContainer && appContainer.currentApp && appContainer.currentApp.context
-                ? appContainer.currentApp.context
-                : null;
+        const unlistenAppContainer = appContainer.on('change', app => {
+            this.resolveContextFromUrlOrLocalStorage(app);
+            unlistenAppContainer();
+        });
+    }
+
+    private async resolveContextFromUrlOrLocalStorageAsync(app: AppManifest | null) {
+        if (!app || !app.context) return;
+
+        const { history } = useFusionContext();
+        const {
+            context: { getContextFromUrl, buildUrl },
+        } = app;
 
         const contextId =
-            context && context.getContextFromUrl && history.location && history.location.pathname
-                ? context.getContextFromUrl(history.location.pathname)
+            getContextFromUrl && history.location && history.location.pathname
+                ? getContextFromUrl(history.location.pathname)
                 : null;
 
-        if (contextId) {
-            this.setCurrentContextFromIdAsync(contextId);
-        }
+        if (contextId) return this.setCurrentContextFromIdAsync(contextId);
 
-        if (!contextId && context && context.buildUrl) {
-            const buildUrl = context.buildUrl;
-            this.getCurrentContextAsync().then(currentContext => {
-                currentContext && history.push(buildUrl(currentContext));
-            });
-        }
+        const currentContext = await this.getCurrentContextAsync();
+        if (buildUrl && currentContext) history.push(buildUrl(currentContext));
     }
 
     async setCurrentContextAsync(context: Context) {
