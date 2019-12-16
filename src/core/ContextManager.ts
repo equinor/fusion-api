@@ -29,27 +29,23 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         });
     }
 
-    private resolveContextFromUrlOrLocalStorage(app: AppManifest | null) {
-        if (!app) return;
+    private async resolveContextFromUrlOrLocalStorage(app: AppManifest | null) {
+        if (!app || !app.context) return;
 
         const { history } = useFusionContext();
-        const context = app && app.context ? app.context : null;
+        const {
+            context: { getContextFromUrl, buildUrl },
+        } = app;
 
         const contextId =
-            context && context.getContextFromUrl && history.location && history.location.pathname
-                ? context.getContextFromUrl(history.location.pathname)
+            getContextFromUrl && history.location && history.location.pathname
+                ? getContextFromUrl(history.location.pathname)
                 : null;
 
-        if (contextId) {
-            this.setCurrentContextFromIdAsync(contextId);
-        }
+        if (contextId) return this.setCurrentContextFromIdAsync(contextId);
 
-        if (!contextId && context && context.buildUrl) {
-            const buildUrl = context.buildUrl;
-            this.getCurrentContextAsync().then(currentContext => {
-                currentContext && history.push(buildUrl(currentContext));
-            });
-        }
+        const currentContext = await this.getCurrentContextAsync();
+        if (buildUrl && currentContext) history.push(buildUrl(currentContext));
     }
 
     async setCurrentContextAsync(context: Context) {
