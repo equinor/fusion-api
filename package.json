@@ -1,70 +1,6 @@
 {
-<<<<<<< HEAD
-  "name": "@equinor/fusion",
-  "version": "1.0.0-beta.11",
-  "description": "Everything a Fusion app needs to communicate with the core",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
-  "scripts": {
-    "update-version-definition": "echo \"export default '$npm_package_version';\" > src/version.ts && git commit -am \"Update version.ts\"",
-    "build": "npm run update-version-definition && npm run tsc",
-    "tsc": "tsc -p ./tsconfig.json",
-    "tsc:version": "tsc --version"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/equinor/fusion.git"
-  },
-  "keywords": [
-    "fusion"
-  ],
-  "author": "Fusion Core",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/equinor/fusion/issues"
-  },
-  "homepage": "https://github.com/equinor/fusion#readme",
-  "dependencies": {
-    "@microsoft/applicationinsights-web": "^2.3.0",
-    "odata-query": "^5.7.0",
-    "uuid": "^3.3.3"
-  },
-  "devDependencies": {
-    "@types/history": "^4.7.3",
-    "@types/react": "^16.9.2",
-    "@types/react-router": "^5.0.3",
-    "@types/react-router-dom": "^4.3.5",
-    "@types/uuid": "^3.4.5",
-    "history": "^4.9.0",
-    "react": "^16.9.0",
-    "react-router": "^5.0.1",
-    "react-router-dom": "^5.0.1",
-    "tslib": "^1.10.0",
-    "tslint-config-prettier": "^1.18.0",
-    "typescript": "^3.5.3"
-  },
-  "peerDependencies": {
-    "@types/history": "^4.7.3",
-    "@types/react": "^16.9.2",
-    "@types/react-router": "^5.0.3",
-    "@types/react-router-dom": "^4.3.5",
-    "@types/uuid": "^3.4.5",
-    "history": "^4.9.0",
-    "react": "^16.9.0",
-    "react-router": "^5.0.1",
-    "react-router-dom": "^5.0.1",
-    "uuid": "^3.3.3",
-    "odata-query": "^5.7.0"
-  },
-  "files": [
-    "/lib"
-  ],
-  "publishConfig": {
-    "access": "public"
-  }
-=======
     "name": "@equinor/fusion",
-    "version": "0.4.76",
+    "version": "1.0.0-beta.11",
     "description": "Everything a Fusion app needs to communicate with the core",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -126,5 +62,4 @@
     "publishConfig": {
         "access": "public"
     }
->>>>>>> master
 }
