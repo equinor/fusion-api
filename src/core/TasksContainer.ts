@@ -136,7 +136,7 @@ export default class TasksContainer extends EventEmitter<TasksEvents> {
 
         // Overwrite existing tasks with updated tasks
         this.tasks.state = mergedTasks.map(t => tasks.find(n => n.id === t.id) || t);
-        this.emit('tasks-updated', this.tasks);
+        this.emit('tasks-updated', this.tasks.state);
     }
 
     private setTaskTypes(taskTypes: TaskType[]) {
