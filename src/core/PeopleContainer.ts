@@ -7,6 +7,7 @@ import * as React from 'react';
 import EventEmitter, { useEventEmitter } from '../utils/EventEmitter';
 import DistributedState, { IDistributedState } from '../utils/DistributedState';
 import { IEventHub } from '../utils/EventHub';
+import useCurrentUser from '../auth/useCurrentUser';
 
 interface IPersonImage {
     [personId: string]: IDistributedState<HTMLImageElement>;
@@ -216,4 +217,9 @@ const usePersonImageUrl = (personId: string) => {
     return { isFetching, error, imageUrl };
 };
 
-export { usePeopleContainer, usePersonDetails, usePersonImageUrl };
+const useCurrentPersonDetails = () => {
+    const currentUser = useCurrentUser();
+    return usePersonDetails(currentUser?.id || "");
+};
+
+export { usePeopleContainer, usePersonDetails, usePersonImageUrl, useCurrentPersonDetails };

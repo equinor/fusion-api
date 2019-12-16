@@ -19,6 +19,10 @@ export default class PowerBIClient extends BaseApiClient {
     private dashboards: IDashboardItem = {};
     private powerBiToken: string = '';
 
+    protected getBaseUrl() {
+        return this.serviceResolver.getReportsBaseUrl();
+    }
+    
     private async getPowerBITokenAsync(): Promise<string> {
         if (this.powerBiToken && AuthToken.parse(this.powerBiToken).isValid())
             return this.powerBiToken;

@@ -1,4 +1,4 @@
-import { ContextType } from "./ContextTypes";
+import { ContextType } from './ContextTypes';
 
 type ParentContext = {
     id: string;

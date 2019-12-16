@@ -36,7 +36,12 @@ export {
 } from './http/apiClients/models/common/FusionApiHttpErrorResponse';
 
 export { Context, ContextType, ContextTypes } from './http/apiClients/models/context';
-export { useContextManager, useCurrentContext, useContextQuery } from './core/ContextManager';
+export {
+    useContextManager,
+    useCurrentContext,
+    useContextQuery,
+    useCurrentContextTypes,
+} from './core/ContextManager';
 
 export { withAbortController, useAbortControllerManager } from './utils/AbortControllerManager';
 
@@ -58,7 +63,12 @@ export {
     useTaskPrioritySetter,
 } from './core/TasksContainer';
 
-export { usePeopleContainer, usePersonDetails, usePersonImageUrl } from './core/PeopleContainer';
+export {
+    usePeopleContainer,
+    usePersonDetails,
+    usePersonImageUrl,
+    useCurrentPersonDetails,
+} from './core/PeopleContainer';
 
 export {
     default as Task,
@@ -77,6 +87,8 @@ export {
     PositionLocation,
     FusionProject,
     OrgProjectType,
+    CreateOrgProject,
+    OrgProjectDates,
 } from './http/apiClients/models/org/OrgProject';
 export {
     default as PersonDetails,

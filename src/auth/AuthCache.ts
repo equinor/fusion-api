@@ -5,9 +5,10 @@ import ReliableDictionary, { LocalStorageProvider } from '../utils/ReliableDicti
 import EventHub from '../utils/EventHub';
 
 enum TokenCacheKey {
-    TOKEN = 'TOKEN',
-    USER = 'USER',
-}
+    TOKEN = "TOKEN",
+    USER = "USER",
+    REDIRECT_URL = "REDIRECT_URL",
+};
 
 export default class AuthCache extends ReliableDictionary {
     constructor() {
@@ -53,5 +54,15 @@ export default class AuthCache extends ReliableDictionary {
         }
 
         return AuthUser.fromJSON(cachedUser);
+    }
+
+    async storeRedirectUrl(redirectUrl: string) {
+        await this.setAsync(TokenCacheKey.REDIRECT_URL, redirectUrl);
+    }
+
+    async getRedirectUrl() {
+        const redirectUrl = await this.getAsync<string, string>(TokenCacheKey.REDIRECT_URL);
+        await this.removeAsync(TokenCacheKey.REDIRECT_URL);
+        return redirectUrl;
     }
 }

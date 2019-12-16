@@ -1,4 +1,4 @@
-import { ContextTypes } from '../../context';
+import { ContextManifest } from '../../context';
 
 export type AppAuth = {
     clientId: string;
@@ -12,9 +12,9 @@ type AppManifest = {
     version: string;
     description: string;
     tags: string[];
-    contextTypes?: ContextTypes[];
+    context?: ContextManifest;
     auth?: AppAuth;
     icon?: string;
-}
+};
 
 export default AppManifest;

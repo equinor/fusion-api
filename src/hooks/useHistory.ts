@@ -5,7 +5,21 @@ import { useFusionContext } from "../core/FusionContext";
 export interface IHistoryContext {
     history: History | null;
 }
-export const HistoryContext = createContext<IHistoryContext>({ history: null });
+
+const ensureGlobalFusionHistoryContextType = () => {
+    const win = window as any;
+    const key = 'EQUINOR_FUSION_HISTORY_CONTEXT';
+
+    if (typeof win[key] !== undefined && win[key]) {
+        return win[key] as React.Context<IHistoryContext>;
+    }
+
+    const fusionContext = createContext<IHistoryContext>({ history: null });
+    win[key] = fusionContext;
+    return fusionContext;
+};
+
+export const HistoryContext = ensureGlobalFusionHistoryContextType();
 
 export default (): History => {
     const fusionContext = useFusionContext();

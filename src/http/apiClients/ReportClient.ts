@@ -7,6 +7,10 @@ import ConfigValidation from './models/report/ConfigValidation';
 import BaseApiClient from './BaseApiClient';
 
 export default class ReportClient extends BaseApiClient {
+    protected getBaseUrl() {
+        return this.serviceResolver.getReportsBaseUrl();
+    }
+    
     async getReportsAsync() {
         const url = this.resourceCollections.report.reports();
         return await this.httpClient.getAsync<Report[], FusionApiHttpErrorResponse>(url);

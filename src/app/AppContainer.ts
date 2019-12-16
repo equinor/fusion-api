@@ -7,9 +7,11 @@ import { useEffect, useState } from 'react';
 import TelemetryLogger from '../utils/TelemetryLogger';
 import DistributedState, { IDistributedState } from '../utils/DistributedState';
 import { IEventHub } from '../utils/EventHub';
+import { ContextManifest } from '../http/apiClients/models/context/ContextManifest';
 
 type AppRegistration = {
     AppComponent: React.ComponentType;
+    context?: ContextManifest;
 };
 
 type AppContainerEvents = {
@@ -20,7 +22,7 @@ type AppContainerEvents = {
 export default class AppContainer extends EventEmitter<AppContainerEvents> {
     private _currentApp: IDistributedState<AppManifest | null>;
     private apps: IDistributedState<AppManifest[]>;
-    previousApp: AppManifest | null = null;
+    previousApps: IDistributedState<AppManifest[]>;
 
     get currentApp() {
         return this._currentApp.state;
@@ -33,15 +35,17 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
         super();
         this.fusionClient = apiClients.fusion;
         this.telemetryLogger = telemetryLogger;
-        this._currentApp = new DistributedState<AppManifest | null>('currentApp', null, eventHub);
+        this._currentApp = new DistributedState<AppManifest | null>('AppContainer.currentApp', null, eventHub);
         this._currentApp.on('change', (updatedApp: AppManifest | null) => {
             this.emit('change', updatedApp);
         });
 
-        this.apps = new DistributedState<AppManifest[]>('apps', [], eventHub);
+        this.apps = new DistributedState<AppManifest[]>('AppContainer.apps', [], eventHub);
         this.apps.on('change', (apps: AppManifest[]) => {
             this.emit('update', apps);
         });
+
+        this.previousApps = new DistributedState<AppManifest[]>('AppContainer.previousApps', [], eventHub);
     }
 
     updateManifest(appKey: string, manifest: AppManifest): void {
@@ -72,9 +76,13 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
     }
 
     async setCurrentAppAsync(appKey: string | null): Promise<void> {
+        const previousApp = this.previousApps.state[0];
+        if(this.currentApp && previousApp && previousApp.key !== appKey) {
+            this.previousApps.state = [this.currentApp, ...this.previousApps.state];
+        }
+
         if (!appKey) {
             this._currentApp.state = null;
-            this.previousApp = this._currentApp.state;
             this.emit('change', null);
             return;
         }
@@ -93,16 +101,13 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
             return await this.setCurrentAppAsync(appKey);
         }
 
-        if (this._currentApp) {
-            this.previousApp = this._currentApp.state;
-        }
-
         // Log custom event - new app and prev app
         this.telemetryLogger.trackEvent({
             name: 'App selected',
             properties: {
                 previousApp: this._currentApp.state ? this._currentApp.state.name : null,
                 selectedApp: app.name,
+                previousApps: this.previousApps.state.map(pa => pa.name),
                 currentApp: app.name,
             },
         });

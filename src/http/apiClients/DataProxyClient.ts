@@ -37,6 +37,10 @@ export {
 };
 
 export default class DataProxyClient extends BaseApiClient {
+    protected getBaseUrl() {
+        return this.serviceResolver.getDataProxyBaseUrl();
+    }
+    
     async getHandoverAsync(siteCode: string, projectIdentifier: string) {
         const url = this.resourceCollections.dataProxy.handover(siteCode, projectIdentifier);
         return await this.httpClient.getAsync<HandoverItem[], FusionApiHttpErrorResponse>(url);
