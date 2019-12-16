@@ -24,7 +24,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         this.contextClient = apiClients.context;
 
         const unlistenAppContainer = appContainer.on('change', app => {
-            this.resolveContextFromUrlOrLocalStorage(app);
+            this.resolveContextFromUrlOrLocalStorageAsync(app);
             unlistenAppContainer();
         });
     }
