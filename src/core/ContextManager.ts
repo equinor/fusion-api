@@ -7,6 +7,7 @@ import ReliableDictionary, { LocalStorageProvider } from '../utils/ReliableDicti
 import useDebouncedAbortable from '../hooks/useDebouncedAbortable';
 import useApiClients from '../http/hooks/useApiClients';
 import AppContainer, { useCurrentApp } from '../app/AppContainer';
+import AppManifest from '../http/apiClients/models/fusion/apps/AppManifest';
 
 type ContextCache = {
     current: Context | null;
@@ -21,12 +22,18 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
     constructor(apiClients: ApiClients, appContainer: AppContainer) {
         super(new LocalStorageProvider(`FUSION_CURRENT_CONTEXT`));
         this.contextClient = apiClients.context;
-        const { history } = useFusionContext();
 
-        const context =
-            appContainer && appContainer.currentApp && appContainer.currentApp.context
-                ? appContainer.currentApp.context
-                : null;
+        const unlistenAppContainer = appContainer.on('change', app => {
+            this.resolveContextFromUrlOrLocalStorage(app);
+            unlistenAppContainer();
+        });
+    }
+
+    private resolveContextFromUrlOrLocalStorage(app: AppManifest | null) {
+        if (!app) return;
+
+        const { history } = useFusionContext();
+        const context = app && app.context ? app.context : null;
 
         const contextId =
             context && context.getContextFromUrl && history.location && history.location.pathname
