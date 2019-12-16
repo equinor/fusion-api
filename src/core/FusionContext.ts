@@ -170,7 +170,7 @@ export const createFusionContext = (
     const contextId =
         contextRouteMatch && contextRouteMatch.params ? contextRouteMatch.params.contextId : null;
 
-    const contextManager = new ContextManager(apiClients, appContainer);
+    const contextManager = new ContextManager(apiClients, appContainer, history);
     const tasksContainer = new TasksContainer(apiClients);
     const notificationCenter = new NotificationCenter();
     const peopleContainer = new PeopleContainer(apiClients, resourceCollections);
