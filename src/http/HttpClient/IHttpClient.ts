@@ -76,4 +76,24 @@ export default interface IHttpClient {
         init?: RequestInit | null,
         responseParser?: ResponseParser<TResponse>
     ): Promise<HttpResponse<TResponse>>;
+
+    /**
+     *  Performs a POST with multipart form data
+     * @param url Request url
+     * @param form Optional request init object
+     * @param onProgress Callback for progress updates
+     * @param responseParser Optional custom response parser
+     */
+    postFormAsync<TResponse, TExpectedErrorResponse>(
+        url: string,
+        form: FormData,
+        onProgress?: (percentage: number, event: ProgressEvent<XMLHttpRequestEventTarget>) => void,
+        responseParser?: (response: string) => TResponse
+    ): Promise<HttpResponse<TResponse>>;
+
+    /**
+     *  Performs a GET request and converts the response to a File
+     * @param url Request url
+     */
+    getBlobAsync<TExpectedErrorResponse>(url: string): Promise<File>;
 }

@@ -134,13 +134,15 @@ export const createFusionContext = (
     const resourceCache = new ResourceCache(new EventHub());
     const abortControllerManager = new AbortControllerManager(new EventHub());
     
+    authContainer.setTelemetryLogger(telemetryLogger);
+
     const httpClient = new HttpClient(
         authContainer,
         resourceCache,
         abortControllerManager,
         telemetryLogger
     );
-    const apiClients = createApiClients(httpClient, resourceCollections);
+    const apiClients = createApiClients(httpClient, resourceCollections, serviceResolver);
 
     const history = createBrowserHistory();
 
@@ -161,7 +163,7 @@ export const createFusionContext = (
     const contextId =
         contextRouteMatch && contextRouteMatch.params ? contextRouteMatch.params.contextId : null;
 
-    const contextManager = new ContextManager(apiClients, contextId);
+    const contextManager = new ContextManager(apiClients, appContainer);
     const tasksContainer = new TasksContainer(apiClients, new EventHub());
     const notificationCenter = new NotificationCenter(new EventHub());
     const peopleContainer = new PeopleContainer(apiClients, resourceCollections, new EventHub());

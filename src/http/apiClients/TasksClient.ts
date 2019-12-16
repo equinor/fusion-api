@@ -3,6 +3,10 @@ import { FusionApiHttpErrorResponse } from './models/common/FusionApiHttpErrorRe
 import Task, { TaskSourceSystem, TaskType, TaskTypes } from './models/tasks/Task';
 
 export default class TasksClient extends BaseApiClient {
+    protected getBaseUrl() {
+        return this.serviceResolver.getTasksBaseUrl();
+    }
+    
     async getSourceSystemsAsync() {
         const url = this.resourceCollections.tasks.sourceSystems();
         return this.httpClient.getAsync<TaskSourceSystem[], FusionApiHttpErrorResponse>(url);
