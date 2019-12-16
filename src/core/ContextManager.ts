@@ -29,7 +29,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         });
     }
 
-    private async resolveContextFromUrlOrLocalStorage(app: AppManifest | null) {
+    private async resolveContextFromUrlOrLocalStorageAsync(app: AppManifest | null) {
         if (!app || !app.context) return;
 
         const { history } = useFusionContext();
