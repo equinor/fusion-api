@@ -17,6 +17,7 @@ import NotificationCenter from './NotificationCenter';
 import PeopleContainer from './PeopleContainer';
 import UserMenuContainer from './UserMenuContainer';
 import TelemetryLogger from '../utils/TelemetryLogger';
+import EventHub from '../utils/EventHub';
 
 export type Auth = {
     container: IAuthContainer;
@@ -75,6 +76,7 @@ export interface IFusionContext {
     userMenuSectionsContainer: UserMenuContainer;
     environment: FusionEnvironment;
     logging: Logging;
+    options?: FusionContextOptions;
 }
 
 export type CoreSettings = {
@@ -104,20 +106,8 @@ export type FusionContextOptions = {
     telemetry?: TelemetryOptions;
 };
 
-const ensureGlobalFusionContextType = () => {
-    const win = window as any;
-    const key = 'EQUINOR_FUSION_CONTEXT';
-
-    if (typeof win[key] !== undefined && win[key]) {
-        return win[key] as React.Context<IFusionContext>;
-    }
-
-    const fusionContext = createContext<IFusionContext>({} as IFusionContext);
-    win[key] = fusionContext;
-    return fusionContext;
-};
-
-const FusionContext = ensureGlobalFusionContextType();
+const globalEquinorFusionContextKey = '74b1613f-f22a-451b-a5c3-1c9391e91e68';
+const win = window as any;
 
 const ensureFusionEnvironment = (options?: FusionContextOptions): FusionEnvironment => {
     if (options && options.environment) {
@@ -132,18 +122,21 @@ const ensureFusionEnvironment = (options?: FusionContextOptions): FusionEnvironm
 export const createFusionContext = (
     authContainer: IAuthContainer,
     serviceResolver: ServiceResolver,
-    refs: ExternalRefs,
+    refs: Refs,
     options?: FusionContextOptions
 ): IFusionContext => {
     const telemetryLogger = new TelemetryLogger(
         options && options.telemetry ? options.telemetry.instrumentationKey : '',
         authContainer
     );
-    authContainer.setTelemetryLogger(telemetryLogger);
-    const abortControllerManager = new AbortControllerManager();
+    
+    const abortControllerManager = new AbortControllerManager(new EventHub());
     const resourceCollections = createResourceCollections(serviceResolver, options);
 
-    const resourceCache = new ResourceCache();
+    const resourceCache = new ResourceCache(new EventHub());
+
+    authContainer.setTelemetryLogger(telemetryLogger);
+    
     const httpClient = new HttpClient(
         authContainer,
         resourceCache,
@@ -157,10 +150,11 @@ export const createFusionContext = (
     const coreSettings = new SettingsContainer<CoreSettings>(
         'core',
         authContainer.getCachedUser(),
+        new EventHub(),
         defaultSettings
     );
 
-    const appContainer = new AppContainer(apiClients, telemetryLogger);
+    const appContainer = new AppContainer(apiClients, telemetryLogger, new EventHub());
     appContainerFactory(appContainer);
 
     // Try to get the current context id from the current route if a user navigates directly to the app/context
@@ -171,13 +165,13 @@ export const createFusionContext = (
         contextRouteMatch && contextRouteMatch.params ? contextRouteMatch.params.contextId : null;
 
     const contextManager = new ContextManager(apiClients, appContainer, history);
-    const tasksContainer = new TasksContainer(apiClients);
-    const notificationCenter = new NotificationCenter();
-    const peopleContainer = new PeopleContainer(apiClients, resourceCollections);
-    const userMenuSectionsContainer = new UserMenuContainer();
+    const tasksContainer = new TasksContainer(apiClients, new EventHub());
+    const notificationCenter = new NotificationCenter(new EventHub());
+    const peopleContainer = new PeopleContainer(apiClients, resourceCollections, new EventHub());
+    const userMenuSectionsContainer = new UserMenuContainer(new EventHub());
     const environment = ensureFusionEnvironment(options);
 
-    return {
+    const fusionContext = {
         auth: { container: authContainer },
         http: {
             client: httpClient,
@@ -186,10 +180,7 @@ export const createFusionContext = (
             resourceCache,
             serviceResolver,
         },
-        refs: {
-            ...refs,
-            headerContent: useRef<HTMLDivElement>(null),
-        },
+        refs,
         history,
         settings: {
             core: coreSettings,
@@ -208,8 +199,31 @@ export const createFusionContext = (
         logging: {
             telemetry: telemetryLogger,
         },
+        options,
     };
+    if (!win[globalEquinorFusionContextKey]) {
+        win[globalEquinorFusionContextKey] = fusionContext;
+    }
+    return fusionContext;
 };
+
+const ensureGlobalFusionContextType = () => {
+    if (!win[globalEquinorFusionContextKey]) {
+        return createContext<IFusionContext>({} as IFusionContext);
+    }
+    const existingFusionContext = win[globalEquinorFusionContextKey] as IFusionContext;
+
+    return createContext<IFusionContext>(
+        createFusionContext(
+            existingFusionContext.auth.container,
+            existingFusionContext.http.serviceResolver,
+            existingFusionContext.refs,
+            existingFusionContext.options
+        )
+    );
+};
+
+const FusionContext = ensureGlobalFusionContextType();
 
 export const useFusionContext = () => useContext(FusionContext);
 

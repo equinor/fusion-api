@@ -68,7 +68,7 @@ export default abstract class ReliableDictionary<
         return this.provider.toObject() as TCacheType;
     }
 
-    private async emitChangesAsync(): Promise<void> {
+    protected async emitChangesAsync(): Promise<void> {
         const dictionary = await this.toObjectAsync();
         this.emit('change', dictionary);
     }

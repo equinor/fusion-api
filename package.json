@@ -1,6 +1,6 @@
 {
     "name": "@equinor/fusion",
-    "version": "0.4.79",
+    "version": "1.0.0-beta.21",
     "description": "Everything a Fusion app needs to communicate with the core",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",

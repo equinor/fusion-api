@@ -1,6 +1,8 @@
 import uuid from 'uuid/v1';
 import ReliableDictionary, { LocalStorageProvider } from '../utils/ReliableDictionary';
 import { useFusionContext } from './FusionContext';
+import DistributedState, { IDistributedState } from '../utils/DistributedState';
+import EventHub, { IEventHub } from '../utils/EventHub';
 
 export type NotificationLevel = 'low' | 'medium' | 'high';
 export type NotificationPriority = 'low' | 'medium' | 'high';
@@ -68,14 +70,21 @@ export default class NotificationCenter extends ReliableDictionary<
     NotificationCache,
     NotificationEvents
 > {
-    private presenters: NotificationPresenterRegistration[] = [];
+    private presenters: IDistributedState<NotificationPresenterRegistration[]>;
 
-    constructor() {
-        super(new LocalStorageProvider('NOTIFICATION_CENTER', { notifications: [] }));
+    constructor(eventHub: IEventHub) {
+        super(
+            new LocalStorageProvider('NOTIFICATION_CENTER', new EventHub(), { notifications: [] })
+        );
+        this.presenters = new DistributedState<NotificationPresenterRegistration[]>(
+            'NotificationCenter.presenters',
+            [],
+            eventHub
+        );
     }
 
     async sendAsync(notificationRequest: NotificationRequest): Promise<NotificationResponse> {
-        if(!await this.shouldPresentNotificationAsync(notificationRequest)) {
+        if (!(await this.shouldPresentNotificationAsync(notificationRequest))) {
             return Promise.reject();
         }
 
@@ -110,12 +119,10 @@ export default class NotificationCenter extends ReliableDictionary<
             level,
             present,
         };
-
-        this.presenters.push(notificationPresenter);
+        this.presenters.state = [...this.presenters.state, notificationPresenter];
 
         return () => {
-            const index = this.presenters.indexOf(notificationPresenter);
-            this.presenters.splice(index, 1);
+            this.presenters.state = this.presenters.state.filter(p => p !== notificationPresenter);
         };
     }
 
@@ -127,7 +134,7 @@ export default class NotificationCenter extends ReliableDictionary<
     private async shouldPresentNotificationAsync(notificationRequest: NotificationRequest) {
         const allNotifications = await this.getAllNotificationsAsync();
 
-        if(allNotifications.find(n => n.id === notificationRequest.id)) {
+        if (allNotifications.find(n => n.id === notificationRequest.id)) {
             return false;
         }
 
@@ -196,7 +203,7 @@ export default class NotificationCenter extends ReliableDictionary<
     }
 
     private getPresenter(notification: NotificationRequest) {
-        return this.presenters.find(presenter => presenter.level === notification.level);
+        return this.presenters.state.find(presenter => presenter.level === notification.level);
     }
 }
 

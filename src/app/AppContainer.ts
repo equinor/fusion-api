@@ -5,6 +5,8 @@ import FusionClient from '../http/apiClients/FusionClient';
 import { useFusionContext } from '../core/FusionContext';
 import { useEffect, useState } from 'react';
 import TelemetryLogger from '../utils/TelemetryLogger';
+import DistributedState, { IDistributedState } from '../utils/DistributedState';
+import { IEventHub } from '../utils/EventHub';
 import { ContextManifest } from '../http/apiClients/models/context/ContextManifest';
 
 type AppRegistration = {
@@ -13,21 +15,37 @@ type AppRegistration = {
 };
 
 type AppContainerEvents = {
-    update: (app: AppManifest) => void;
+    update: (app: AppManifest[]) => void;
     change: (app: AppManifest | null) => void;
 };
 
 export default class AppContainer extends EventEmitter<AppContainerEvents> {
-    previousApps: AppManifest[] = [];
-    currentApp: AppManifest | null = null;
-    private apps: AppManifest[] = [];
+    private _currentApp: IDistributedState<AppManifest | null>;
+    private apps: IDistributedState<AppManifest[]>;
+    previousApps: IDistributedState<AppManifest[]>;
+
+    get currentApp() {
+        return this._currentApp.state;
+    }
+
     private readonly fusionClient: FusionClient;
     private readonly telemetryLogger: TelemetryLogger;
 
-    constructor(apiClients: ApiClients, telemetryLogger: TelemetryLogger) {
+    constructor(apiClients: ApiClients, telemetryLogger: TelemetryLogger, eventHub: IEventHub) {
         super();
         this.fusionClient = apiClients.fusion;
         this.telemetryLogger = telemetryLogger;
+        this._currentApp = new DistributedState<AppManifest | null>('AppContainer.currentApp', null, eventHub);
+        this._currentApp.on('change', (updatedApp: AppManifest | null) => {
+            this.emit('change', updatedApp);
+        });
+
+        this.apps = new DistributedState<AppManifest[]>('AppContainer.apps', [], eventHub);
+        this.apps.on('change', (apps: AppManifest[]) => {
+            this.emit('update', apps);
+        });
+
+        this.previousApps = new DistributedState<AppManifest[]>('AppContainer.previousApps', [], eventHub);
     }
 
     updateManifest(appKey: string, manifest: AppManifest): void {
@@ -50,21 +68,21 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
     }
 
     get(appKey: string | null) {
-        return this.apps.find(app => app.key === appKey) || null;
+        return this.apps.state.find(app => app.key === appKey) || null;
     }
 
     getAll() {
-        return [...this.apps];
+        return [...this.apps.state];
     }
 
     async setCurrentAppAsync(appKey: string | null): Promise<void> {
-        const previousApp = this.previousApps[0];
+        const previousApp = this.previousApps.state[0];
         if(this.currentApp && previousApp && previousApp.key !== appKey) {
-            this.previousApps = [this.currentApp, ...this.previousApps];
+            this.previousApps.state = [this.currentApp, ...this.previousApps.state];
         }
 
         if (!appKey) {
-            this.currentApp = null;
+            this._currentApp.state = null;
             this.emit('change', null);
             return;
         }
@@ -87,13 +105,14 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
         this.telemetryLogger.trackEvent({
             name: 'App selected',
             properties: {
-                previousApps: this.previousApps.map(pa => pa.name),
-                previousApp: previousApp ? previousApp.name : null,
+                previousApp: this._currentApp.state ? this._currentApp.state.name : null,
+                selectedApp: app.name,
+                previousApps: this.previousApps.state.map(pa => pa.name),
                 currentApp: app.name,
             },
         });
 
-        this.currentApp = app;
+        this._currentApp.state = app;
         this.emit('change', app);
     }
 
@@ -122,21 +141,21 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
         const existingApp = this.get(app.key);
 
         if (existingApp) {
-            this.apps = this.apps.map(a => (a.key === app.key ? app : a));
+            this.apps.state = this.apps.state.map(a => (a.key === app.key ? app : a));
         } else {
-            this.apps = [...this.apps, app];
+            this.apps.state = [...this.apps.state, app];
         }
 
-        this.emit('update', app);
+        this.emit('update', this.apps.state);
     }
 }
 
-const global = window as any;
+let appContainerInstance: AppContainer | null = null;
 
 let appContainerPromise: Promise<AppContainer> | null = null;
 let setAppContainerSingleton: ((appContainer: AppContainer) => void) | null;
 const appContainerFactory = (appContainer: AppContainer) => {
-    global['EQUINOR_FUSION_APP_CONTAINER'] = appContainer;
+    appContainerInstance = appContainer;
 
     if (setAppContainerSingleton) {
         setAppContainerSingleton(appContainer);
@@ -145,8 +164,8 @@ const appContainerFactory = (appContainer: AppContainer) => {
 };
 
 const getAppContainer = (): Promise<AppContainer> => {
-    if (global['EQUINOR_FUSION_APP_CONTAINER']) {
-        return Promise.resolve(global['EQUINOR_FUSION_APP_CONTAINER']);
+    if (appContainerInstance) {
+        return Promise.resolve(appContainerInstance);
     }
 
     if (appContainerPromise) {

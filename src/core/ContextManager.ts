@@ -6,6 +6,7 @@ import { Context, ContextTypes } from '../http/apiClients/models/context';
 import ReliableDictionary, { LocalStorageProvider } from '../utils/ReliableDictionary';
 import useDebouncedAbortable from '../hooks/useDebouncedAbortable';
 import useApiClients from '../http/hooks/useApiClients';
+import EventHub from '../utils/EventHub';
 import AppContainer, { useCurrentApp } from '../app/AppContainer';
 import AppManifest from '../http/apiClients/models/fusion/apps/AppManifest';
 import { History } from 'history';
@@ -22,7 +23,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
     private history: History;
 
     constructor(apiClients: ApiClients, appContainer: AppContainer, history: History) {
-        super(new LocalStorageProvider(`FUSION_CURRENT_CONTEXT`));
+        super(new LocalStorageProvider(`FUSION_CURRENT_CONTEXT`, new EventHub()));
         this.contextClient = apiClients.context;
         this.history = history;
 

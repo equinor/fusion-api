@@ -1,7 +1,8 @@
-import AuthApp from "./AuthApp";
-import AuthToken from "./AuthToken";
-import AuthUser, { AuthUserJSON } from "./AuthUser";
-import ReliableDirctionary, { LocalStorageProvider } from "../utils/ReliableDictionary";
+import AuthApp from './AuthApp';
+import AuthToken from './AuthToken';
+import AuthUser, { AuthUserJSON } from './AuthUser';
+import ReliableDictionary, { LocalStorageProvider } from '../utils/ReliableDictionary';
+import EventHub from '../utils/EventHub';
 
 enum TokenCacheKey {
     TOKEN = "TOKEN",
@@ -9,9 +10,9 @@ enum TokenCacheKey {
     REDIRECT_URL = "REDIRECT_URL",
 };
 
-export default class AuthCache extends ReliableDirctionary {
+export default class AuthCache extends ReliableDictionary {
     constructor() {
-        super(new LocalStorageProvider("FUSION_AUTH_CACHE"));
+        super(new LocalStorageProvider('FUSION_AUTH_CACHE', new EventHub()));
     }
 
     private static createAppCacheKey(app: AuthApp, key: TokenCacheKey) {

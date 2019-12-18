@@ -1,21 +1,27 @@
-import IReliableDictionaryStorageProvider from "./IReliableDictionaryStorageProvider";
+import IReliableDictionaryStorageProvider from './IReliableDictionaryStorageProvider';
 import JSON from '../JSON';
+import DistributedState, { IDistributedState } from '../DistributedState';
+import { IEventHub } from '../EventHub';
 
 type LocalCache = { [key: string]: any };
 
 export default class LocalStorageProvider implements IReliableDictionaryStorageProvider {
     private baseKey: string;
-    private localCache: LocalCache | null = null;
+    private localCache: IDistributedState<LocalCache | null>;
 
-    constructor(baseKey: string, defaultValue?: LocalCache) {
+    constructor(baseKey: string, eventHub: IEventHub, defaultValue?: LocalCache) {
         this.baseKey = baseKey;
 
         const cachedJson = localStorage.getItem(this.baseKey);
         const cachedValue = cachedJson ? JSON.parse<LocalCache>(cachedJson) : null;
-        this.localCache = cachedValue;
+        this.localCache = new DistributedState(
+            `LocalStorageProvider.${baseKey}`,
+            cachedValue,
+            eventHub
+        );
 
         if (!cachedValue && defaultValue) {
-            this.localCache = defaultValue;
+            this.localCache.state = defaultValue;
         }
     }
 
@@ -32,34 +38,34 @@ export default class LocalStorageProvider implements IReliableDictionaryStorageP
 
     async setItemAsync<T>(key: string, value: T): Promise<void> {
         const localCache = await this.toObjectAsync();
-        this.localCache = { ...localCache, [key]: value };
+        this.localCache.state = { ...localCache, [key]: value };
         await this.persistAsync();
     }
 
     async removeItemAsync(key: string): Promise<void> {
         const localCache = await this.toObjectAsync();
         delete localCache[key];
-        this.localCache = { ...localCache };
+        this.localCache.state = { ...localCache };
         await this.persistAsync();
     }
 
     async clearAsync(): Promise<void> {
         localStorage.removeItem(this.baseKey);
-        this.localCache = {};
+        this.localCache.state = {};
     }
 
     async toObjectAsync(): Promise<LocalCache> {
-        if (this.localCache === null) {
+        if (this.localCache.state === null) {
             const cachedJson = localStorage.getItem(this.baseKey);
             const cachedValue = cachedJson ? JSON.parse<LocalCache>(cachedJson) : {};
-            this.localCache = cachedValue;
+            this.localCache.state = cachedValue;
         }
 
-        return this.localCache as LocalCache;
+        return this.localCache.state as LocalCache;
     }
 
     toObject(): LocalCache | null {
-        return this.localCache;
+        return this.localCache.state;
     }
 
     private async persistAsync() {
