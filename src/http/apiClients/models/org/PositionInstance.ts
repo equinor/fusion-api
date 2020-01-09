@@ -11,9 +11,16 @@ type PositionInstance = {
     appliesTo: Date;
     type: PositionInstanceType; // Normal/Offshore/Vacation etc.
     location: PositionLocation;
-    assignedPerson: AssignedPerson;
+    assignedPerson: AssignedPerson | null;
     properties: object; // dynamic metadata
     rotationId: string | null;
+    taskOwnerIds: string[] | null;
+    reportsToIds?: string[];
+    isDeleted: boolean;
+    positionId: string;
+    externalId: string;
+    parentPositionId: string | null;
+
 };
 
 export default PositionInstance;
