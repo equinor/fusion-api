@@ -1,4 +1,4 @@
-export { IAuthContainer, default as AuthContainer } from './auth/AuthContainer';
+export { IAuthContainer, FusionAuthLoginError, default as AuthContainer } from './auth/AuthContainer';
 export { default as AuthApp } from './auth/AuthApp';
 export { default as AuthNonce } from './auth/AuthNonce';
 export { default as AuthUser } from './auth/AuthUser';
