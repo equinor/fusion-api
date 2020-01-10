@@ -7,6 +7,7 @@ import FusionProject from './FusionProject';
 import OrgProjectType from './OrgProjectType';
 import CreateOrgProject from './CreateOrgProject';
 import OrgProjectDates from './OrgProjectDates';
+import Contract from './Contract';
 
 type OrgProject = {
     dates: OrgProjectDates;
@@ -27,7 +28,8 @@ export {
     FusionProject,
     OrgProjectType,
     CreateOrgProject,
-    OrgProjectDates
+    OrgProjectDates,
+    Contract,
 };
 
 export default OrgProject;

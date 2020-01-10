@@ -1,69 +1,68 @@
 import BaseApiClient from './BaseApiClient';
 import { FusionApiHttpErrorResponse } from './models/common/FusionApiHttpErrorResponse';
-import Position from './models/org/Position';
+import Contract from './models/org/Contract';
 import OrgProject, { BasePosition, CreateOrgProject } from './models/org/OrgProject';
+import Position from './models/org/Position';
 
 export default class OrgClient extends BaseApiClient {
-    protected getBaseUrl() {
-        return this.serviceResolver.getOrgBaseUrl();
-    }
-    
-    async getProjectsAsync() {
+    public async getProjectsAsync() {
         const url = this.resourceCollections.org.projects();
-        return await this.httpClient.getAsync<OrgProject[], FusionApiHttpErrorResponse>(url);
+        return this.httpClient.getAsync<OrgProject[], FusionApiHttpErrorResponse>(url);
     }
 
-    async getProjectAsync(projectId: string) {
+    public async getProjectAsync(projectId: string) {
         const url = this.resourceCollections.org.project(projectId);
-        return await this.httpClient.getAsync<OrgProject, FusionApiHttpErrorResponse>(url, {
+        return this.httpClient.getAsync<OrgProject, FusionApiHttpErrorResponse>(url, {
             headers: {
                 'api-version': '2.0',
             },
         });
     }
 
-    async searchProjectsAsync(query: string, apiVersion?: string) {
+    public async searchProjectsAsync(query: string, apiVersion?: string) {
         const requestHeader: RequestInit = {
             headers: {
-                'api-version': apiVersion ? apiVersion : "1.0"
-            }
-        }
+                'api-version': apiVersion ? apiVersion : '1.0',
+            },
+        };
         const url = this.resourceCollections.org.projectQuery(query);
-        return await this.httpClient.getAsync<OrgProject[], FusionApiHttpErrorResponse>(url, requestHeader);
+        return this.httpClient.getAsync<OrgProject[], FusionApiHttpErrorResponse>(
+            url,
+            requestHeader
+        );
     }
 
-    async newProjectAsync(newProject: CreateOrgProject) {
+    public async newProjectAsync(newProject: CreateOrgProject) {
         const baseUrl = this.resourceCollections.org.projects();
         const url = `${baseUrl}?api-version=2.0`;
 
-        return await this.httpClient.postAsync<
-            CreateOrgProject,
-            OrgProject,
-            FusionApiHttpErrorResponse
-        >(url, newProject);
+        return this.httpClient.postAsync<CreateOrgProject, OrgProject, FusionApiHttpErrorResponse>(
+            url,
+            newProject
+        );
     }
 
-    async getPositionsAsync(projectId: string, expandProperties?: string[]) {
+    public async getPositionsAsync(projectId: string, expandProperties?: string[]) {
         const url = this.resourceCollections.org.positions(projectId, expandProperties);
-        return await this.httpClient.getAsync<Position[], FusionApiHttpErrorResponse>(url, {
+        return this.httpClient.getAsync<Position[], FusionApiHttpErrorResponse>(url, {
             headers: {
                 'api-version': '2.0',
             },
         });
     }
 
-    async getPositionAsync(projectId: string, positionId: string) {
+    public async getPositionAsync(projectId: string, positionId: string) {
         const url = this.resourceCollections.org.position(projectId, positionId);
-        return await this.httpClient.getAsync<Position, FusionApiHttpErrorResponse>(url, {
+        return this.httpClient.getAsync<Position, FusionApiHttpErrorResponse>(url, {
             headers: {
                 'api-version': '2.0',
             },
         });
     }
 
-    async updatePositionAsync(projectId: string, position: Position) {
+    public async updatePositionAsync(projectId: string, position: Position) {
         const url = this.resourceCollections.org.position(projectId, position.id, false);
-        return await this.httpClient.putAsync<Position, Position, FusionApiHttpErrorResponse>(
+        return this.httpClient.putAsync<Position, Position, FusionApiHttpErrorResponse>(
             url,
             position,
             {
@@ -75,34 +74,34 @@ export default class OrgClient extends BaseApiClient {
         );
     }
 
-    async getRoleDescriptionAsync(projectId: string, positionId: string) {
+    public async getRoleDescriptionAsync(projectId: string, positionId: string) {
         const url = this.resourceCollections.org.roleDescription(projectId, positionId);
-        return await this.httpClient.getAsync<string, FusionApiHttpErrorResponse>(
+        return this.httpClient.getAsync<string, FusionApiHttpErrorResponse>(
             url,
             null,
             async (response: Response) => {
-                return await response.text();
+                return response.text();
             }
         );
     }
 
-    async getBasePositionRoleDescriptionAsync(basePositionId: string) {
+    public async getBasePositionRoleDescriptionAsync(basePositionId: string) {
         const url = this.resourceCollections.org.basePositionRoleDescription(basePositionId);
-        return await this.httpClient.getAsync<string, FusionApiHttpErrorResponse>(
+        return this.httpClient.getAsync<string, FusionApiHttpErrorResponse>(
             url,
             null,
             async (response: Response) => {
-                return await response.text();
+                return response.text();
             }
         );
     }
 
-    async getDisciplineNetworkAsync(projectId: string, discipline: string) {
+    public async getDisciplineNetworkAsync(projectId: string, discipline: string) {
         const url = this.resourceCollections.org.disciplineNetwork(projectId, discipline);
-        return await this.httpClient.getAsync<Position[], FusionApiHttpErrorResponse>(url);
+        return this.httpClient.getAsync<Position[], FusionApiHttpErrorResponse>(url);
     }
 
-    async canEditPosition(projectId: string, positionId: string) {
+    public async canEditPosition(projectId: string, positionId: string) {
         const url = this.resourceCollections.org.position(projectId, positionId, false);
 
         try {
@@ -127,7 +126,7 @@ export default class OrgClient extends BaseApiClient {
         }
     }
 
-    async getDisciplines() {
+    public async getDisciplines() {
         const url = this.resourceCollections.org.basePositions();
 
         try {
@@ -148,5 +147,27 @@ export default class OrgClient extends BaseApiClient {
         } catch (error) {
             return false;
         }
+    }
+
+    public async getContractsAsync(projectId: string) {
+        const url = this.resourceCollections.org.getContractsUrl(projectId);
+        return this.httpClient.getAsync<Contract[], FusionApiHttpErrorResponse>(url, {
+            headers: {
+                'api-version': '2.0',
+            },
+        });
+    }
+
+    public async getContractPositionsAsync(projectId: string, contractId: string) {
+        const url = this.resourceCollections.org.getContractPositionsUrl(projectId, contractId);
+        return this.httpClient.getAsync<Position[], FusionApiHttpErrorResponse>(url, {
+            headers: {
+                'api-version': '2.0',
+            },
+        });
+    }
+
+    protected getBaseUrl() {
+        return this.serviceResolver.getOrgBaseUrl();
     }
 }
