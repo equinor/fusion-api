@@ -47,7 +47,7 @@ export {
     useCurrentContextTypes,
 } from './core/ContextManager';
 
-export { withAbortController, useAbortControllerManager } from './utils/AbortControllerManager';
+export { withAbortController, useAbortControllerManager, enqueueAsyncOperation, AbortableAction, AsyncOperation } from './utils/AbortControllerManager';
 
 export {
     useComponentDisplayType,
