@@ -123,20 +123,21 @@ export const createFusionContext = (
     authContainer: IAuthContainer,
     serviceResolver: ServiceResolver,
     refs: Refs,
-    options?: FusionContextOptions
+    options?: FusionContextOptions,
+    browserHistory?: History
 ): IFusionContext => {
     const telemetryLogger = new TelemetryLogger(
         options && options.telemetry ? options.telemetry.instrumentationKey : '',
         authContainer
     );
-    
+
     const abortControllerManager = new AbortControllerManager(new EventHub());
     const resourceCollections = createResourceCollections(serviceResolver, options);
 
     const resourceCache = new ResourceCache(new EventHub());
 
     authContainer.setTelemetryLogger(telemetryLogger);
-    
+
     const httpClient = new HttpClient(
         authContainer,
         resourceCache,
@@ -145,7 +146,7 @@ export const createFusionContext = (
     );
     const apiClients = createApiClients(httpClient, resourceCollections, serviceResolver);
 
-    const history = createBrowserHistory();
+    const history = browserHistory || createBrowserHistory();
 
     const coreSettings = new SettingsContainer<CoreSettings>(
         'core',
@@ -218,7 +219,8 @@ const ensureGlobalFusionContextType = () => {
             existingFusionContext.auth.container,
             existingFusionContext.http.serviceResolver,
             existingFusionContext.refs,
-            existingFusionContext.options
+            existingFusionContext.options,
+            existingFusionContext.history
         )
     );
 };
