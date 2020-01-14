@@ -74,10 +74,10 @@ const getTopLevelWindow = (win: Window): Window => {
 };
 
 export default class AuthContainer implements IAuthContainer {
-    private apps: AuthApp[];
-    private cache: AuthCache;
-    private cachedUser: AuthUser | null = null;
-    private telemetryLogger?: TelemetryLogger;
+    protected apps: AuthApp[];
+    protected cache: AuthCache;
+    protected cachedUser: AuthUser | null = null;
+    protected telemetryLogger?: TelemetryLogger;
 
     constructor() {
         this.apps = [];
@@ -220,13 +220,13 @@ export default class AuthContainer implements IAuthContainer {
         this.telemetryLogger = telemetryLogger;
     }
 
-    private logError(error: Error) {
+    protected logError(error: Error) {
         if (this.telemetryLogger) {
             this.telemetryLogger.trackException({ error });
         }
     }
 
-    private async updateTokenForAppAsync(app: AuthApp, token: string) {
+    protected async updateTokenForAppAsync(app: AuthApp, token: string) {
         const parsedToken = AuthToken.parse(token);
         await this.cache.storeTokenAsync(app, parsedToken);
 
@@ -259,7 +259,7 @@ export default class AuthContainer implements IAuthContainer {
         return AuthContainer.getPartFromHash(hash, 'error');
     }
 
-    private static getPartFromHash(hash: string, key: string): string | null {
+    protected static getPartFromHash(hash: string, key: string): string | null {
         const parts = hash.substr(1).split('&');
         const tokenPart = parts.find(part => part.indexOf(`${key}=`) === 0);
 

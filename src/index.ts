@@ -1,4 +1,8 @@
-export { IAuthContainer, default as AuthContainer } from './auth/AuthContainer';
+export {
+    IAuthContainer,
+    FusionAuthLoginError,
+    default as AuthContainer,
+} from './auth/AuthContainer';
 export { default as AuthApp } from './auth/AuthApp';
 export { default as AuthNonce } from './auth/AuthNonce';
 export { default as AuthUser } from './auth/AuthUser';
@@ -89,6 +93,7 @@ export {
     OrgProjectType,
     CreateOrgProject,
     OrgProjectDates,
+    Contract,
 } from './http/apiClients/models/org/OrgProject';
 export {
     default as PersonDetails,

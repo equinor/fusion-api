@@ -71,4 +71,11 @@ export default class OrgResourceCollection extends BaseResourceCollection {
         const query = `?discipline=${discipline}`;
         return `${url}${query}`;
     }
+
+    getContractsUrl(projectId: string) {
+        return combineUrls(this.getBaseUrl(), 'projects', projectId, 'contracts');
+    }
+    getContractPositionsUrl(projectId: string, contractId: string) {
+        return combineUrls(this.getContractsUrl(projectId), contractId, 'positions');
+    }
 }
