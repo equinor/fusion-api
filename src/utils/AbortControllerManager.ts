@@ -63,4 +63,41 @@ const withAbortController = (): ((abortableAction: AbortableAction) => AbortDisp
     };
 };
 
-export { useAbortControllerManager, withAbortController };
+type AsyncOperation<T> = (abortSignal?: AbortSignal) => T;
+
+/**
+ * Enqueue an operation to be run after the next repaint
+ * @param operation 
+ * @param abortSignal 
+ */
+const enqueueAsyncOperation = <T = void>(operation: AsyncOperation<T>, abortSignal?: AbortSignal): Promise<T> => {
+    return new Promise((resolve, reject) => {
+        if(abortSignal?.aborted) {
+            return reject();
+        }
+
+        abortSignal?.addEventListener("abort", () => reject());
+
+        const animationFrame = window.requestAnimationFrame(() => {
+            if(abortSignal?.aborted) {
+                return reject();
+            }
+
+            const timer = setTimeout(async () => {
+                try {
+                    const result = operation();
+                    resolve(result);
+                }
+                catch(e) {
+                    reject(e);
+                }
+            }, 0);
+
+            abortSignal?.addEventListener("abort", () => clearTimeout(timer));
+        });
+
+        abortSignal?.addEventListener("abort", () => window.cancelAnimationFrame(animationFrame));
+    });
+};
+
+export { useAbortControllerManager, withAbortController, enqueueAsyncOperation, AbortableAction, AsyncOperation };
