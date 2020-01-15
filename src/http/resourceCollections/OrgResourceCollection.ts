@@ -39,6 +39,19 @@ export default class OrgResourceCollection extends BaseResourceCollection {
         return `${url}${query}`;
     }
 
+    instances(projectId: string, expandProperties?: string[]) {
+        const url = combineUrls(this.getBaseUrl(), 'projects', projectId, 'instances');
+        if(!expandProperties || !expandProperties.length){
+            return url;
+        }
+        const query = `?$expand=${expandProperties.join(',')}`;
+        return `${url}${query}`;
+    }
+
+    instance(projectId: string, instanceId: string) {
+        return combineUrls(this.instances(projectId), instanceId);
+    }
+
     roleDescription(projectId: string, positionId: string) {
         return combineUrls(
             this.position(projectId, positionId, false),

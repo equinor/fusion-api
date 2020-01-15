@@ -1,7 +1,7 @@
 import BaseApiClient from './BaseApiClient';
 import { FusionApiHttpErrorResponse } from './models/common/FusionApiHttpErrorResponse';
 import Contract from './models/org/Contract';
-import OrgProject, { BasePosition, CreateOrgProject } from './models/org/OrgProject';
+import OrgProject, { BasePosition, CreateOrgProject, PositionInstance } from './models/org/OrgProject';
 import Position from './models/org/Position';
 
 export default class OrgClient extends BaseApiClient {
@@ -74,6 +74,42 @@ export default class OrgClient extends BaseApiClient {
         );
     }
 
+    public async updatePositionPropertyAsync(
+        projectId: string,
+        positionId: string,
+        positionProperties: Partial<Position>
+    ) {
+        const url = this.resourceCollections.org.position(projectId, positionId, false);
+        return this.httpClient.patchAsync<Partial<Position>, Position, FusionApiHttpErrorResponse>(
+            url,
+            positionProperties,
+            {
+                headers: {
+                    'api-version': '2.0',
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+    }
+
+    public async updateInstancePropertyAsync(
+        projectId: string,
+        instanceId: string,
+        instanceProperties: Partial<PositionInstance>
+    ) {
+        const url = this.resourceCollections.org.instance(projectId, instanceId);
+        return this.httpClient.patchAsync<Partial<PositionInstance>, PositionInstance, FusionApiHttpErrorResponse>(
+            url,
+            instanceProperties,
+            {
+                headers: {
+                    'api-version': '2.0',
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+    }
+    
     public async getRoleDescriptionAsync(projectId: string, positionId: string) {
         const url = this.resourceCollections.org.roleDescription(projectId, positionId);
         return this.httpClient.getAsync<string, FusionApiHttpErrorResponse>(
