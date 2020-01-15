@@ -22,7 +22,13 @@ export {
 
 export { default as ServiceResolver } from './http/resourceCollections/ServiceResolver';
 
-export { default as HttpClient, IHttpClient } from './http/HttpClient';
+export {
+    default as HttpClient,
+    IHttpClient,
+    HttpClientError,
+    HttpClientParseError,
+    HttpClientRequestFailedError,
+} from './http/HttpClient';
 
 export {
     default as ResourceCollections,
@@ -47,7 +53,13 @@ export {
     useCurrentContextTypes,
 } from './core/ContextManager';
 
-export { withAbortController, useAbortControllerManager, enqueueAsyncOperation, AbortableAction, AsyncOperation } from './utils/AbortControllerManager';
+export {
+    withAbortController,
+    useAbortControllerManager,
+    enqueueAsyncOperation,
+    AbortableAction,
+    AsyncOperation,
+} from './utils/AbortControllerManager';
 
 export {
     useComponentDisplayType,
