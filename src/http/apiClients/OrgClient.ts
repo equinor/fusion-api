@@ -1,7 +1,11 @@
 import BaseApiClient from './BaseApiClient';
 import { FusionApiHttpErrorResponse } from './models/common/FusionApiHttpErrorResponse';
 import Contract from './models/org/Contract';
-import OrgProject, { BasePosition, CreateOrgProject, PositionInstance } from './models/org/OrgProject';
+import OrgProject, {
+    BasePosition,
+    CreateOrgProject,
+    PositionInstance,
+} from './models/org/OrgProject';
 import Position from './models/org/Position';
 
 export default class OrgClient extends BaseApiClient {
@@ -60,7 +64,7 @@ export default class OrgClient extends BaseApiClient {
         });
     }
 
-    public async updatePositionAsync(projectId: string, position: Position) {
+    public async updatePositionAsync(projectId: string, position: Position, edit?: boolean) {
         const url = this.resourceCollections.org.position(projectId, position.id, false);
         return this.httpClient.putAsync<Position, Position, FusionApiHttpErrorResponse>(
             url,
@@ -69,6 +73,7 @@ export default class OrgClient extends BaseApiClient {
                 headers: {
                     'api-version': '2.0',
                     'Content-Type': 'application/json',
+                    'x-pro-edit-mode': edit ? 'true' : 'false',
                 },
             }
         );
@@ -77,7 +82,8 @@ export default class OrgClient extends BaseApiClient {
     public async updatePositionPropertyAsync(
         projectId: string,
         positionId: string,
-        positionProperties: Partial<Position>
+        positionProperties: Partial<Position>,
+        edit?: boolean
     ) {
         const url = this.resourceCollections.org.position(projectId, positionId, false);
         return this.httpClient.patchAsync<Partial<Position>, Position, FusionApiHttpErrorResponse>(
@@ -87,6 +93,7 @@ export default class OrgClient extends BaseApiClient {
                 headers: {
                     'api-version': '2.0',
                     'Content-Type': 'application/json',
+                    'x-pro-edit-mode': edit ? 'true' : 'false',
                 },
             }
         );
@@ -95,21 +102,23 @@ export default class OrgClient extends BaseApiClient {
     public async updateInstancePropertyAsync(
         projectId: string,
         instanceId: string,
-        instanceProperties: Partial<PositionInstance>
+        instanceProperties: Partial<PositionInstance>,
+        edit?: boolean
     ) {
         const url = this.resourceCollections.org.instance(projectId, instanceId);
-        return this.httpClient.patchAsync<Partial<PositionInstance>, PositionInstance, FusionApiHttpErrorResponse>(
-            url,
-            instanceProperties,
-            {
-                headers: {
-                    'api-version': '2.0',
-                    'Content-Type': 'application/json',
-                },
-            }
-        );
+        return this.httpClient.patchAsync<
+            Partial<PositionInstance>,
+            PositionInstance,
+            FusionApiHttpErrorResponse
+        >(url, instanceProperties, {
+            headers: {
+                'api-version': '2.0',
+                'Content-Type': 'application/json',
+                'x-pro-edit-mode': edit ? 'true' : 'false',
+            },
+        });
     }
-    
+
     public async getRoleDescriptionAsync(projectId: string, positionId: string) {
         const url = this.resourceCollections.org.roleDescription(projectId, positionId);
         return this.httpClient.getAsync<string, FusionApiHttpErrorResponse>(
