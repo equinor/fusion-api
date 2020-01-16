@@ -103,7 +103,7 @@ export default class OrgClient extends BaseApiClient {
     public async updateInstancePropertyAsync(
         projectId: string,
         instanceId: string,
-        instanceProperties: Partial<PositionInstance>,
+        instanceProperties: Partial<PositionInstance> & { id: string },
         edit?: boolean
     ) {
         const url = this.resourceCollections.org.instance(projectId, instanceId);
@@ -127,8 +127,11 @@ export default class OrgClient extends BaseApiClient {
                 'api-version': apiVersion ? apiVersion : '1.0',
             },
         };
-        return this.httpClient.postAsync<null, PublishDetails, FusionApiHttpErrorResponse>(url, null,requestHeader);
-
+        return this.httpClient.postAsync<null, PublishDetails, FusionApiHttpErrorResponse>(
+            url,
+            null,
+            requestHeader
+        );
     }
 
     public async getRoleDescriptionAsync(projectId: string, positionId: string) {
