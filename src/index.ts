@@ -94,6 +94,7 @@ export {
     CreateOrgProject,
     OrgProjectDates,
     Contract,
+    PublishDetails,
 } from './http/apiClients/models/org/OrgProject';
 export {
     default as PersonDetails,

@@ -5,6 +5,7 @@ import OrgProject, {
     BasePosition,
     CreateOrgProject,
     PositionInstance,
+    PublishDetails,
 } from './models/org/OrgProject';
 import Position from './models/org/Position';
 
@@ -117,6 +118,17 @@ export default class OrgClient extends BaseApiClient {
                 'x-pro-edit-mode': edit ? 'true' : 'false',
             },
         });
+    }
+
+    public async publishAsync(projectId: string, draftId: string, apiVersion?: string) {
+        const url = this.resourceCollections.org.publish(projectId, draftId);
+        const requestHeader: RequestInit = {
+            headers: {
+                'api-version': apiVersion ? apiVersion : '1.0',
+            },
+        };
+        return this.httpClient.postAsync<null, PublishDetails, FusionApiHttpErrorResponse>(url, null,requestHeader);
+
     }
 
     public async getRoleDescriptionAsync(projectId: string, positionId: string) {
