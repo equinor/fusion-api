@@ -107,18 +107,22 @@ export default class OrgClient extends BaseApiClient {
         instanceProperties: Partial<PositionInstance> & { id: string },
         edit?: boolean
     ) {
-        const url = this.resourceCollections.org.instance(projectId, positionId,instanceId);
-        return this.httpClient.patchAsync<
-            Partial<PositionInstance>,
-            PositionInstance,
-            FusionApiHttpErrorResponse
-        >(url, instanceProperties, {
-            headers: {
-                'api-version': '2.0',
-                'Content-Type': 'application/json',
-                'x-pro-edit-mode': edit ? 'true' : 'false',
-            },
-        });
+        const url = this.resourceCollections.org.instance(projectId, positionId, instanceId);
+        const transformedInstanceProps = {
+            ...instanceProperties,
+            parentPositionId: [instanceProperties.parentPositionId],
+        };
+        return this.httpClient.patchAsync<object, PositionInstance, FusionApiHttpErrorResponse>(
+            url,
+            transformedInstanceProps,
+            {
+                headers: {
+                    'api-version': '2.0',
+                    'Content-Type': 'application/json',
+                    'x-pro-edit-mode': edit ? 'true' : 'false',
+                },
+            }
+        );
     }
 
     public async publishAsync(projectId: string, draftId: string, apiVersion?: string) {
