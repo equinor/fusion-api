@@ -9,6 +9,7 @@ import CreateOrgProject from './CreateOrgProject';
 import OrgProjectDates from './OrgProjectDates';
 import Contract from './Contract';
 import PublishDetails from './PublishDetails';
+import PositionReportPath from './PositionReportPath';
 
 type OrgProject = {
     dates: OrgProjectDates;
@@ -32,6 +33,7 @@ export {
     OrgProjectDates,
     Contract,
     PublishDetails,
+    PositionReportPath,
 };
 
 export default OrgProject;

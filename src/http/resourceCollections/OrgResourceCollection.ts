@@ -83,8 +83,9 @@ export default class OrgResourceCollection extends BaseResourceCollection {
         );
     }
 
-    reportsTo(projectId: string, positionId: string) {
-        return combineUrls(this.position(projectId, positionId, false), 'reportsTo');
+    reportsTo(projectId: string, positionId: string, date: Date) {
+        const url = combineUrls(this.position(projectId, positionId, false), 'reportsTo');
+        return `${url}?date=${date}`;
     }
 
     disciplineNetwork(projectId: string, discipline: string) {
