@@ -39,8 +39,8 @@ export default class OrgResourceCollection extends BaseResourceCollection {
         return `${url}${query}`;
     }
 
-    instances(projectId: string, expandProperties?: string[]) {
-        const url = combineUrls(this.getBaseUrl(), 'projects', projectId, 'positions', 'instances');
+    instances(projectId: string, positionId :string, expandProperties?: string[]) {
+        const url = combineUrls(this.position(projectId, positionId), 'instances');
         if(!expandProperties || !expandProperties.length){
             return url;
         }
@@ -48,8 +48,8 @@ export default class OrgResourceCollection extends BaseResourceCollection {
         return `${url}${query}`;
     }
 
-    instance(projectId: string, instanceId: string) {
-        return combineUrls(this.instances(projectId), instanceId);
+    instance(projectId: string,positionId: string, instanceId: string) {
+        return combineUrls(this.instances(projectId, positionId), instanceId);
     }
 
     publish(projectId: string, draftId: string) {

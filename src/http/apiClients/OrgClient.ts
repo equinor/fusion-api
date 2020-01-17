@@ -102,11 +102,12 @@ export default class OrgClient extends BaseApiClient {
 
     public async updateInstancePropertyAsync(
         projectId: string,
+        positionId: string,
         instanceId: string,
         instanceProperties: Partial<PositionInstance> & { id: string },
         edit?: boolean
     ) {
-        const url = this.resourceCollections.org.instance(projectId, instanceId);
+        const url = this.resourceCollections.org.instance(projectId, positionId,instanceId);
         return this.httpClient.patchAsync<
             Partial<PositionInstance>,
             PositionInstance,
