@@ -134,6 +134,19 @@ export default class OrgClient extends BaseApiClient {
         );
     }
 
+    public async getPublishStatusAsync(draftId: string, apiVersion?: string) {
+        const url = this.resourceCollections.org.publishStatus(draftId);
+        const requestHeader: RequestInit = {
+            headers: {
+                'api-version': apiVersion ? apiVersion : '1.0',
+            },
+        };
+        return this.httpClient.getAsync<PublishDetails, FusionApiHttpErrorResponse>(
+            url,
+            requestHeader
+        );
+    }
+
     public async getRoleDescriptionAsync(projectId: string, positionId: string) {
         const url = this.resourceCollections.org.roleDescription(projectId, positionId);
         return this.httpClient.getAsync<string, FusionApiHttpErrorResponse>(
