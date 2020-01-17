@@ -40,7 +40,7 @@ export default class OrgResourceCollection extends BaseResourceCollection {
     }
 
     instances(projectId: string, positionId :string, expandProperties?: string[]) {
-        const url = combineUrls(this.position(projectId, positionId), 'instances');
+        const url = combineUrls(this.position(projectId, positionId, false), 'instances');
         if(!expandProperties || !expandProperties.length){
             return url;
         }
