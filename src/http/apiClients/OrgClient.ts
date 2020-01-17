@@ -108,13 +108,9 @@ export default class OrgClient extends BaseApiClient {
         edit?: boolean
     ) {
         const url = this.resourceCollections.org.instance(projectId, positionId, instanceId);
-        const transformedInstanceProps = {
-            ...instanceProperties,
-            parentPositionId: [instanceProperties.parentPositionId],
-        };
         return this.httpClient.patchAsync<object, PositionInstance, FusionApiHttpErrorResponse>(
             url,
-            transformedInstanceProps,
+            instanceProperties,
             {
                 headers: {
                     'api-version': '2.0',
