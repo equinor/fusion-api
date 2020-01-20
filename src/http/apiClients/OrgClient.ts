@@ -6,6 +6,7 @@ import OrgProject, {
     CreateOrgProject,
     PositionInstance,
     PublishDetails,
+    PositionReportPath,
 } from './models/org/OrgProject';
 import Position from './models/org/Position';
 
@@ -150,7 +151,7 @@ export default class OrgClient extends BaseApiClient {
 
     public async getPositionReportPathAsync(projectId: string, positionId: string, date: string){
         const url = this.resourceCollections.org.reportsTo(projectId, positionId, date);
-        return this.httpClient.getAsync<object, FusionApiHttpErrorResponse>(url, {
+        return this.httpClient.getAsync<PositionReportPath, FusionApiHttpErrorResponse>(url, {
             headers: {
                 'api-version': '2.0',
             }

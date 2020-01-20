@@ -6,7 +6,7 @@ type PositionReportPath = {
         id: string;
         position: Position;
         error?: 'futurePosition' | 'pastPosition';
-    };
+    }[];
     taskOwners: Position[];
 };
 
