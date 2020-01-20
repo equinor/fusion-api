@@ -148,7 +148,7 @@ export default class OrgClient extends BaseApiClient {
         );
     }
 
-    public async getPositionReportPathAsync(projectId: string, positionId: string, date: Date){
+    public async getPositionReportPathAsync(projectId: string, positionId: string, date: string){
         const url = this.resourceCollections.org.reportsTo(projectId, positionId, date);
         return this.httpClient.getAsync<object, FusionApiHttpErrorResponse>(url, {
             headers: {
