@@ -86,6 +86,8 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
             },
             previusContexts: (history || []).map(c => ({ id: c.id, name: c.title })),
         });
+
+        this.featureLogger.setCurrentContext(context.id, context.title);
     }
 
     private async updateHistoryAsync(currentContext: Context) {
