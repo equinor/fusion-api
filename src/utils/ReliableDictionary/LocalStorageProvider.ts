@@ -1,15 +1,21 @@
-import IReliableDictionaryStorageProvider from './IReliableDictionaryStorageProvider';
+import IReliableDictionaryStorageProvider, {
+    ReliableDictionaryStorageProviderEvents,
+} from './IReliableDictionaryStorageProvider';
 import JSON from '../JSON';
 import DistributedState, { IDistributedState } from '../DistributedState';
 import { IEventHub } from '../EventHub';
+import EventEmitter from '../EventEmitter';
 
 type LocalCache = { [key: string]: any };
 
-export default class LocalStorageProvider implements IReliableDictionaryStorageProvider {
+export default class LocalStorageProvider
+    extends EventEmitter<ReliableDictionaryStorageProviderEvents>
+    implements IReliableDictionaryStorageProvider {
     private baseKey: string;
     private localCache: IDistributedState<LocalCache | null>;
 
     constructor(baseKey: string, eventHub: IEventHub, defaultValue?: LocalCache) {
+        super();
         this.baseKey = baseKey;
 
         const cachedJson = localStorage.getItem(this.baseKey);
@@ -23,6 +29,10 @@ export default class LocalStorageProvider implements IReliableDictionaryStorageP
         if (!cachedValue && defaultValue) {
             this.localCache.state = defaultValue;
         }
+
+        this.localCache.on('change', value => {
+            this.emit('change', value);
+        });
     }
 
     async getItemAsync<T>(key: string): Promise<T | null> {

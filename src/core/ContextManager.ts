@@ -222,7 +222,6 @@ const useContextHistory = () => {
 
 const useCurrentContext = () => {
     const contextManager = useContextManager();
-    const currentTypes = useCurrentContextTypes();
     const [currentContext, setCurrentContext] = useState(contextManager.getCurrentContext());
 
     const setContext = useCallback((contextCache: ContextCache) => {
@@ -236,27 +235,6 @@ const useCurrentContext = () => {
 
         return contextManager.on('change', setContext);
     }, []);
-
-    const history = useContextHistory();
-    if (
-        currentContext &&
-        currentTypes.length > 0 &&
-        !currentTypes.find(type => currentContext.type.id === type)
-    ) {
-        return null;
-    }
-
-    // We don't have a context at all, but we could try to find the first context in the history
-    // that matches the given types (if any)
-    if (!currentContext && currentTypes.length > 0 && history.length > 0) {
-        const historicalContext =
-            history.find(c => currentTypes.findIndex(type => c.type.id === type) > 0) || null;
-
-        if (historicalContext) {
-            contextManager.setCurrentContextAsync(historicalContext);
-            return historicalContext;
-        }
-    }
 
     return currentContext || null;
 };
