@@ -11,6 +11,7 @@ import AppContainer, { useCurrentApp } from '../app/AppContainer';
 import AppManifest from '../http/apiClients/models/fusion/apps/AppManifest';
 import { History } from 'history';
 import { combineUrls } from '../utils/url';
+import FeatureLogger from '../utils/FeatureLogger';
 
 type ContextCache = {
     current: Context | null;
@@ -21,12 +22,15 @@ type ContextCache = {
 export default class ContextManager extends ReliableDictionary<ContextCache> {
     private readonly contextClient: ContextClient;
     private isSettingFromRoute: boolean = false;
-    private history: History;
 
-    constructor(apiClients: ApiClients, private appContainer: AppContainer, history: History) {
+    constructor(
+        apiClients: ApiClients,
+        private appContainer: AppContainer,
+        private featureLogger: FeatureLogger,
+        private history: History
+    ) {
         super(new LocalStorageProvider(`FUSION_CURRENT_CONTEXT`, new EventHub()));
         this.contextClient = apiClients.context;
-        this.history = history;
 
         const unlistenAppContainer = this.appContainer.on('change', app => {
             this.resolveContextFromUrlOrLocalStorageAsync(app);
@@ -71,8 +75,17 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
             return;
         }
 
-        this.updateHistoryAsync(currentContext);
-        this.updateLinksAsync(currentContext, context);
+        await this.updateHistoryAsync(currentContext);
+        await this.updateLinksAsync(currentContext, context);
+
+        const history = await this.getAsync('history');
+        this.featureLogger.log('Context selected', '0.0.1', {
+            selectedContext: {
+                id: context.id,
+                name: context.title,
+            },
+            previusContexts: (history || []).map(c => ({ id: c.id, name: c.title })),
+        });
     }
 
     private async updateHistoryAsync(currentContext: Context) {

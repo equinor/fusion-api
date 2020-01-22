@@ -169,6 +169,8 @@ export {
     useTelemetryInitializer,
 } from './utils/TelemetryLogger';
 
+export { default as FeatureLogger, useFeatureLogger } from './utils/FeatureLogger';
+
 export { default as useDebouncedAbortable } from './hooks/useDebouncedAbortable';
 export { default as useDebounce } from './hooks/useDebounce';
 export { default as useEffectAsync } from './hooks/useEffectAsync';
