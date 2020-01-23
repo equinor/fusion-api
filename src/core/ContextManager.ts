@@ -46,28 +46,37 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         } = app;
 
         const appPath = `/apps/${app.key}`;
+        const scopedPath = this.history.location.pathname.replace(appPath, '');
         const contextId =
             getContextFromUrl && this.history.location && this.history.location.pathname
-                ? getContextFromUrl(this.history.location.pathname.replace(appPath, ''))
+                ? getContextFromUrl(scopedPath)
                 : null;
 
         const hasAppPath = this.history.location.pathname.indexOf(appPath) !== -1;
         if (contextId) return this.setCurrentContextFromIdAsync(contextId);
 
         const currentContext = await this.getCurrentContextAsync();
-        if (buildUrl && currentContext)
-            this.history.push(combineUrls(hasAppPath ? appPath : '', buildUrl(currentContext)));
+        if (buildUrl && currentContext) {
+            const newUrl = combineUrls(
+                hasAppPath ? appPath : '',
+                buildUrl(currentContext, scopedPath)
+            );
+            if (this.history.location.pathname.indexOf(newUrl) === 0) this.history.push(newUrl);
+        }
     }
 
-    async setCurrentContextAsync(context: Context) {
+    async setCurrentContextAsync(context: Context | null) {
         const currentContext = await this.getCurrentContextAsync();
         const buildUrl = this.appContainer.currentApp?.context?.buildUrl;
 
         const appPath = `/apps/${this.appContainer.currentApp?.key}`;
         const hasAppPath = this.history.location.pathname.indexOf(appPath) !== -1;
+        const scopedPath = this.history.location.pathname.replace(appPath, '');
 
-        if (buildUrl && context)
-            this.history.push(combineUrls(hasAppPath ? appPath : '', buildUrl(context)));
+        if (buildUrl)
+            this.history.push(
+                combineUrls(hasAppPath ? appPath : '', buildUrl(context, scopedPath))
+            );
 
         await this.setAsync('current', context);
 
@@ -75,19 +84,23 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
             return;
         }
 
-        await this.updateHistoryAsync(currentContext);
-        await this.updateLinksAsync(currentContext, context);
+        this.updateHistoryAsync(currentContext);
+        if (context) this.updateLinksAsync(currentContext, context);
 
         const history = await this.getAsync('history');
         this.featureLogger.log('Context selected', '0.0.1', {
-            selectedContext: {
+            selectedContext: context ? {
                 id: context.id,
                 name: context.title,
-            },
+            } : null,
             previusContexts: (history || []).map(c => ({ id: c.id, name: c.title })),
         });
 
-        this.featureLogger.setCurrentContext(context.id, context.title);
+        if(context) {
+            this.featureLogger.setCurrentContext(context.id, context.title);
+        } else {
+            this.featureLogger.setCurrentContext(null, null);
+        }
     }
 
     private async updateHistoryAsync(currentContext: Context) {
@@ -237,7 +250,6 @@ const useContextHistory = () => {
 
 const useCurrentContext = () => {
     const contextManager = useContextManager();
-    const currentTypes = useCurrentContextTypes();
     const [currentContext, setCurrentContext] = useState(contextManager.getCurrentContext());
 
     const setContext = useCallback((contextCache: ContextCache) => {
@@ -251,27 +263,6 @@ const useCurrentContext = () => {
 
         return contextManager.on('change', setContext);
     }, []);
-
-    const history = useContextHistory();
-    if (
-        currentContext &&
-        currentTypes.length > 0 &&
-        !currentTypes.find(type => currentContext.type.id === type)
-    ) {
-        return null;
-    }
-
-    // We don't have a context at all, but we could try to find the first context in the history
-    // that matches the given types (if any)
-    if (!currentContext && currentTypes.length > 0 && history.length > 0) {
-        const historicalContext =
-            history.find(c => currentTypes.findIndex(type => c.type.id === type) > 0) || null;
-
-        if (historicalContext) {
-            contextManager.setCurrentContextAsync(historicalContext);
-            return historicalContext;
-        }
-    }
 
     return currentContext || null;
 };

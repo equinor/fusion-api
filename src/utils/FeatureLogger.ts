@@ -83,12 +83,16 @@ export default class FeatureLogger {
         this.transformers.state = [...this.transformers.state, transformer];
     }
 
-    public setCurrentApp(appKey: string) {
+    public setCurrentApp(appKey: string | null) {
         this.currentAppKey.state = appKey;
     }
 
-    public setCurrentContext(id: string, name: string) {
-        this.currentContext.state = { id, name };
+    public setCurrentContext(id: string | null, name: string | null) {
+        if(id === null || name === null) {
+            this.currentContext.state = null;
+        } else {
+            this.currentContext.state = { id, name };
+        }
     }
 
     private timer: NodeJS.Timeout | null = null;
