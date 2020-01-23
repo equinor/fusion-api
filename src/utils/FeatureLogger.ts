@@ -23,7 +23,7 @@ export type FeatureLogEntry = {
     feature: string;
     featureVersion: string;
     payload?: any;
-    metadata?: { [key: string]: any };
+    metadata: { [key: string]: any };
     dateTimeUtc: Date;
 };
 
@@ -61,7 +61,11 @@ export default class FeatureLogger {
         );
         this.transformers = new DistributedState<FeatureLogEntryTransformer[]>(
             'FeatureLogger.transformers',
-            [entry => this.addAppToLogEntry(entry), entry => this.addContextToLogEntry(entry)],
+            [
+                entry => this.addAppToLogEntry(entry),
+                entry => this.addContextToLogEntry(entry),
+                entry => this.addScreenToLogEntry(entry),
+            ],
             eventHub
         );
     }
@@ -89,7 +93,7 @@ export default class FeatureLogger {
     }
 
     public setCurrentContext(id: string | null, name: string | null) {
-        if(id === null || name === null) {
+        if (id === null || name === null) {
             this.currentContext.state = null;
         } else {
             this.currentContext.state = { id, name };
@@ -102,12 +106,28 @@ export default class FeatureLogger {
             clearTimeout(this.timer);
         }
 
+        if (this.logEntries.length >= 10) {
+            this.sendBatchAsync();
+            return;
+        }
+
         this.timer = setTimeout(() => {
             this.sendBatchAsync();
         }, 5000);
     }
 
+    protected isSendingBatch = false;
     protected async sendBatchAsync() {
+        if (this.logEntries.length === 0) {
+            return;
+        }
+
+        if (this.isSendingBatch) {
+            return this.scheduleBatch();
+        }
+
+        this.isSendingBatch = true;
+
         const entries: FeatureLogEntryRequest[] = this.logEntries.map(entry => ({
             ...entry,
             appKey: entry.appKey || null,
@@ -126,8 +146,11 @@ export default class FeatureLogger {
         try {
             await this.apiClients.fusion.logFeaturesAsync(batch);
             this.logEntries = [];
+            this.isSendingBatch = false;
+            this.scheduleBatch();
         } catch (e) {
             fusionConsole.error(e);
+            this.isSendingBatch = false;
         }
     }
 
@@ -148,6 +171,33 @@ export default class FeatureLogger {
             contextId: this.currentContext.state?.id,
             contextName: this.currentContext.state?.name,
         };
+    }
+
+    protected addScreenToLogEntry(entry: FeatureLogEntry) {
+        try {
+            const screen = {
+                availableWidth: window.screen.availWidth,
+                availableHeight: window.screen.availHeight,
+                width: window.innerWidth,
+                height: window.innerHeight,
+                orientation:
+                    'orientation' in window.screen && window.screen.orientation
+                        ? window.screen.orientation.type
+                        : 'unknown',
+            };
+
+            return {
+                ...entry,
+                metadata: {
+                    ...entry.metadata,
+                    screen,
+                },
+            };
+        } catch (e) {
+            fusionConsole.error(e);
+        }
+
+        return entry;
     }
 }
 
