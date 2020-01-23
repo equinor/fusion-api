@@ -42,28 +42,37 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         } = app;
 
         const appPath = `/apps/${app.key}`;
+        const scopedPath = this.history.location.pathname.replace(appPath, '');
         const contextId =
             getContextFromUrl && this.history.location && this.history.location.pathname
-                ? getContextFromUrl(this.history.location.pathname.replace(appPath, ''))
+                ? getContextFromUrl(scopedPath)
                 : null;
 
         const hasAppPath = this.history.location.pathname.indexOf(appPath) !== -1;
         if (contextId) return this.setCurrentContextFromIdAsync(contextId);
 
         const currentContext = await this.getCurrentContextAsync();
-        if (buildUrl && currentContext)
-            this.history.push(combineUrls(hasAppPath ? appPath : '', buildUrl(currentContext)));
+        if (buildUrl && currentContext) {
+            const newUrl = combineUrls(
+                hasAppPath ? appPath : '',
+                buildUrl(currentContext, scopedPath)
+            );
+            if (this.history.location.pathname.indexOf(newUrl) === 0) this.history.push(newUrl);
+        }
     }
 
-    async setCurrentContextAsync(context: Context) {
+    async setCurrentContextAsync(context: Context | null) {
         const currentContext = await this.getCurrentContextAsync();
         const buildUrl = this.appContainer.currentApp?.context?.buildUrl;
 
         const appPath = `/apps/${this.appContainer.currentApp?.key}`;
         const hasAppPath = this.history.location.pathname.indexOf(appPath) !== -1;
+        const scopedPath = this.history.location.pathname.replace(appPath, '');
 
-        if (buildUrl && context)
-            this.history.push(combineUrls(hasAppPath ? appPath : '', buildUrl(context)));
+        if (buildUrl)
+            this.history.push(
+                combineUrls(hasAppPath ? appPath : '', buildUrl(context, scopedPath))
+            );
 
         await this.setAsync('current', context);
 
@@ -72,7 +81,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         }
 
         this.updateHistoryAsync(currentContext);
-        this.updateLinksAsync(currentContext, context);
+        if (context) this.updateLinksAsync(currentContext, context);
     }
 
     private async updateHistoryAsync(currentContext: Context) {
