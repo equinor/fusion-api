@@ -5,6 +5,7 @@ import FusionClient from '../http/apiClients/FusionClient';
 import { useFusionContext } from '../core/FusionContext';
 import { useEffect, useState } from 'react';
 import TelemetryLogger from '../utils/TelemetryLogger';
+import FeatureLogger from '../utils/FeatureLogger';
 import DistributedState, { IDistributedState } from '../utils/DistributedState';
 import { IEventHub } from '../utils/EventHub';
 import { ContextManifest } from '../http/apiClients/models/context/ContextManifest';
@@ -31,11 +32,20 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
     private readonly fusionClient: FusionClient;
     private readonly telemetryLogger: TelemetryLogger;
 
-    constructor(apiClients: ApiClients, telemetryLogger: TelemetryLogger, eventHub: IEventHub) {
+    constructor(
+        apiClients: ApiClients,
+        telemetryLogger: TelemetryLogger,
+        private readonly featureLogger: FeatureLogger,
+        eventHub: IEventHub
+    ) {
         super();
         this.fusionClient = apiClients.fusion;
         this.telemetryLogger = telemetryLogger;
-        this._currentApp = new DistributedState<AppManifest | null>('AppContainer.currentApp', null, eventHub);
+        this._currentApp = new DistributedState<AppManifest | null>(
+            'AppContainer.currentApp',
+            null,
+            eventHub
+        );
         this._currentApp.on('change', (updatedApp: AppManifest | null) => {
             this.emit('change', updatedApp);
         });
@@ -45,7 +55,11 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
             this.emit('update', apps);
         });
 
-        this.previousApps = new DistributedState<AppManifest[]>('AppContainer.previousApps', [], eventHub);
+        this.previousApps = new DistributedState<AppManifest[]>(
+            'AppContainer.previousApps',
+            [],
+            eventHub
+        );
     }
 
     updateManifest(appKey: string, manifest: AppManifest): void {
@@ -77,11 +91,21 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
 
     async setCurrentAppAsync(appKey: string | null): Promise<void> {
         const previousApp = this.previousApps.state[0];
-        if(this.currentApp && previousApp && previousApp.key !== appKey) {
+        if (this.currentApp && previousApp && previousApp.key !== appKey) {
             this.previousApps.state = [this.currentApp, ...this.previousApps.state];
         }
 
         if (!appKey) {
+            this.featureLogger.log('App selected', '0.0.1', {
+                selectedApp: null,
+                previousApps: this.previousApps.state.map(pa => ({
+                    key: pa.key,
+                    name: pa.name,
+                })),
+            });
+    
+            this.featureLogger.setCurrentApp(null);
+
             this._currentApp.state = null;
             this.emit('change', null);
             return;
@@ -101,7 +125,6 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
             return await this.setCurrentAppAsync(appKey);
         }
 
-        // Log custom event - new app and prev app
         this.telemetryLogger.trackEvent({
             name: 'App selected',
             properties: {
@@ -111,6 +134,19 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
                 currentApp: app.name,
             },
         });
+
+        this.featureLogger.log('App selected', '0.0.1', {
+            selectedApp: {
+                key: app.key,
+                name: app.name,
+            },
+            previousApps: this.previousApps.state.map(pa => ({
+                key: pa.key,
+                name: pa.name,
+            })),
+        });
+
+        this.featureLogger.setCurrentApp(app.key);
 
         this._currentApp.state = app;
         this.emit('change', app);

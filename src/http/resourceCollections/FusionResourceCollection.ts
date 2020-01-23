@@ -43,6 +43,10 @@ export default class FusionResourceCollection extends BaseResourceCollection {
         return combineUrls(this.app(appKey), this.getResourcesPath(), 'app-icon.svg');
     }
 
+    featureLog() {
+        return combineUrls(this.getBaseUrl(), 'log', 'features');
+    }
+
     private getBundlesPath() {
         return this.options && this.options.loadBundlesFromDisk ? 'js' : 'bundles';
     }

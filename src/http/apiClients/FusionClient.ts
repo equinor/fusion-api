@@ -1,13 +1,14 @@
 import BaseApiClient from './BaseApiClient';
 import { FusionApiHttpErrorResponse } from './models/common/FusionApiHttpErrorResponse';
 import AppManifest from './models/fusion/apps/AppManifest';
+import { FeatureLogBatch } from './models/fusion/FeatureLogEntryRequest';
 import getScript from '../../utils/getScript';
 
 export default class FusionClient extends BaseApiClient {
     protected getBaseUrl() {
         return this.serviceResolver.getFusionBaseUrl();
     }
-    
+
     async getAppsAsync() {
         const url = this.resourceCollections.fusion.apps();
         return await this.httpClient.getAsync<AppManifest[], FusionApiHttpErrorResponse>(url);
@@ -21,6 +22,16 @@ export default class FusionClient extends BaseApiClient {
     async loadAppScriptAsync(appKey: string) {
         const url = this.resourceCollections.fusion.appScript(appKey);
         return await getScript(url);
+    }
+
+    async logFeaturesAsync(batch: FeatureLogBatch) {
+        const url = this.resourceCollections.fusion.featureLog();
+        return await this.httpClient.postAsync<FeatureLogBatch, void, FusionApiHttpErrorResponse>(
+            url,
+            batch,
+            null,
+            () => Promise.resolve()
+        );
     }
 
     async getAppIconAsync(appKey: string) {

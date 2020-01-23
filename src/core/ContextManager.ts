@@ -11,6 +11,7 @@ import AppContainer, { useCurrentApp } from '../app/AppContainer';
 import AppManifest from '../http/apiClients/models/fusion/apps/AppManifest';
 import { History } from 'history';
 import { combineUrls } from '../utils/url';
+import FeatureLogger from '../utils/FeatureLogger';
 
 type ContextCache = {
     current: Context | null;
@@ -21,12 +22,15 @@ type ContextCache = {
 export default class ContextManager extends ReliableDictionary<ContextCache> {
     private readonly contextClient: ContextClient;
     private isSettingFromRoute: boolean = false;
-    private history: History;
 
-    constructor(apiClients: ApiClients, private appContainer: AppContainer, history: History) {
+    constructor(
+        apiClients: ApiClients,
+        private appContainer: AppContainer,
+        private featureLogger: FeatureLogger,
+        private history: History
+    ) {
         super(new LocalStorageProvider(`FUSION_CURRENT_CONTEXT`, new EventHub()));
         this.contextClient = apiClients.context;
-        this.history = history;
 
         const unlistenAppContainer = this.appContainer.on('change', app => {
             this.resolveContextFromUrlOrLocalStorageAsync(app);
@@ -82,6 +86,21 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
 
         this.updateHistoryAsync(currentContext);
         if (context) this.updateLinksAsync(currentContext, context);
+
+        const history = await this.getAsync('history');
+        this.featureLogger.log('Context selected', '0.0.1', {
+            selectedContext: context ? {
+                id: context.id,
+                name: context.title,
+            } : null,
+            previusContexts: (history || []).map(c => ({ id: c.id, name: c.title })),
+        });
+
+        if(context) {
+            this.featureLogger.setCurrentContext(context.id, context.title);
+        } else {
+            this.featureLogger.setCurrentContext(null, null);
+        }
     }
 
     private async updateHistoryAsync(currentContext: Context) {
