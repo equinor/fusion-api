@@ -7,6 +7,7 @@ import {
     FeatureLogEntryRequest,
 } from '../http/apiClients/models/fusion/FeatureLogEntryRequest';
 import { useFusionContext } from '../core/FusionContext';
+import fusionConsole from './fusionConsole';
 
 type FeatureLogEntryTransformer = (entry: FeatureLogEntry) => FeatureLogEntry;
 
@@ -125,7 +126,9 @@ export default class FeatureLogger {
         try {
             await this.apiClients.fusion.logFeaturesAsync(batch);
             this.logEntries = [];
-        } catch (e) {}
+        } catch (e) {
+            fusionConsole.error(e);
+        }
     }
 
     protected transformLogEntry(entry: FeatureLogEntry) {
