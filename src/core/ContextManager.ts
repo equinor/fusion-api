@@ -57,7 +57,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
                 hasAppPath ? appPath : '',
                 buildUrl(currentContext, scopedPath)
             );
-            if (this.history.location.pathname.indexOf(newUrl) === 0) this.history.push(newUrl);
+            if (this.history.location.pathname.indexOf(newUrl) !== 0) this.history.push(newUrl);
         }
     }
 
