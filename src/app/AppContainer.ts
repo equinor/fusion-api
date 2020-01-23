@@ -96,6 +96,16 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
         }
 
         if (!appKey) {
+            this.featureLogger.log('App selected', '0.0.1', {
+                selectedApp: null,
+                previousApps: this.previousApps.state.map(pa => ({
+                    key: pa.key,
+                    name: pa.name,
+                })),
+            });
+    
+            this.featureLogger.setCurrentApp(null);
+
             this._currentApp.state = null;
             this.emit('change', null);
             return;
@@ -115,7 +125,6 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
             return await this.setCurrentAppAsync(appKey);
         }
 
-        // Log custom event - new app and prev app
         this.telemetryLogger.trackEvent({
             name: 'App selected',
             properties: {
