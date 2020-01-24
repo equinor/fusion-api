@@ -91,7 +91,7 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
 
     async setCurrentAppAsync(appKey: string | null): Promise<void> {
         const previousApp = this.previousApps.state[0];
-        if (this.currentApp && previousApp && previousApp.key !== appKey) {
+        if (this.currentApp && (!previousApp || previousApp.key !== appKey)) {
             this.previousApps.state = [this.currentApp, ...this.previousApps.state];
         }
 
