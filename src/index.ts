@@ -96,6 +96,7 @@ export {
     Contract,
     PublishDetails,
     PositionReportPath,
+    RoleDescription,
 } from './http/apiClients/models/org/OrgProject';
 export {
     default as PersonDetails,

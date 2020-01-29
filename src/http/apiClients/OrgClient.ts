@@ -7,6 +7,7 @@ import OrgProject, {
     PositionInstance,
     PublishDetails,
     PositionReportPath,
+    RoleDescription,
 } from './models/org/OrgProject';
 import Position from './models/org/Position';
 
@@ -149,14 +150,13 @@ export default class OrgClient extends BaseApiClient {
         );
     }
 
-    public async getPositionReportPathAsync(projectId: string, positionId: string, date: string){
+    public async getPositionReportPathAsync(projectId: string, positionId: string, date: string) {
         const url = this.resourceCollections.org.reportsTo(projectId, positionId, date);
         return this.httpClient.getAsync<PositionReportPath, FusionApiHttpErrorResponse>(url, {
             headers: {
                 'api-version': '2.0',
-            }
-        })
-
+            },
+        });
     }
 
     public async getRoleDescriptionAsync(projectId: string, positionId: string) {
@@ -177,6 +177,32 @@ export default class OrgClient extends BaseApiClient {
             null,
             async (response: Response) => {
                 return response.text();
+            }
+        );
+    }
+
+    public async getRoleDescriptionV2Async(projectId: string, positionId: string) {
+        const url = this.resourceCollections.org.roleDescriptionV2(projectId, positionId);
+        return this.httpClient.getAsync<RoleDescription, FusionApiHttpErrorResponse>(url, {
+            headers: {
+                'api-version': '2.0',
+            },
+        });
+    }
+
+    public async updatePersonalTaskDescriptionAsync(
+        projectId: string,
+        mail: string,
+        description: string
+    ) {
+        const url = this.resourceCollections.org.personalTaskDescription(projectId, mail);
+        return this.httpClient.putAsync<string, string, FusionApiHttpErrorResponse>(
+            url,
+            description,
+            {
+                headers: {
+                    'api-version': '2.0',
+                },
             }
         );
     }
