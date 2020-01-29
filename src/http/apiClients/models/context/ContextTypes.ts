@@ -1,10 +1,12 @@
 export enum ContextTypes {
-    Contract = "Contract",
-    OrgChart = "OrgChart",
-    PDP = "PDP",
-    PimsDomain = "PimsDomain",
-    Portfolio = "Portfolio",
-    Project = "Project",
+    Contract = 'Contract',
+    OrgChart = 'OrgChart',
+    PDP = 'PDP',
+    PimsDomain = 'PimsDomain',
+    Portfolio = 'Portfolio',
+    Project = 'Project',
+    ProjectMaster = 'ProjectMaster',
+    Facility = 'Facility',
 }
 
 export class ContextType {
