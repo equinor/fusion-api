@@ -204,6 +204,9 @@ export default class OrgClient extends BaseApiClient {
                     'api-version': '2.0',
                     'Content-Type': 'text/plain',
                 },
+            },
+            async (response: Response) => {
+                return response.text();
             }
         );
     }
