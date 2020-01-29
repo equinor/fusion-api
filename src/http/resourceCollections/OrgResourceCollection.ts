@@ -64,8 +64,8 @@ export default class OrgResourceCollection extends BaseResourceCollection {
         return combineUrls(this.position(projectId, positionId, false), 'role-description');
     }
 
-    personalTaskDescription(projectId: string, mail: string) {
-        return combineUrls(this.getBaseUrl(), 'persons', mail,'role-descriptions', 'projects', projectId, 'content')
+    personalTaskDescription(projectId: string, azureUniqueId: string) {
+        return combineUrls(this.getBaseUrl(), 'persons', azureUniqueId,'role-descriptions', 'projects', projectId, 'content')
     }
 
     roleDescription(projectId: string, positionId: string) {

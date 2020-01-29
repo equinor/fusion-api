@@ -192,10 +192,10 @@ export default class OrgClient extends BaseApiClient {
 
     public async updatePersonalTaskDescriptionAsync(
         projectId: string,
-        mail: string,
+        azureUniqueId: string,
         description: string
     ) {
-        const url = this.resourceCollections.org.personalTaskDescription(projectId, mail);
+        const url = this.resourceCollections.org.personalTaskDescription(projectId, azureUniqueId);
         return this.httpClient.putAsync<() => string, string, FusionApiHttpErrorResponse>(
             url,
             () => description,
@@ -209,6 +209,27 @@ export default class OrgClient extends BaseApiClient {
                 return response.text();
             }
         );
+    }
+
+    public async canEditPersonalTaskDescriptionAsync(projectId: string, azureUniqueId: string) {
+        const url = this.resourceCollections.org.personalTaskDescription(projectId, azureUniqueId);
+        try {
+            const response = await this.httpClient.optionsAsync<void, FusionApiHttpErrorResponse>(url, {
+                headers: {
+                    'api-version': '2.0'
+                }
+            }, () => Promise.resolve());
+            
+            const allowHeader = response.headers.get('Allow');
+            if (allowHeader !== null && allowHeader.indexOf('PUT') !== -1) {
+                return true;
+            }
+
+            return false;
+        } catch (e) {
+            return false;
+        
+        }
     }
 
     public async getDisciplineNetworkAsync(projectId: string, discipline: string) {
