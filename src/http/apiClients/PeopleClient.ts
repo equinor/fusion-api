@@ -16,6 +16,7 @@ import { PersonODataExpand } from '../resourceCollections/PeopleResourceCollecti
 import GroupRoleMapping from './models/people/GroupRoleMapping';
 import RoleStatus from './models/people/RoleStatus';
 import ServiceResolver from '../resourceCollections/ServiceResolver';
+import fusionConsole from '../../utils/fusionConsole';
 
 export {
     PersonDetails,
@@ -30,20 +31,31 @@ export {
 };
 
 export default class PeopleClient extends BaseApiClient {
-    constructor(httpClient: IHttpClient, resourceCollection: ResourceCollections, serviceResolver: ServiceResolver) {
+    constructor(
+        protected httpClient: IHttpClient,
+        protected resourceCollection: ResourceCollections,
+        serviceResolver: ServiceResolver
+    ) {
         super(httpClient, resourceCollection, serviceResolver);
+        this.apiSigninAsync();
+    }
 
-        httpClient.getAsync<void, unknown>(
-            resourceCollection.people.apiSignin(),
-            { credentials: 'include' },
-            async () => Promise.resolve()
-        );
+    private apiSigninAsync() {
+        try {
+            this.httpClient.getAsync<void, unknown>(
+                this.resourceCollection.people.apiSignin(),
+                { credentials: 'include' },
+                async () => Promise.resolve()
+            );
+        } catch (e) {
+            fusionConsole.error(e);
+        }
     }
 
     protected getBaseUrl() {
         return this.serviceResolver.getPeopleBaseUrl();
     }
-    
+
     async getPersonDetailsAsync(id: string, oDataExpand?: PersonODataExpand[]) {
         const url = this.resourceCollections.people.getPersonDetails(id, oDataExpand);
         return await this.httpClient.getAsync<PersonDetails, FusionApiHttpErrorResponse>(url, {
