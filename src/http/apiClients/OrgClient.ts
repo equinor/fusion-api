@@ -196,13 +196,13 @@ export default class OrgClient extends BaseApiClient {
         description: string
     ) {
         const url = this.resourceCollections.org.personalTaskDescription(projectId, mail);
-        return this.httpClient.putAsync<string, string, FusionApiHttpErrorResponse>(
+        return this.httpClient.putAsync<() => string, string, FusionApiHttpErrorResponse>(
             url,
-            description,
+            () => description,
             {
                 headers: {
                     'api-version': '2.0',
-                    'Content-Type':'text/plain'
+                    'Content-Type': 'text/plain',
                 },
             }
         );
