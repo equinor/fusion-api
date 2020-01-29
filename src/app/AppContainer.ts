@@ -103,7 +103,7 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
                     name: pa.name,
                 })),
             });
-    
+
             this.featureLogger.setCurrentApp(null);
 
             this._currentApp.state = null;
@@ -229,6 +229,10 @@ const useCurrentApp = () => {
         app => app,
         app.container.currentApp
     );
+
+    // Only to get notified/rerendered when changes are made to the current app
+    const [_] = useEventEmitterValue(app.container, 'update');
+
     return currentApp;
 };
 
