@@ -10,7 +10,7 @@ type RoleDescriptionContent = {
 
 type RoleDescription = {
     generic: RoleDescriptionContent & {exists: boolean},
-    persons: RoleDescriptionContent & {person: AssignedPerson}[]
+    persons: Array<RoleDescriptionContent & {person: AssignedPerson}>
 }
 
 export default RoleDescription;
