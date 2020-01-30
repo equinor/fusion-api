@@ -2,7 +2,7 @@ import AssignedPerson from './AssignedPerson';
 
 
 type RoleDescriptionContent = {
-    lastUpdate: Date | null,
+    lastUpdated: Date | null,
     lastUpdatedBy: AssignedPerson | null, 
     content: string | null,
     type: "Generic" | "Personal",
