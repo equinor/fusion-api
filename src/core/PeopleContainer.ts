@@ -139,6 +139,10 @@ const usePersonDetails = (personId: string) => {
     );
 
     const getPersonAsync = async (personId: string) => {
+        if(!personId) {
+            return;
+        }
+
         try {
             setFetching(true);
 
@@ -189,6 +193,10 @@ const usePersonImageUrl = (personId: string) => {
     const [imageUrl, setImageUrl] = React.useState<string>(getCachedPersonImageUrl(personId));
 
     const getImageAsync = async (personId: string) => {
+        if(!personId) {
+            return;
+        }
+        
         const cachedImageUrl = getCachedPersonImageUrl(personId);
 
         if (cachedImageUrl !== '') {

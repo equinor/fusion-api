@@ -76,14 +76,16 @@ const enqueueAsyncOperation = <T = void>(operation: AsyncOperation<T>, abortSign
             return reject();
         }
 
-        abortSignal?.addEventListener("abort", () => reject());
-
-        const animationFrame = window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
             if(abortSignal?.aborted) {
                 return reject();
             }
 
-            const timer = setTimeout(async () => {
+            setTimeout(async () => {
+                if(abortSignal?.aborted) {
+                    return reject();
+                }
+
                 try {
                     const result = operation();
                     resolve(result);
@@ -92,11 +94,7 @@ const enqueueAsyncOperation = <T = void>(operation: AsyncOperation<T>, abortSign
                     reject(e);
                 }
             }, 0);
-
-            abortSignal?.addEventListener("abort", () => clearTimeout(timer));
         });
-
-        abortSignal?.addEventListener("abort", () => window.cancelAnimationFrame(animationFrame));
     });
 };
 
