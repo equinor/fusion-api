@@ -6,6 +6,7 @@ import {
     IExceptionTelemetry,
     ITraceTelemetry,
     IDependencyTelemetry,
+    IMetricTelemetry,
 } from '@microsoft/applicationinsights-web';
 import { useFusionContext } from '../core/FusionContext';
 import { useEffect } from 'react';
@@ -65,6 +66,14 @@ export default class TelemetryLogger {
         }
         
         this.internalAppInsights.trackTrace(trace);
+    }
+
+    trackMetric(metrics: IMetricTelemetry) {
+        if(!this.isInitialized) {
+            return;
+        }
+        
+        this.internalAppInsights.trackMetric(metrics);
     }
 
     trackDependency(dependency: IDependencyTelemetry) {
