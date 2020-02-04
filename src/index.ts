@@ -154,6 +154,10 @@ export {
     NotificationPresenter,
     NotificationResolver,
     useNotificationCenter,
+    NotificationContextProvider,
+    useNotificationContext,
+    RegisterNotificationPresenter,
+    INotificationContext,
 } from './core/NotificationCenter';
 
 export {
@@ -171,7 +175,7 @@ export {
 
 export { default as FeatureLogger, useFeatureLogger } from './utils/FeatureLogger';
 
-export { default as fusionConsole } from "./utils/fusionConsole";
+export { default as fusionConsole } from './utils/fusionConsole';
 
 export { default as useDebouncedAbortable } from './hooks/useDebouncedAbortable';
 export { default as useDebounce } from './hooks/useDebounce';
