@@ -25,6 +25,12 @@ export type NotificationRequest = {
     body?: string;
     cancelLabel?: string;
     confirmLabel?: string;
+
+    /**
+     * How long should the notification be visible to the user?
+     * Only applicable for notifications with level == 'low'.
+     * Min-max: 4000-10000 ms
+     */
     timeout?: number;
 };
 
@@ -171,7 +177,7 @@ export default class NotificationCenter extends ReliableDictionary<
         switch (notificationRequest.level) {
             case 'low':
                 return notificationRequest.timeout
-                    ? Math.min(4000, Math.max(10000, notificationRequest.timeout))
+                    ? Math.max(4000, Math.min(10000, notificationRequest.timeout))
                     : 4000;
             default:
                 return null;
