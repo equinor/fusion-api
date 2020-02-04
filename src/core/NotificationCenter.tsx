@@ -25,6 +25,7 @@ export type NotificationRequest = {
     body?: string;
     cancelLabel?: string;
     confirmLabel?: string;
+    timeout?: number;
 };
 
 export type NotificationResponse = {
@@ -162,14 +163,16 @@ export default class NotificationCenter extends ReliableDictionary<
             response: null,
             presented: new Date(),
             responded: null,
-            timeout: this.getTimeoutForLevel(notificationRequest.level),
+            timeout: this.getTimeoutForLevel(notificationRequest),
         };
     }
 
-    private getTimeoutForLevel(level: NotificationLevel): number | null {
-        switch (level) {
+    private getTimeoutForLevel(notificationRequest: NotificationRequest): number | null {
+        switch (notificationRequest.level) {
             case 'low':
-                return 4000;
+                return notificationRequest.timeout
+                    ? Math.min(4000, Math.max(10000, notificationRequest.timeout))
+                    : 4000;
             default:
                 return null;
         }
