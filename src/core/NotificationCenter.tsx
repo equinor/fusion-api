@@ -1,3 +1,4 @@
+import React from 'react';
 import uuid from 'uuid/v1';
 import ReliableDictionary, { LocalStorageProvider } from '../utils/ReliableDictionary';
 import { useFusionContext } from './FusionContext';
@@ -41,6 +42,16 @@ export type Notification = {
     timeout: number | null;
 };
 
+export type RegisterNotificationPresenter = (
+    level: NotificationLevel,
+    present: NotificationPresenter
+) => () => void;
+
+export interface INotificationContext {
+    presenters: NotificationPresenterRegistration[];
+    registerPresenter: RegisterNotificationPresenter;
+}
+
 type NotificationCache = {
     notifications: Notification[];
 };
@@ -83,7 +94,10 @@ export default class NotificationCenter extends ReliableDictionary<
         );
     }
 
-    async sendAsync(notificationRequest: NotificationRequest): Promise<NotificationResponse> {
+    async sendAsync(
+        notificationRequest: NotificationRequest,
+        notificationContext?: INotificationContext
+    ): Promise<NotificationResponse> {
         if (!(await this.shouldPresentNotificationAsync(notificationRequest))) {
             return Promise.reject();
         }
@@ -91,7 +105,7 @@ export default class NotificationCenter extends ReliableDictionary<
         const notification = this.createNotification(notificationRequest);
         await this.persistAsync(notification);
 
-        const response = await this.presentAsync(notification);
+        const response = await this.presentAsync(notification, notificationContext);
 
         if (response.confirmed) {
             this.emit('confirmed', notificationRequest);
@@ -176,8 +190,11 @@ export default class NotificationCenter extends ReliableDictionary<
         }
     }
 
-    private presentAsync(notification: Notification): Promise<NotificationResponse> {
-        const presenter = this.getPresenter(notification.request);
+    private presentAsync(
+        notification: Notification,
+        notificationContext?: INotificationContext
+    ): Promise<NotificationResponse> {
+        const presenter = this.getPresenter(notification.request, notificationContext);
 
         if (!presenter) {
             throw new Error('No presenter for notification level ' + notification.request.level);
@@ -202,14 +219,55 @@ export default class NotificationCenter extends ReliableDictionary<
         });
     }
 
-    private getPresenter(notification: NotificationRequest) {
-        return this.presenters.state.find(presenter => presenter.level === notification.level);
+    private getPresenter(
+        notification: NotificationRequest,
+        notificationContext?: INotificationContext
+    ) {
+        const contextualPresenter = notificationContext?.presenters?.find(
+            presenter => presenter.level === notification.level
+        );
+
+        return (
+            contextualPresenter ||
+            this.presenters.state.find(presenter => presenter.level === notification.level)
+        );
     }
 }
 
+const NotificationContext = React.createContext<INotificationContext>({} as INotificationContext);
+
+export const NotificationContextProvider: React.FC = ({ children }) => {
+    const [presenters, setPresenters] = React.useState<NotificationPresenterRegistration[]>([]);
+
+    const registerPresenter = React.useCallback(
+        (level: NotificationLevel, present: NotificationPresenter) => {
+            const notificationPresenter = {
+                level,
+                present,
+            };
+
+            setPresenters([notificationPresenter, ...presenters]);
+
+            return () => {
+                setPresenters(p => p.filter(presenter => presenter !== notificationPresenter));
+            };
+        },
+        [presenters]
+    );
+
+    return (
+        <NotificationContext.Provider value={{ presenters, registerPresenter }}>
+            {children}
+        </NotificationContext.Provider>
+    );
+};
+
+export const useNotificationContext = () => React.useContext(NotificationContext);
+
 export const useNotificationCenter = () => {
     const { notificationCenter } = useFusionContext();
+    const nofificationContext = React.useContext(NotificationContext);
 
     return (notificationRequest: NotificationRequest) =>
-        notificationCenter.sendAsync(notificationRequest);
+        notificationCenter.sendAsync(notificationRequest, nofificationContext);
 };
