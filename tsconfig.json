@@ -13,6 +13,7 @@
         "composite": false,
         "moduleResolution": "node",
         "jsx": "react",
+        "skipLibCheck": true,
         "typeRoots": [
             "./src/typings/@equinor",
             "./node_modules/@types"

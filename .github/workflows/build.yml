@@ -1,0 +1,27 @@
+name: PR Build
+
+on:
+  pull_request:
+    branches:
+      - master
+      
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [8.x]
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: npm install, update version.ts, run tsc
+      run: |
+        npm ci
+        npm run update-version-definition:no-commit
+        npm run tsc
+      env:
+        CI: true
