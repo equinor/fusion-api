@@ -68,8 +68,8 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
     private async validateContext(context: Context | null) {
         if (!context) return;
 
-        const validContext = this.contextClient.getContextAsync(context.id);
-        if (validContext) return;
+        const validContext = await this.contextClient.getContextAsync(context.id);
+        if (validContext?.data) return;
 
         await this.setAsync('current', null);
     }
