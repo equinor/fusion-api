@@ -89,14 +89,16 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
 
         const history = await this.getAsync('history');
         this.featureLogger.log('Context selected', '0.0.1', {
-            selectedContext: context ? {
-                id: context.id,
-                name: context.title,
-            } : null,
+            selectedContext: context
+                ? {
+                      id: context.id,
+                      name: context.title,
+                  }
+                : null,
             previusContexts: (history || []).map(c => ({ id: c.id, name: c.title })),
         });
 
-        if(context) {
+        if (context) {
             this.featureLogger.setCurrentContext(context.id, context.title);
         } else {
             this.featureLogger.setCurrentContext(null, null);
@@ -176,8 +178,12 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
             return null;
         }
 
-        const contextResponse = await this.contextClient.getContextAsync(currentContext.id);
-        return contextResponse.data;
+        try {
+            const contextResponse = await this.contextClient.getContextAsync(currentContext.id);
+            return contextResponse.data;
+        } catch {
+            return null;
+        }
     }
 
     async exchangeContextAsync(currentContext: Context, ...requiredTypes: ContextTypes[]) {
