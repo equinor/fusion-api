@@ -65,9 +65,19 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         }
     }
 
+    private async validateContext(context: Context | null) {
+        if (!context) return;
+
+        const validContext = this.contextClient.getContextAsync(context.id);
+        if (validContext) return;
+
+        await this.setAsync('current', null);
+    }
+
     async setCurrentContextAsync(context: Context | null) {
-        const currentContext = await this.getCurrentContextAsync();
         const buildUrl = this.appContainer.currentApp?.context?.buildUrl;
+        // const currentContext = await this.getCurrentContextAsync();
+        const currentContext = await this.getAsync('current');
 
         const appPath = `/apps/${this.appContainer.currentApp?.key}`;
         const hasAppPath = this.history.location.pathname.indexOf(appPath) !== -1;
@@ -79,13 +89,16 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
             );
 
         await this.setAsync('current', context);
+        this.validateContext(context);
 
         if (!currentContext) {
             return;
         }
+        const previousContext = await this.contextClient.getContextAsync(currentContext.id);
+        if (!previousContext) return;
 
-        this.updateHistoryAsync(currentContext);
-        if (context) this.updateLinksAsync(currentContext, context);
+        this.updateHistoryAsync(previousContext.data);
+        if (context) this.updateLinksAsync(previousContext.data, context);
 
         const history = await this.getAsync('history');
         this.featureLogger.log('Context selected', '0.0.1', {
