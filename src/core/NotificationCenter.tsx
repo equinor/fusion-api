@@ -255,13 +255,13 @@ export const NotificationContextProvider: React.FC = ({ children }) => {
                 present,
             };
 
-            setPresenters([notificationPresenter, ...presenters]);
+            setPresenters(p => [notificationPresenter, ...p]);
 
             return () => {
                 setPresenters(p => p.filter(presenter => presenter !== notificationPresenter));
             };
         },
-        [presenters]
+        []
     );
 
     return (
