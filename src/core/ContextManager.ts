@@ -178,8 +178,12 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
             return null;
         }
 
-        const contextResponse = await this.contextClient.getContextAsync(currentContext.id);
-        return contextResponse.data;
+        try {
+            const contextResponse = await this.contextClient.getContextAsync(currentContext.id);
+            return contextResponse.data;
+        } catch {
+            return null;
+        }
     }
 
     async exchangeContextAsync(currentContext: Context, ...requiredTypes: ContextTypes[]) {
