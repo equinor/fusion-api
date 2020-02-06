@@ -9,7 +9,8 @@
         "update-version-definition:no-commit": "echo \"export default '$npm_package_version';\" > src/version.ts ",
         "build": "npm run update-version-definition && npm run tsc",
         "tsc": "tsc -p ./tsconfig.json",
-        "tsc:version": "tsc --version"
+        "tsc:version": "tsc --version",
+        "version": "echo \"export default '$npm_package_version';\" > src/version.ts"
     },
     "repository": {
         "type": "git",
