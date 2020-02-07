@@ -5,7 +5,7 @@ type PersonContract = {
     name: string;
     companyId?: string;
     companyName: string;
-    number: string;
+    contractNumber: string;
     project: PersonProject;
 };
 
