@@ -22,7 +22,13 @@ export {
 
 export { default as ServiceResolver } from './http/resourceCollections/ServiceResolver';
 
-export { default as HttpClient, IHttpClient } from './http/HttpClient';
+export {
+    default as HttpClient,
+    IHttpClient,
+    HttpClientError,
+    HttpClientParseError,
+    HttpClientRequestFailedError,
+} from './http/HttpClient';
 
 export {
     default as ResourceCollections,
@@ -47,7 +53,13 @@ export {
     useCurrentContextTypes,
 } from './core/ContextManager';
 
-export { withAbortController, useAbortControllerManager, enqueueAsyncOperation, AbortableAction, AsyncOperation } from './utils/AbortControllerManager';
+export {
+    withAbortController,
+    useAbortControllerManager,
+    enqueueAsyncOperation,
+    AbortableAction,
+    AsyncOperation,
+} from './utils/AbortControllerManager';
 
 export {
     useComponentDisplayType,
@@ -145,6 +157,10 @@ export {
     NotificationPresenter,
     NotificationResolver,
     useNotificationCenter,
+    NotificationContextProvider,
+    useNotificationContext,
+    RegisterNotificationPresenter,
+    INotificationContext,
 } from './core/NotificationCenter';
 
 export {
@@ -159,6 +175,10 @@ export {
     useTelemetryLogger,
     useTelemetryInitializer,
 } from './utils/TelemetryLogger';
+
+export { default as FeatureLogger, useFeatureLogger } from './utils/FeatureLogger';
+
+export { default as fusionConsole } from './utils/fusionConsole';
 
 export { default as useDebouncedAbortable } from './hooks/useDebouncedAbortable';
 export { default as useDebounce } from './hooks/useDebounce';

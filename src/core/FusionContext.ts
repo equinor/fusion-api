@@ -18,6 +18,7 @@ import PeopleContainer from './PeopleContainer';
 import UserMenuContainer from './UserMenuContainer';
 import TelemetryLogger from '../utils/TelemetryLogger';
 import EventHub from '../utils/EventHub';
+import FeatureLogger from '../utils/FeatureLogger';
 
 export type Auth = {
     container: IAuthContainer;
@@ -59,6 +60,7 @@ export type App = {
 
 export type Logging = {
     telemetry: TelemetryLogger;
+    feature: FeatureLogger;
 };
 
 export interface IFusionContext {
@@ -146,6 +148,7 @@ export const createFusionContext = (
     );
     const apiClients = createApiClients(httpClient, resourceCollections, serviceResolver);
 
+    const featureLogger = new FeatureLogger(apiClients, new EventHub());
     const history = browserHistory || createBrowserHistory();
 
     const coreSettings = new SettingsContainer<CoreSettings>(
@@ -155,17 +158,15 @@ export const createFusionContext = (
         defaultSettings
     );
 
-    const appContainer = new AppContainer(apiClients, telemetryLogger, new EventHub());
+    const appContainer = new AppContainer(
+        apiClients,
+        telemetryLogger,
+        featureLogger,
+        new EventHub()
+    );
     appContainerFactory(appContainer);
 
-    // Try to get the current context id from the current route if a user navigates directly to the app/context
-    const contextRouteMatch = matchPath<ContextRouteMatch>('apps/:appKey/:contextId', {
-        path: history.location.pathname,
-    });
-    const contextId =
-        contextRouteMatch && contextRouteMatch.params ? contextRouteMatch.params.contextId : null;
-
-    const contextManager = new ContextManager(apiClients, appContainer, history);
+    const contextManager = new ContextManager(apiClients, appContainer, featureLogger, history);
     const tasksContainer = new TasksContainer(apiClients, new EventHub());
     const notificationCenter = new NotificationCenter(new EventHub());
     const peopleContainer = new PeopleContainer(apiClients, resourceCollections, new EventHub());
@@ -199,6 +200,7 @@ export const createFusionContext = (
         environment,
         logging: {
             telemetry: telemetryLogger,
+            feature: featureLogger,
         },
         options,
     };

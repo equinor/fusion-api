@@ -1,12 +1,10 @@
 import { ContextTypes } from './ContextTypes';
 import { Context } from './Context';
 
-export class ContextManifest {
+export type ContextManifest = {
     readonly types: ContextTypes[];
-    buildUrl?: (context: Context) => string;
+    readonly placeholder?: string;
+    readonly nullable?: boolean;
+    buildUrl?: (context: Context | null, url: string) => string;
     getContextFromUrl?: (url: string) => string;
-
-    constructor(types: ContextTypes[]) {
-        this.types = types;
-    }
-}
+};

@@ -33,6 +33,9 @@ export default abstract class ReliableDictionary<
     constructor(provider: IReliableDictionaryStorageProvider) {
         super();
         this.provider = provider;
+        this.provider.on('change', value => {
+            this.emit('change', value);
+        });
     }
 
     async getAsync<TKey extends keyof TCacheType, T = TCacheType[TKey]>(
