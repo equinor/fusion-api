@@ -39,6 +39,35 @@ export default class OrgResourceCollection extends BaseResourceCollection {
         return `${url}${query}`;
     }
 
+    instances(projectId: string, positionId :string, expandProperties?: string[]) {
+        const url = combineUrls(this.position(projectId, positionId, false), 'instances');
+        if(!expandProperties || !expandProperties.length){
+            return url;
+        }
+        const query = `?$expand=${expandProperties.join(',')}`;
+        return `${url}${query}`;
+    }
+
+    instance(projectId: string,positionId: string, instanceId: string) {
+        return combineUrls(this.instances(projectId, positionId), instanceId);
+    }
+
+    publish(projectId: string, draftId: string) {
+        return combineUrls(this.project(projectId), 'drafts', draftId, 'publish')
+    }
+
+    publishStatus(draftId: string) {
+        return combineUrls(this.getBaseUrl(), 'drafts', draftId, 'publish')
+    }
+
+    roleDescriptionV2(projectId: string, positionId: string) {
+        return combineUrls(this.position(projectId, positionId, false), 'role-description');
+    }
+
+    personalTaskDescription(projectId: string, azureUniqueId: string) {
+        return combineUrls(this.getBaseUrl(), 'persons', azureUniqueId,'role-descriptions', 'projects', projectId, 'content')
+    }
+
     roleDescription(projectId: string, positionId: string) {
         return combineUrls(
             this.position(projectId, positionId, false),
@@ -62,8 +91,9 @@ export default class OrgResourceCollection extends BaseResourceCollection {
         );
     }
 
-    reportsTo(projectId: string, positionId: string) {
-        return combineUrls(this.position(projectId, positionId, false), 'reportsTo');
+    reportsTo(projectId: string, positionId: string, date: string) {
+        const url = combineUrls(this.position(projectId, positionId, false), 'reportsTo');
+        return `${url}?date=${date}`;
     }
 
     disciplineNetwork(projectId: string, discipline: string) {

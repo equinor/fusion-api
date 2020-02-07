@@ -5,7 +5,6 @@ type Position = {
     id: string;
     externalId: string;
     name: string;
-    parentPositionId: string | null;
     basePosition: BasePosition;
     instances: PositionInstance[];
     properties: {
@@ -16,8 +15,6 @@ type Position = {
     totalChildCount: number;
     projectId: string;
     contractId: string | null;
-    reportsTo?: Position[];
-    taskOwners?: Position[];
 };
 
 export default Position;

@@ -1,7 +1,14 @@
 import BaseApiClient from './BaseApiClient';
 import { FusionApiHttpErrorResponse } from './models/common/FusionApiHttpErrorResponse';
 import Contract from './models/org/Contract';
-import OrgProject, { BasePosition, CreateOrgProject } from './models/org/OrgProject';
+import OrgProject, {
+    BasePosition,
+    CreateOrgProject,
+    PositionInstance,
+    PublishDetails,
+    PositionReportPath,
+    RoleDescription,
+} from './models/org/OrgProject';
 import Position from './models/org/Position';
 
 export default class OrgClient extends BaseApiClient {
@@ -60,7 +67,7 @@ export default class OrgClient extends BaseApiClient {
         });
     }
 
-    public async updatePositionAsync(projectId: string, position: Position) {
+    public async updatePositionAsync(projectId: string, position: Position, edit?: boolean) {
         const url = this.resourceCollections.org.position(projectId, position.id, false);
         return this.httpClient.putAsync<Position, Position, FusionApiHttpErrorResponse>(
             url,
@@ -69,9 +76,87 @@ export default class OrgClient extends BaseApiClient {
                 headers: {
                     'api-version': '2.0',
                     'Content-Type': 'application/json',
+                    'x-pro-edit-mode': edit ? 'true' : 'false',
                 },
             }
         );
+    }
+
+    public async updatePositionPropertyAsync(
+        projectId: string,
+        positionId: string,
+        positionProperties: Partial<Position>,
+        edit?: boolean
+    ) {
+        const url = this.resourceCollections.org.position(projectId, positionId, false);
+        return this.httpClient.patchAsync<Partial<Position>, Position, FusionApiHttpErrorResponse>(
+            url,
+            positionProperties,
+            {
+                headers: {
+                    'api-version': '2.0',
+                    'Content-Type': 'application/json',
+                    'x-pro-edit-mode': edit ? 'true' : 'false',
+                },
+            }
+        );
+    }
+
+    public async updateInstancePropertyAsync(
+        projectId: string,
+        positionId: string,
+        instanceId: string,
+        instanceProperties: Partial<PositionInstance> & { id: string },
+        edit?: boolean
+    ) {
+        const url = this.resourceCollections.org.instance(projectId, positionId, instanceId);
+        return this.httpClient.patchAsync<object, PositionInstance, FusionApiHttpErrorResponse>(
+            url,
+            instanceProperties,
+            {
+                headers: {
+                    'api-version': '2.0',
+                    'Content-Type': 'application/json',
+                    'x-pro-edit-mode': edit ? 'true' : 'false',
+                },
+            }
+        );
+    }
+
+    public async publishAsync(projectId: string, draftId: string, apiVersion?: string) {
+        const url = this.resourceCollections.org.publish(projectId, draftId);
+        const requestHeader: RequestInit = {
+            headers: {
+                'api-version': apiVersion ? apiVersion : '1.0',
+            },
+        };
+        return this.httpClient.postAsync<null, PublishDetails, FusionApiHttpErrorResponse>(
+            url,
+            null,
+            requestHeader
+        );
+    }
+
+    public async getPublishStatusAsync(draftId: string, apiVersion?: string) {
+        const url = this.resourceCollections.org.publishStatus(draftId);
+        const requestHeader: RequestInit = {
+            headers: {
+                'api-version': apiVersion ? apiVersion : '1.0',
+            },
+        };
+        return this.httpClient.getAsync<PublishDetails, FusionApiHttpErrorResponse>(
+            url,
+            requestHeader
+        );
+    }
+
+    public async getPositionReportPathAsync(projectId: string, positionId: string, date: string) {
+        const url = this.resourceCollections.org.reportsTo(projectId, positionId, date);
+        return this.httpClient.getAsync<PositionReportPath, FusionApiHttpErrorResponse>(url, {
+            headers: {
+                'api-version': '2.0',
+            },
+        });
     }
 
     public async getRoleDescriptionAsync(projectId: string, positionId: string) {
@@ -94,6 +179,57 @@ export default class OrgClient extends BaseApiClient {
                 return response.text();
             }
         );
+    }
+
+    public async getRoleDescriptionV2Async(projectId: string, positionId: string) {
+        const url = this.resourceCollections.org.roleDescriptionV2(projectId, positionId);
+        return this.httpClient.getAsync<RoleDescription, FusionApiHttpErrorResponse>(url, {
+            headers: {
+                'api-version': '2.0',
+            },
+        });
+    }
+
+    public async updatePersonalTaskDescriptionAsync(
+        projectId: string,
+        azureUniqueId: string,
+        description: string
+    ) {
+        const url = this.resourceCollections.org.personalTaskDescription(projectId, azureUniqueId);
+        return this.httpClient.putAsync<() => string, string, FusionApiHttpErrorResponse>(
+            url,
+            () => description,
+            {
+                headers: {
+                    'api-version': '2.0',
+                    'Content-Type': 'text/plain',
+                },
+            },
+            async (response: Response) => {
+                return response.text();
+            }
+        );
+    }
+
+    public async canEditPersonalTaskDescriptionAsync(projectId: string, azureUniqueId: string) {
+        const url = this.resourceCollections.org.personalTaskDescription(projectId, azureUniqueId);
+        try {
+            const response = await this.httpClient.optionsAsync<void, FusionApiHttpErrorResponse>(url, {
+                headers: {
+                    'api-version': '2.0'
+                }
+            }, () => Promise.resolve());
+            
+            const allowHeader = response.headers.get('Allow');
+            if (allowHeader !== null && allowHeader.indexOf('PUT') !== -1) {
+                return true;
+            }
+
+            return false;
+        } catch (e) {
+            return false;
+        
+        }
     }
 
     public async getDisciplineNetworkAsync(projectId: string, discipline: string) {
