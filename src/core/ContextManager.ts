@@ -68,10 +68,14 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
     private async validateContext(context: Context | null) {
         if (!context) return;
 
-        const validContext = await this.contextClient.getContextAsync(context.id);
-        if (validContext?.data) return;
+        try {
+            const validContext = await this.contextClient.getContextAsync(context.id);
+            if (validContext?.data) return;
 
-        await this.setAsync('current', null);
+            await this.setAsync('current', null);
+        } catch {
+            await this.setAsync('current', null);
+        }
     }
 
     async setCurrentContextAsync(context: Context | null) {
@@ -93,11 +97,15 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         if (!currentContext) {
             return;
         }
-        const previousContext = await this.contextClient.getContextAsync(currentContext.id);
-        if (!previousContext) return;
+        try {
+            const previousContext = await this.contextClient.getContextAsync(currentContext.id);
+            if (!previousContext) return;
 
-        this.updateHistoryAsync(previousContext.data);
-        if (context) this.updateLinksAsync(previousContext.data, context);
+            this.updateHistoryAsync(previousContext.data);
+            if (context) this.updateLinksAsync(previousContext.data, context);
+        } catch {
+            return;
+        }
 
         const history = await this.getAsync('history');
         this.featureLogger.log('Context selected', '0.0.1', {
@@ -158,9 +166,12 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
             return contextFromHistory;
         }
 
-        const response = await this.contextClient.getContextAsync(linkedContextId);
-
-        return response.data || null;
+        try {
+            const response = await this.contextClient.getContextAsync(linkedContextId);
+            return response.data || null;
+        } catch {
+            return null;
+        }
     }
 
     getCurrentContext() {
