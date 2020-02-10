@@ -155,7 +155,7 @@ export default class NotificationCenter extends ReliableDictionary<
     private async shouldPresentNotificationAsync(notificationRequest: NotificationRequest) {
         const allNotifications = await this.getAllNotificationsAsync();
 
-        if (allNotifications.find(n => n.id === notificationRequest.id)) {
+        if (allNotifications.find(n => n.responded !== null && n.id === notificationRequest.id)) {
             return false;
         }
 
