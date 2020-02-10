@@ -185,6 +185,10 @@ export default class NotificationCenter extends ReliableDictionary<
     }
 
     private async persistAsync(notification: Notification) {
+        if (notification.request.level === 'low') {
+            return;
+        }
+
         const notifications = await this.getAllNotificationsAsync();
 
         const existing = notifications.find(n => n.id === notification.id);
