@@ -137,6 +137,20 @@ export default class OrgClient extends BaseApiClient {
         );
     }
 
+    public async deleteDraftAsync(projectId: string, draftId: string, apiVersion?: string) {
+        const url = this.resourceCollections.org.deleteDraft(projectId, draftId);
+        const requestHeader: RequestInit = {
+            headers: {
+                'api-version': apiVersion ? apiVersion : '1.0',
+            },
+        };
+        return this.httpClient.deleteAsync<void, FusionApiHttpErrorResponse>(
+            url,
+            requestHeader,
+            () => Promise.resolve()
+        );
+    }
+
     public async getPublishStatusAsync(draftId: string, apiVersion?: string) {
         const url = this.resourceCollections.org.publishStatus(draftId);
         const requestHeader: RequestInit = {
@@ -214,12 +228,16 @@ export default class OrgClient extends BaseApiClient {
     public async canEditPersonalTaskDescriptionAsync(projectId: string, azureUniqueId: string) {
         const url = this.resourceCollections.org.personalTaskDescription(projectId, azureUniqueId);
         try {
-            const response = await this.httpClient.optionsAsync<void, FusionApiHttpErrorResponse>(url, {
-                headers: {
-                    'api-version': '2.0'
-                }
-            }, () => Promise.resolve());
-            
+            const response = await this.httpClient.optionsAsync<void, FusionApiHttpErrorResponse>(
+                url,
+                {
+                    headers: {
+                        'api-version': '2.0',
+                    },
+                },
+                () => Promise.resolve()
+            );
+
             const allowHeader = response.headers.get('Allow');
             if (allowHeader !== null && allowHeader.indexOf('PUT') !== -1) {
                 return true;
@@ -228,7 +246,6 @@ export default class OrgClient extends BaseApiClient {
             return false;
         } catch (e) {
             return false;
-        
         }
     }
 

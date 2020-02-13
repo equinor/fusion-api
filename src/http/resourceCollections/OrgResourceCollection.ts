@@ -60,6 +60,10 @@ export default class OrgResourceCollection extends BaseResourceCollection {
         return combineUrls(this.getBaseUrl(), 'drafts', draftId, 'publish')
     }
 
+    deleteDraft(projectId: string, draftId: string) {
+        return combineUrls(this.project(projectId),'drafts', draftId )
+    }
+
     roleDescriptionV2(projectId: string, positionId: string) {
         return combineUrls(this.position(projectId, positionId, false), 'role-description');
     }
