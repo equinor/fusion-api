@@ -74,7 +74,6 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
         if (existingApp === null) {
             const newApp = manifest;
             this.addOrUpdate(newApp);
-            this.fetchIconAsync(appKey);
         } else {
             const updatedApp = { ...existingApp, ...manifest };
             this.addOrUpdate(updatedApp);
@@ -159,18 +158,6 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
         );
 
         return this.getAll();
-    }
-
-    private async fetchIconAsync(appKey: string) {
-        const app = this.get(appKey);
-
-        if (!app) {
-            return;
-        }
-
-        const response = await this.fusionClient.getAppIconAsync(appKey);
-        const appWithIcon = { ...app, icon: response.data };
-        this.addOrUpdate(appWithIcon);
     }
 
     private addOrUpdate(app: AppManifest) {
