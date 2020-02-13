@@ -14,7 +14,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/equinor/fusion.git"
+        "url": "git+https://github.com/equinor/fusion-api.git"
     },
     "keywords": [
         "fusion"
@@ -22,9 +22,9 @@
     "author": "Fusion Core",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/equinor/fusion/issues"
+        "url": "https://github.com/equinor/fusion-api/issues"
     },
-    "homepage": "https://github.com/equinor/fusion#readme",
+    "homepage": "https://github.com/equinor/fusion-api#readme",
     "dependencies": {
         "@microsoft/applicationinsights-web": "^2.4.3",
         "odata-query": "^5.7.0",
