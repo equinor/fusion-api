@@ -11,6 +11,10 @@ export { default as AuthToken } from './auth/AuthToken';
 export { default as useCurrentUser } from './auth/useCurrentUser';
 
 export { registerApp, useCurrentApp } from './app/AppContainer';
+export { default as AppManifest } from './app/AppManifest';
+export { default as ApiAppManifest } from './http/apiClients/models/fusion/apps/AppManifest';
+export { default as AppCategory } from './http/apiClients/models/fusion/apps/AppCategory';
+export { default as AppType } from './http/apiClients/models/fusion/apps/AppType';
 
 export {
     default as FusionContext,
@@ -28,6 +32,7 @@ export {
     HttpClientError,
     HttpClientParseError,
     HttpClientRequestFailedError,
+    useHttpClient,
 } from './http/HttpClient';
 
 export {
@@ -45,7 +50,12 @@ export {
     FusionApiErrorMessage,
 } from './http/apiClients/models/common/FusionApiHttpErrorResponse';
 
-export { Context, ContextType, ContextTypes } from './http/apiClients/models/context';
+export {
+    Context,
+    ContextType,
+    ContextTypes,
+    ContextManifest,
+} from './http/apiClients/models/context';
 export {
     useContextManager,
     useCurrentContext,
