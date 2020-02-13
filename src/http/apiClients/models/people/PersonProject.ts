@@ -1,8 +1,8 @@
 type PersonProject = {
     id: string;
     name: string;
-    pimsDomainId: string;
-    wbs: string;
+    domainId: string;
+    type: string;
 };
 
 export default PersonProject;
