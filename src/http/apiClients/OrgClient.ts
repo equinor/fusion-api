@@ -144,7 +144,11 @@ export default class OrgClient extends BaseApiClient {
                 'api-version': apiVersion ? apiVersion : '1.0',
             },
         };
-        return this.httpClient.deleteAsync<null, FusionApiHttpErrorResponse>(url, requestHeader);
+        return this.httpClient.deleteAsync<void, FusionApiHttpErrorResponse>(
+            url,
+            requestHeader,
+            () => Promise.resolve()
+        );
     }
 
     public async getPublishStatusAsync(draftId: string, apiVersion?: string) {
