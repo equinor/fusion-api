@@ -135,6 +135,11 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
             },
         });
 
+        if (!app.context) {
+            // Reset context on feature logger if current app does not support it
+            this.featureLogger.setCurrentContext(null, null);
+        }
+
         this.featureLogger.log('App selected', '0.0.1', {
             selectedApp: {
                 key: app.key,

@@ -12,6 +12,7 @@ import AppManifest from '../http/apiClients/models/fusion/apps/AppManifest';
 import { History } from 'history';
 import { combineUrls } from '../utils/url';
 import FeatureLogger from '../utils/FeatureLogger';
+import TelemetryLogger from '../utils/TelemetryLogger';
 
 type ContextCache = {
     current: Context | null;
@@ -27,6 +28,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         apiClients: ApiClients,
         private appContainer: AppContainer,
         private featureLogger: FeatureLogger,
+        private telemetryLogger: TelemetryLogger,
         private history: History
     ) {
         super(new LocalStorageProvider(`FUSION_CURRENT_CONTEXT`, new EventHub()));
@@ -70,11 +72,37 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
 
         try {
             const validContext = await this.contextClient.getContextAsync(context.id);
-            if (validContext?.data) return;
+            if (validContext?.data) {
+                this.featureLogger.setCurrentContext(context.id, context.title);
+
+                const history = await this.getAsync('history');
+                this.featureLogger.log('Context selected', '0.0.1', {
+                    selectedContext: context
+                        ? {
+                              id: context.id,
+                              name: context.title,
+                          }
+                        : null,
+                    previusContexts: (history || []).map(c => ({ id: c.id, name: c.title })),
+                });
+
+                this.telemetryLogger.trackEvent({
+                    name: 'Project selected',
+                    properties: {
+                        projectId: context.id,
+                        projectName: context.title,
+                        currentApp: this.appContainer.currentApp?.name,
+                    },
+                });
+
+                return;
+            }
 
             await this.setAsync('current', null);
+            this.featureLogger.setCurrentContext(null, null);
         } catch {
             await this.setAsync('current', null);
+            this.featureLogger.setCurrentContext(null, null);
         }
     }
 
@@ -105,23 +133,6 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
             if (context) this.updateLinksAsync(previousContext.data, context);
         } catch {
             return;
-        }
-
-        const history = await this.getAsync('history');
-        this.featureLogger.log('Context selected', '0.0.1', {
-            selectedContext: context
-                ? {
-                      id: context.id,
-                      name: context.title,
-                  }
-                : null,
-            previusContexts: (history || []).map(c => ({ id: c.id, name: c.title })),
-        });
-
-        if (context) {
-            this.featureLogger.setCurrentContext(context.id, context.title);
-        } else {
-            this.featureLogger.setCurrentContext(null, null);
         }
     }
 
