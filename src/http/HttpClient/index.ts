@@ -48,7 +48,11 @@ export default class HttpClient implements IHttpClient {
         this.resourceCache = resourceCache;
         this.abortControllerManager = abortControllerManager;
         this.telemetryLogger = telemetryLogger;
-        this.requestsInProgress = new DistributedState<RequestsInProgress>("FusionHttpClient.requestsInProgress", {}, eventHub);
+        this.requestsInProgress = new DistributedState<RequestsInProgress>(
+            'FusionHttpClient.requestsInProgress',
+            {},
+            eventHub
+        );
     }
 
     async getAsync<TResponse, TExpectedErrorResponse>(
@@ -310,17 +314,21 @@ export default class HttpClient implements IHttpClient {
         const requestPerformer = async () => {
             try {
                 const data = await handler();
-                delete this.requestsInProgress.state[url];
+                const requestsInProgres = this.requestsInProgress.state;
+                delete requestsInProgres[url];
+                this.requestsInProgress.state = requestInProgress;
                 return data;
             } catch (error) {
-                delete this.requestsInProgress.state[url];
+                const requestsInProgres = this.requestsInProgress.state;
+                delete requestsInProgres[url];
+                this.requestsInProgress.state = requestInProgress;
                 throw error;
             }
         };
 
         const request = requestPerformer();
 
-        this.requestsInProgress.state[url] = request;
+        this.requestsInProgress.state = { ...this.requestsInProgress.state, [url]: request };
 
         return await request;
     }
