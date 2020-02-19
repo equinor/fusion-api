@@ -14,6 +14,8 @@ import { useFusionContext } from '../../core/FusionContext';
 import RequestBody from '../models/RequestBody';
 import JSON from '../../utils/JSON';
 import TelemetryLogger from '../../utils/TelemetryLogger';
+import DistributedState, { IDistributedState } from '../../utils/DistributedState';
+import { IEventHub } from '../../utils/EventHub';
 
 // Export interface, response and error types
 export {
@@ -24,25 +26,33 @@ export {
     HttpClientRequestFailedError,
 };
 
+type RequestsInProgress = { [key: string]: Promise<HttpResponse<any>> };
+
 export default class HttpClient implements IHttpClient {
     private authContainer: IAuthContainer;
     private resourceCache: ResourceCache;
     private abortControllerManager: AbortControllerManager;
     private telemetryLogger: TelemetryLogger;
 
-    private requestsInProgress: { [key: string]: Promise<HttpResponse<any>> } = {};
+    private requestsInProgress: IDistributedState<RequestsInProgress>;
     private sessionId = uuid();
 
     constructor(
         authContainer: IAuthContainer,
         resourceCache: ResourceCache,
         abortControllerManager: AbortControllerManager,
-        telemetryLogger: TelemetryLogger
+        telemetryLogger: TelemetryLogger,
+        eventHub: IEventHub
     ) {
         this.authContainer = authContainer;
         this.resourceCache = resourceCache;
         this.abortControllerManager = abortControllerManager;
         this.telemetryLogger = telemetryLogger;
+        this.requestsInProgress = new DistributedState<RequestsInProgress>(
+            'FusionHttpClient.requestsInProgress',
+            {},
+            eventHub
+        );
     }
 
     async getAsync<TResponse, TExpectedErrorResponse>(
@@ -304,17 +314,21 @@ export default class HttpClient implements IHttpClient {
         const requestPerformer = async () => {
             try {
                 const data = await handler();
-                delete this.requestsInProgress[url];
+                const requestsInProgres = this.requestsInProgress.state;
+                delete requestsInProgres[url];
+                this.requestsInProgress.state = requestInProgress;
                 return data;
             } catch (error) {
-                delete this.requestsInProgress[url];
+                const requestsInProgres = this.requestsInProgress.state;
+                delete requestsInProgres[url];
+                this.requestsInProgress.state = requestInProgress;
                 throw error;
             }
         };
 
         const request = requestPerformer();
 
-        this.requestsInProgress[url] = request;
+        this.requestsInProgress.state = { ...this.requestsInProgress.state, [url]: request };
 
         return await request;
     }
@@ -428,7 +442,7 @@ export default class HttpClient implements IHttpClient {
 
     // Utils
     private getRequestInProgress<T>(url: string) {
-        return this.requestsInProgress[url] as Promise<HttpResponse<T>>;
+        return this.requestsInProgress.state[url] as Promise<HttpResponse<T>>;
     }
 
     private createRequestBody<TBody extends RequestBody>(body: TBody) {
