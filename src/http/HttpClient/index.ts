@@ -316,12 +316,12 @@ export default class HttpClient implements IHttpClient {
                 const data = await handler();
                 const requestsInProgres = this.requestsInProgress.state;
                 delete requestsInProgres[url];
-                this.requestsInProgress.state = requestInProgress;
+                this.requestsInProgress.state = requestsInProgres;
                 return data;
             } catch (error) {
                 const requestsInProgres = this.requestsInProgress.state;
                 delete requestsInProgres[url];
-                this.requestsInProgress.state = requestInProgress;
+                this.requestsInProgress.state = requestsInProgres;
                 throw error;
             }
         };
