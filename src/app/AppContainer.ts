@@ -228,17 +228,12 @@ const registerApp = (appKey: string, manifest: AppRegistration): void => {
 
 const useCurrentApp = () => {
     const { app } = useFusionContext();
-    const [currentApp] = useEventEmitterValue(
-        app.container,
-        'change',
-        app => app,
-        app.container.currentApp
-    );
+    useEventEmitterValue(app.container, 'change', app => app, app.container.currentApp);
 
     // Only to get notified/rerendered when changes are made to the current app
-    const [_] = useEventEmitterValue(app.container, 'update');
+    useEventEmitterValue(app.container, 'update');
 
-    return currentApp;
+    return app.container.currentApp;
 };
 
 const useApps = (): [Error | null, boolean, AppManifest[]] => {
