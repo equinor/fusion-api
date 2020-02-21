@@ -21,7 +21,7 @@ export interface IEventEmitter<TEvents extends Events> {
     on<TKey extends keyof TEvents>(
         key: TKey,
         handler: (arg: EventHandlerParameter<TEvents, TKey>) => void
-    ): () => void ;
+    ): () => void;
 }
 
 export default abstract class EventEmitter<TEvents extends Events> {
@@ -70,9 +70,13 @@ export const useEventEmitterValue = <
     defaultData: TData | null = null
 ): [TData | null, Dispatch<SetStateAction<TData | null>>] => {
     const [value, setValue] = useState<TData | null>(defaultData);
+    const [_, forceUpdate] = useState<null>(null);
 
     useEffect(() => {
-        return emitter.on(event, data => setValue(transform(data)));
+        return emitter.on(event, data => {
+            setValue(transform(data));
+            forceUpdate(null);
+        });
     }, [emitter, event]);
 
     return [value, setValue];
