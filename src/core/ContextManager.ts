@@ -349,4 +349,4 @@ const useContextQuery = (): {
     return { error, isQuerying, contexts, search };
 };
 
-export { useContextManager, useCurrentContext, useContextQuery, useCurrentContextTypes };
+export { useContextManager, useCurrentContext, useContextQuery, useCurrentContextTypes,useContextHistory };
