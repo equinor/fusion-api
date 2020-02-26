@@ -136,6 +136,20 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         }
     }
 
+    async setCurrentContextIdAsync(id: string | null) {
+        if(!id) {
+            return await this.setCurrentContextAsync(null);
+        }
+
+        try {
+            const response = await this.contextClient.getContextAsync(id);
+            await this.setCurrentContextAsync(response.data);
+        } catch(e) {
+            this.telemetryLogger.trackException(e);
+            await this.setCurrentContextAsync(null);
+        }
+    }
+
     private async updateHistoryAsync(currentContext: Context) {
         const newHistory = [currentContext];
 
