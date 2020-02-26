@@ -51,6 +51,7 @@ export {
     useCurrentContext,
     useContextQuery,
     useCurrentContextTypes,
+    useContextHistory
 } from './core/ContextManager';
 
 export {
