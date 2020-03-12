@@ -9,10 +9,16 @@ import FeatureLogger from '../utils/FeatureLogger';
 import DistributedState, { IDistributedState } from '../utils/DistributedState';
 import { IEventHub } from '../utils/EventHub';
 import { ContextManifest } from '../http/apiClients/models/context/ContextManifest';
+import { AppAuth } from '../http/apiClients/models/fusion/apps/AppManifest';
 
 type AppRegistration = {
     AppComponent: React.ComponentType;
+    name?: string;
+    shortName?: string;
+    description?: string;
     context?: ContextManifest;
+    auth?: AppAuth;
+    icon?: string;
 };
 
 type AppContainerEvents = {
