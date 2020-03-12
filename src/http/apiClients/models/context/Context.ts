@@ -7,6 +7,7 @@ type ParentContext = {
 
 export type Context = {
     id: string;
+    externalId: string | null;
     type: ContextType;
     title: string;
     value: any;
