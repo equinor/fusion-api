@@ -268,9 +268,39 @@ export default class HttpClient implements IHttpClient {
         return new File([blob], fileName);
     }
 
+    protected responseIsRetriable(response: Response, retryTimeout: number) {
+        if(retryTimeout > 20000 || response.headers.get("x-fusion-retriable") === "false") {
+            return false;
+        }
+
+        return response.status === 408
+            || response.status === 424
+            || response.status === 500
+            || response.status === 502
+            || response.status === 503 
+            || response.status === 504;
+    }
+
+    protected async retryRequestAsync<TExpectedErrorResponse>(
+        url: string,
+        init: RequestInit,
+        retryTimeout: number,
+    ): Promise<Response> {
+        // Wait before retrying the request
+        await new Promise((resolve) => setTimeout(resolve, retryTimeout));
+
+        // Abort the request if the signal has been aborted while waiting
+        if(this.abortControllerManager.getCurrentSignal()?.aborted) {
+            throw new Error(`Request ${init.method} ${url} was aborted`);
+        }
+
+        return this.performFetchAsync<TExpectedErrorResponse>(url, init, retryTimeout + 3000);
+    }
+
     private async performFetchAsync<TExpectedErrorResponse>(
         url: string,
-        init: RequestInit
+        init: RequestInit,
+        retryTimeout: number = 3000,
     ): Promise<Response> {
         try {
             const options = await this.transformRequestAsync(url, init);
@@ -278,6 +308,10 @@ export default class HttpClient implements IHttpClient {
             const response = await fetch(url, options);
 
             if (!response.ok) {
+                if(this.responseIsRetriable(response, retryTimeout)) {
+                    return this.retryRequestAsync<TExpectedErrorResponse>(url, init, retryTimeout);
+                }
+
                 // Add more info
                 const errorResponse = await this.parseResponseJSONAsync<TExpectedErrorResponse>(
                     response
