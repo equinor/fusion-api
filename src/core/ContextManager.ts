@@ -137,14 +137,14 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
     }
 
     async setCurrentContextIdAsync(id: string | null) {
-        if(!id) {
+        if (!id) {
             return await this.setCurrentContextAsync(null);
         }
 
         try {
             const response = await this.contextClient.getContextAsync(id);
             await this.setCurrentContextAsync(response.data);
-        } catch(e) {
+        } catch (e) {
             this.telemetryLogger.trackException(e);
             await this.setCurrentContextAsync(null);
         }
@@ -339,20 +339,26 @@ const useContextQuery = (): {
 
     const canQueryWithText = (text: string) => !!text && text.length > 2;
 
-    const fetchContexts = useCallback(async (query: string) => {
-        if (canQueryWithText(query)) {
-            setContexts([]);
-            try {
-                var response = await apiClients.context.queryContextsAsync(query, ...currentTypes);
-                setContexts(response.data);
-                setIsQuerying(false);
-            } catch (e) {
-                setError(e);
+    const fetchContexts = useCallback(
+        async (query: string) => {
+            if (canQueryWithText(query)) {
                 setContexts([]);
-                setIsQuerying(false);
+                try {
+                    var response = await apiClients.context.queryContextsAsync(
+                        query,
+                        ...currentTypes
+                    );
+                    setContexts(response.data);
+                    setIsQuerying(false);
+                } catch (e) {
+                    setError(e);
+                    setContexts([]);
+                    setIsQuerying(false);
+                }
             }
-        }
-    }, []);
+        },
+        [currentTypes]
+    );
 
     useDebouncedAbortable(fetchContexts, queryText);
 
@@ -363,4 +369,10 @@ const useContextQuery = (): {
     return { error, isQuerying, contexts, search };
 };
 
-export { useContextManager, useCurrentContext, useContextQuery, useCurrentContextTypes,useContextHistory };
+export {
+    useContextManager,
+    useCurrentContext,
+    useContextQuery,
+    useCurrentContextTypes,
+    useContextHistory,
+};
