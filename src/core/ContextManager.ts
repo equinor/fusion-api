@@ -61,7 +61,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         if (buildUrl && currentContext) {
             const newUrl = combineUrls(
                 hasAppPath ? appPath : '',
-                buildUrl(currentContext, scopedPath)
+                buildUrl(currentContext, scopedPath + this.history.location.search)
             );
             if (this.history.location.pathname.indexOf(newUrl) !== 0) this.history.push(newUrl);
         }
@@ -116,7 +116,10 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
 
         if (buildUrl)
             this.history.push(
-                combineUrls(hasAppPath ? appPath : '', buildUrl(context, scopedPath))
+                combineUrls(
+                    hasAppPath ? appPath : '',
+                    buildUrl(context, scopedPath + this.history.location.search)
+                )
             );
 
         await this.setAsync('current', context);
