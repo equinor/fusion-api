@@ -34,9 +34,32 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         super(new LocalStorageProvider(`FUSION_CURRENT_CONTEXT`, new EventHub()));
         this.contextClient = apiClients.context;
 
-        const unlistenAppContainer = this.appContainer.on('change', app => {
+        const unlistenAppContainer = this.appContainer.on('change', (app) => {
             this.resolveContextFromUrlOrLocalStorageAsync(app);
             unlistenAppContainer();
+        });
+
+        this.history.listen(async () => {
+            const buildUrl = this.appContainer.currentApp?.context?.buildUrl;
+            const currentContext = await this.getCurrentContextAsync();
+
+            if (
+                !buildUrl ||
+                !currentContext?.id ||
+                this.history.location.pathname.indexOf(currentContext.id) !== -1
+            )
+                return;
+
+            const appPath = `/apps/${this.appContainer.currentApp?.key}`;
+            const hasAppPath = this.history.location.pathname.indexOf(appPath) !== -1;
+            const scopedPath = this.history.location.pathname.replace(appPath, '');
+
+            const newUrl = combineUrls(
+                hasAppPath ? appPath : '',
+                buildUrl(currentContext, scopedPath)
+            );
+
+            if (this.history.location.pathname.indexOf(newUrl) !== 0) this.history.push(newUrl);
         });
     }
 
@@ -83,7 +106,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
                               name: context.title,
                           }
                         : null,
-                    previusContexts: (history || []).map(c => ({ id: c.id, name: c.title })),
+                    previusContexts: (history || []).map((c) => ({ id: c.id, name: c.title })),
                 });
 
                 this.telemetryLogger.trackEvent({
@@ -157,10 +180,10 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         if (history) {
             history
                 // Remove the current context from the previous history (it's added to the start of the history)
-                .filter(c => c.id !== currentContext.id)
+                .filter((c) => c.id !== currentContext.id)
                 // Remove historical contexts after the last 10 (currentContext + 9)
                 .slice(0, 9)
-                .forEach(c => newHistory.push(c));
+                .forEach((c) => newHistory.push(c));
         }
 
         await this.setAsync('history', newHistory);
@@ -185,7 +208,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         const linkedContextId = links[context.id];
 
         const history = await this.getAsync('history');
-        const contextFromHistory = history ? history.find(c => c.id === linkedContextId) : null;
+        const contextFromHistory = history ? history.find((c) => c.id === linkedContextId) : null;
 
         if (contextFromHistory) {
             return contextFromHistory;
