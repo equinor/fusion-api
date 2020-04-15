@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import ApiClients from '../http/apiClients';
 import ContextClient from '../http/apiClients/ContextClient';
 import { useFusionContext } from './FusionContext';
-import { Context, ContextTypes } from '../http/apiClients/models/context';
+import { Context, ContextTypes, ContextManifest } from '../http/apiClients/models/context';
 import ReliableDictionary, { LocalStorageProvider } from '../utils/ReliableDictionary';
 import useDebouncedAbortable from '../hooks/useDebouncedAbortable';
 import useApiClients from '../http/hooks/useApiClients';
@@ -39,55 +39,58 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
             unlistenAppContainer();
         });
 
-        this.history.listen(async () => {
-            const buildUrl = this.appContainer.currentApp?.context?.buildUrl;
-            const currentContext = await this.getCurrentContextAsync();
+        this.history.listen(this.ensureContextIdInUrl);
+    }
 
-            if (
-                !buildUrl ||
-                !currentContext?.id ||
-                this.history.location.pathname.indexOf(currentContext.id) !== -1
-            )
-                return;
+    private hasAppPath = (appPath: string): boolean =>
+        this.history.location.pathname.indexOf(appPath) !== -1;
 
-            const appPath = `/apps/${this.appContainer.currentApp?.key}`;
-            const hasAppPath = this.history.location.pathname.indexOf(appPath) !== -1;
-            const scopedPath = this.history.location.pathname.replace(appPath, '');
+    private getScopedPath = (appPath: string): string =>
+        this.history.location.pathname.replace(appPath, '');
 
-            const newUrl = combineUrls(
-                hasAppPath ? appPath : '',
-                buildUrl(currentContext, scopedPath)
-            );
+    private async buildUrlWithContextID() {
+        const buildUrl = this.appContainer.currentApp?.context?.buildUrl;
+        const currentContext = await this.getCurrentContextAsync();
 
-            if (this.history.location.pathname.indexOf(newUrl) !== 0) this.history.push(newUrl);
-        });
+        if (
+            !buildUrl ||
+            !currentContext?.id ||
+            this.history.location.pathname.indexOf(currentContext.id) !== -1
+        )
+            return null;
+
+        const appPath = `/apps/${this.appContainer.currentApp?.key}`;
+        const newUrl = combineUrls(
+            this.hasAppPath(appPath) ? appPath : '',
+            buildUrl(currentContext, this.getScopedPath(appPath))
+        );
+
+        return newUrl;
+    }
+
+    private async ensureContextIdInUrl() {
+        const newUrl = await this.buildUrlWithContextID();
+        if (newUrl && this.history.location.pathname.indexOf(newUrl) !== 0)
+            this.history.push(newUrl);
     }
 
     private async resolveContextFromUrlOrLocalStorageAsync(app: AppManifest | null) {
         if (!app || !app.context) return;
 
-        const {
-            context: { getContextFromUrl, buildUrl },
-        } = app;
+        const getContextFromUrl = app.context.getContextFromUrl;
 
-        const appPath = `/apps/${app.key}`;
-        const scopedPath = this.history.location.pathname.replace(appPath, '');
         const contextId =
             getContextFromUrl && this.history.location && this.history.location.pathname
-                ? getContextFromUrl(scopedPath)
+                ? getContextFromUrl(
+                      this.getScopedPath(`/apps/${this.appContainer.currentApp?.key}`)
+                  )
                 : null;
 
-        const hasAppPath = this.history.location.pathname.indexOf(appPath) !== -1;
         if (contextId) return this.setCurrentContextFromIdAsync(contextId);
 
-        const currentContext = await this.getCurrentContextAsync();
-        if (buildUrl && currentContext) {
-            const newUrl = combineUrls(
-                hasAppPath ? appPath : '',
-                buildUrl(currentContext, scopedPath + this.history.location.search)
-            );
-            if (this.history.location.pathname.indexOf(newUrl) !== 0) this.history.push(newUrl);
-        }
+        const newUrl = await this.buildUrlWithContextID();
+        if (newUrl && this.history.location.pathname.indexOf(newUrl) !== 0)
+            this.history.push(newUrl);
     }
 
     private async validateContext(context: Context | null) {
