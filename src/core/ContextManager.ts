@@ -39,16 +39,16 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
             unlistenAppContainer();
         });
 
-        this.history.listen(this.ensureContextIdInUrl);
+        this.history.listen(this.ensureContextInUrl);
     }
 
-    private hasAppPath = (appPath: string): boolean =>
-        this.history.location.pathname.indexOf(appPath) !== -1;
+    private urlHasPath = (path: string): boolean =>
+        this.history.location.pathname.indexOf(path) !== -1;
 
-    private getScopedPath = (appPath: string): string =>
-        this.history.location.pathname.replace(appPath, '');
+    private getScopedPath = (path: string): string =>
+        this.history.location.pathname.replace(path, '');
 
-    private async buildUrlWithContextID() {
+    private async buildUrlWithContext() {
         const buildUrl = this.appContainer.currentApp?.context?.buildUrl;
         const currentContext = await this.getCurrentContextAsync();
 
@@ -61,15 +61,15 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
 
         const appPath = `/apps/${this.appContainer.currentApp?.key}`;
         const newUrl = combineUrls(
-            this.hasAppPath(appPath) ? appPath : '',
+            this.urlHasPath(appPath) ? appPath : '',
             buildUrl(currentContext, this.getScopedPath(appPath))
         );
 
         return newUrl;
     }
 
-    private async ensureContextIdInUrl() {
-        const newUrl = await this.buildUrlWithContextID();
+    private async ensureContextInUrl() {
+        const newUrl = await this.buildUrlWithContext();
         if (newUrl && this.history.location.pathname.indexOf(newUrl) !== 0)
             this.history.push(newUrl);
     }
@@ -88,9 +88,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
 
         if (contextId) return this.setCurrentContextFromIdAsync(contextId);
 
-        const newUrl = await this.buildUrlWithContextID();
-        if (newUrl && this.history.location.pathname.indexOf(newUrl) !== 0)
-            this.history.push(newUrl);
+        this.ensureContextInUrl();
     }
 
     private async validateContext(context: Context | null) {
