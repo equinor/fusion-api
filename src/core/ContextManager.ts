@@ -42,6 +42,8 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         this.history.listen(this.ensureCurrentContextExistsInUrl);
     }
 
+    private getAppPath = () => `/apps/${this.appContainer.currentApp?.key}`;
+
     private urlHasPath = (path: string): boolean =>
         this.history.location.pathname.indexOf(path) !== -1;
 
@@ -59,7 +61,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         )
             return null;
 
-        const appPath = `/apps/${this.appContainer.currentApp?.key}`;
+        const appPath = this.getAppPath();
         const newUrl = combineUrls(
             this.urlHasPath(appPath) ? appPath : '',
             buildUrl(currentContext, this.getScopedPath(appPath))
@@ -81,9 +83,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
 
         const contextId =
             getContextFromUrl && this.history.location && this.history.location.pathname
-                ? getContextFromUrl(
-                      this.getScopedPath(`/apps/${this.appContainer.currentApp?.key}`)
-                  )
+                ? getContextFromUrl(this.getScopedPath(this.getAppPath()))
                 : null;
 
         if (contextId) return this.setCurrentContextFromIdAsync(contextId);
