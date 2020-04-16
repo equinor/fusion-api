@@ -39,7 +39,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
             unlistenAppContainer();
         });
 
-        this.history.listen(this.ensureContextInUrl);
+        this.history.listen(this.ensureCurrentContextExistsInUrl);
     }
 
     private urlHasPath = (path: string): boolean =>
@@ -68,7 +68,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         return newUrl;
     }
 
-    private async ensureContextInUrl() {
+    private async ensureCurrentContextExistsInUrl() {
         const newUrl = await this.buildUrlWithContext();
         if (newUrl && this.history.location.pathname.indexOf(newUrl) !== 0)
             this.history.push(newUrl);
@@ -88,7 +88,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
 
         if (contextId) return this.setCurrentContextFromIdAsync(contextId);
 
-        this.ensureContextInUrl();
+        this.ensureCurrentContextExistsInUrl();
     }
 
     private async validateContext(context: Context | null) {
