@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import ApiClients from '../http/apiClients';
 import ContextClient from '../http/apiClients/ContextClient';
 import { useFusionContext } from './FusionContext';
-import { Context, ContextTypes } from '../http/apiClients/models/context';
+import { Context, ContextTypes, ContextManifest } from '../http/apiClients/models/context';
 import ReliableDictionary, { LocalStorageProvider } from '../utils/ReliableDictionary';
 import useDebouncedAbortable from '../hooks/useDebouncedAbortable';
 import useApiClients from '../http/hooks/useApiClients';
@@ -34,37 +34,61 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         super(new LocalStorageProvider(`FUSION_CURRENT_CONTEXT`, new EventHub()));
         this.contextClient = apiClients.context;
 
-        const unlistenAppContainer = this.appContainer.on('change', app => {
+        const unlistenAppContainer = this.appContainer.on('change', (app) => {
             this.resolveContextFromUrlOrLocalStorageAsync(app);
             unlistenAppContainer();
         });
+
+        this.history.listen(this.ensureCurrentContextExistsInUrl);
+    }
+
+    private getAppPath = () => `/apps/${this.appContainer.currentApp?.key}`;
+
+    private urlHasPath = (path: string): boolean =>
+        this.history.location.pathname.indexOf(path) !== -1;
+
+    private getScopedPath = (path: string): string =>
+        this.history.location.pathname.replace(path, '');
+
+    private async buildUrlWithContext() {
+        const buildUrl = this.appContainer.currentApp?.context?.buildUrl;
+        const currentContext = await this.getCurrentContextAsync();
+
+        if (
+            !buildUrl ||
+            !currentContext?.id ||
+            this.history.location.pathname.indexOf(currentContext.id) !== -1
+        )
+            return null;
+
+        const appPath = this.getAppPath();
+        const newUrl = combineUrls(
+            this.urlHasPath(appPath) ? appPath : '',
+            buildUrl(currentContext, this.getScopedPath(appPath))
+        );
+
+        return newUrl;
+    }
+
+    private async ensureCurrentContextExistsInUrl() {
+        const newUrl = await this.buildUrlWithContext();
+        if (newUrl && this.history.location.pathname.indexOf(newUrl) !== 0)
+            this.history.push(newUrl);
     }
 
     private async resolveContextFromUrlOrLocalStorageAsync(app: AppManifest | null) {
         if (!app || !app.context) return;
 
-        const {
-            context: { getContextFromUrl, buildUrl },
-        } = app;
+        const getContextFromUrl = app.context.getContextFromUrl;
 
-        const appPath = `/apps/${app.key}`;
-        const scopedPath = this.history.location.pathname.replace(appPath, '');
         const contextId =
             getContextFromUrl && this.history.location && this.history.location.pathname
-                ? getContextFromUrl(scopedPath)
+                ? getContextFromUrl(this.getScopedPath(this.getAppPath()))
                 : null;
 
-        const hasAppPath = this.history.location.pathname.indexOf(appPath) !== -1;
         if (contextId) return this.setCurrentContextFromIdAsync(contextId);
 
-        const currentContext = await this.getCurrentContextAsync();
-        if (buildUrl && currentContext) {
-            const newUrl = combineUrls(
-                hasAppPath ? appPath : '',
-                buildUrl(currentContext, scopedPath + this.history.location.search)
-            );
-            if (this.history.location.pathname.indexOf(newUrl) !== 0) this.history.push(newUrl);
-        }
+        this.ensureCurrentContextExistsInUrl();
     }
 
     private async validateContext(context: Context | null) {
@@ -83,7 +107,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
                               name: context.title,
                           }
                         : null,
-                    previusContexts: (history || []).map(c => ({ id: c.id, name: c.title })),
+                    previusContexts: (history || []).map((c) => ({ id: c.id, name: c.title })),
                 });
 
                 this.telemetryLogger.trackEvent({
@@ -160,10 +184,10 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         if (history) {
             history
                 // Remove the current context from the previous history (it's added to the start of the history)
-                .filter(c => c.id !== currentContext.id)
+                .filter((c) => c.id !== currentContext.id)
                 // Remove historical contexts after the last 10 (currentContext + 9)
                 .slice(0, 9)
-                .forEach(c => newHistory.push(c));
+                .forEach((c) => newHistory.push(c));
         }
 
         await this.setAsync('history', newHistory);
@@ -188,7 +212,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         const linkedContextId = links[context.id];
 
         const history = await this.getAsync('history');
-        const contextFromHistory = history ? history.find(c => c.id === linkedContextId) : null;
+        const contextFromHistory = history ? history.find((c) => c.id === linkedContextId) : null;
 
         if (contextFromHistory) {
             return contextFromHistory;
