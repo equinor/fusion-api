@@ -53,10 +53,11 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         this.history.location.pathname.replace(path, '');
 
     private buildUrlWithContext = async () => {
-        const buildUrl = this.appContainer.currentApp?.context?.buildUrl;
         const currentContext = await this.getCurrentContextAsync();
+        const buildUrl = this.appContainer.currentApp?.context?.buildUrl;
 
         if (
+            !this.appHasContext() ||
             !buildUrl ||
             !currentContext?.id ||
             this.history.location.pathname.indexOf(currentContext.id) !== -1
