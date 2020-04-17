@@ -42,6 +42,8 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         this.history.listen(this.ensureCurrentContextExistsInUrl);
     }
 
+    private appHasContext = (): boolean => Boolean(this.appContainer.currentApp?.context);
+
     private getAppPath = () => `/apps/${this.appContainer.currentApp?.key}`;
 
     private urlHasPath = (path: string): boolean =>
@@ -50,7 +52,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
     private getScopedPath = (path: string): string =>
         this.history.location.pathname.replace(path, '');
 
-    private async buildUrlWithContext() {
+    private buildUrlWithContext = async () => {
         const buildUrl = this.appContainer.currentApp?.context?.buildUrl;
         const currentContext = await this.getCurrentContextAsync();
 
@@ -68,10 +70,10 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         );
 
         return newUrl;
-    }
+    };
 
     private ensureCurrentContextExistsInUrl = async () => {
-        if (!this.appContainer?.currentApp?.context) return;
+        if (!this.appHasContext()) return;
 
         const newUrl = await this.buildUrlWithContext();
         if (newUrl && this.history.location.pathname.indexOf(newUrl) !== 0)
