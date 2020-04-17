@@ -57,6 +57,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         const currentContext = await this.getCurrentContextAsync();
 
         if (
+            !this.appHasContext() ||
             !buildUrl ||
             !currentContext?.id ||
             this.history.location.pathname.indexOf(currentContext.id) !== -1
