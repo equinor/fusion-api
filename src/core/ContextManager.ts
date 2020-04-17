@@ -71,6 +71,8 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
     }
 
     private ensureCurrentContextExistsInUrl = async () => {
+        if (!this.appContainer?.currentApp?.context) return;
+
         const newUrl = await this.buildUrlWithContext();
         if (newUrl && this.history.location.pathname.indexOf(newUrl) !== 0)
             this.history.push(newUrl);
