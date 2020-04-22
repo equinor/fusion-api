@@ -67,10 +67,6 @@ export default class AuthCache extends ReliableDictionary {
         return redirectUrl;
     }
 
-    // private static createAppLoginKey(clientId: string) {
-    //     return `${TokenCacheKey.LOGIN_LOCK_STATUS}-${clientId.trim()}`;
-    // }
-
     async setLoginLock() {
         await this.setAsync(TokenCacheKey.LOGIN_LOCK_STATUS, "locked");
     }
