@@ -12,7 +12,7 @@ export class FusionAuthAppNotFoundError extends Error {
     }
 }
 
-export class FusionAuthLoginError extends Error {}
+export class FusionAuthLoginError extends Error { }
 
 export interface IAuthContainer {
     /**
@@ -60,7 +60,7 @@ export interface IAuthContainer {
 
     /**
      * Set the telemetry logger
-     * @param telemetryLogger 
+     * @param telemetryLogger
      */
     setTelemetryLogger(telemetryLogger: TelemetryLogger): void;
 }
@@ -176,10 +176,15 @@ export default class AuthContainer implements IAuthContainer {
 
     async loginAsync(clientId: string): Promise<void> {
         const app = this.resolveApp(clientId);
-
         if (app === null) {
             throw new FusionAuthAppNotFoundError(clientId);
         }
+
+        const isLockedByOtherApp = await this.cache.isLoginLocked();
+        if (isLockedByOtherApp) {
+            return;
+        }
+        await this.cache.setLoginLock();
 
         const nonce = AuthNonce.createNew(app);
         this.cache.storeRedirectUrl(getTopLevelWindow(window).location.href);
@@ -187,6 +192,8 @@ export default class AuthContainer implements IAuthContainer {
         // Login page cannot be displayed within a frame
         // Get the top level window and redirect there
         getTopLevelWindow(window).location.href = await this.buildLoginUrlAsync(app, nonce);
+
+        await this.cache.releaseLoginLock();
     }
 
     async logoutAsync(clientId?: string) {

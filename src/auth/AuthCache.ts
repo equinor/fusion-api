@@ -8,6 +8,7 @@ enum TokenCacheKey {
     TOKEN = "TOKEN",
     USER = "USER",
     REDIRECT_URL = "REDIRECT_URL",
+    LOGIN_LOCK_STATUS = "LOGIN_LOCK_STATUS",
 };
 
 export default class AuthCache extends ReliableDictionary {
@@ -64,5 +65,22 @@ export default class AuthCache extends ReliableDictionary {
         const redirectUrl = await this.getAsync<string, string>(TokenCacheKey.REDIRECT_URL);
         await this.removeAsync(TokenCacheKey.REDIRECT_URL);
         return redirectUrl;
+    }
+
+    // private static createAppLoginKey(clientId: string) {
+    //     return `${TokenCacheKey.LOGIN_LOCK_STATUS}-${clientId.trim()}`;
+    // }
+
+    async setLoginLock() {
+        await this.setAsync(TokenCacheKey.LOGIN_LOCK_STATUS, "locked");
+    }
+
+    async releaseLoginLock() {
+        await this.setAsync(TokenCacheKey.LOGIN_LOCK_STATUS, "open");
+    }
+
+    async isLoginLocked() {
+        const lockStatus = await this.getAsync<string, string>(TokenCacheKey.LOGIN_LOCK_STATUS);
+        return lockStatus === "locked";
     }
 }
