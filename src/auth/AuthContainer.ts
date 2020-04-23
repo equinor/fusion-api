@@ -168,6 +168,7 @@ export default class AuthContainer implements IAuthContainer {
         const cachedToken = await this.cache.getTokenAsync(newApp);
 
         if (cachedToken !== null) {
+            await this.cache.releaseLoginLock();
             return true;
         }
 
@@ -192,8 +193,6 @@ export default class AuthContainer implements IAuthContainer {
         // Login page cannot be displayed within a frame
         // Get the top level window and redirect there
         getTopLevelWindow(window).location.href = await this.buildLoginUrlAsync(app, nonce);
-
-        await this.cache.releaseLoginLock();
     }
 
     async logoutAsync(clientId?: string) {
