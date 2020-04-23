@@ -168,7 +168,7 @@ export default class AuthContainer implements IAuthContainer {
         const cachedToken = await this.cache.getTokenAsync(newApp);
 
         if (cachedToken !== null) {
-            await this.cache.releaseLoginLock();
+            await this.cache.clearAppLoginLock(clientId);
             return true;
         }
 
@@ -181,11 +181,11 @@ export default class AuthContainer implements IAuthContainer {
             throw new FusionAuthAppNotFoundError(clientId);
         }
 
-        const isLockedByOtherApp = await this.cache.isLoginLocked();
-        if (isLockedByOtherApp) {
+        const isLocked = await this.cache.isAppLoginLocked();
+        if (isLocked) {
             return;
         }
-        await this.cache.setLoginLock();
+        await this.cache.setAppLoginLock(clientId);
 
         const nonce = AuthNonce.createNew(app);
         this.cache.storeRedirectUrl(getTopLevelWindow(window).location.href);

@@ -8,7 +8,7 @@ enum CacheKey {
     TOKEN = "TOKEN",
     USER = "USER",
     REDIRECT_URL = "REDIRECT_URL",
-    LOGIN_LOCK_STATUS = "LOGIN_LOCK_STATUS",
+    APP_LOGIN_LOCK = "APP_LOGIN_LOCK",
 };
 
 export default class AuthCache extends ReliableDictionary {
@@ -67,16 +67,19 @@ export default class AuthCache extends ReliableDictionary {
         return redirectUrl;
     }
 
-    async setLoginLock() {
-        await this.setAsync(CacheKey.LOGIN_LOCK_STATUS, "locked");
+    async setAppLoginLock(clientId: string) {
+        await this.setAsync(CacheKey.APP_LOGIN_LOCK, clientId);
     }
 
-    async releaseLoginLock() {
-        await this.setAsync(CacheKey.LOGIN_LOCK_STATUS, "open");
+    async clearAppLoginLock(clientId: string) {
+        const currentAppIdLock = await this.getAsync<string, string>(CacheKey.APP_LOGIN_LOCK);
+        if (currentAppIdLock === clientId)
+            await this.setAsync(CacheKey.APP_LOGIN_LOCK, "");
     }
 
-    async isLoginLocked() {
-        const lockStatus = await this.getAsync<string, string>(CacheKey.LOGIN_LOCK_STATUS);
-        return lockStatus === "locked";
+    async isAppLoginLocked() {
+        const lockingAppId = await this.getAsync<string, string>(CacheKey.APP_LOGIN_LOCK);
+        const isUnlocked = lockingAppId === null || lockingAppId === "";
+        return !isUnlocked;
     }
 }
