@@ -1,5 +1,6 @@
 import { HttpResponse } from './HttpResponse';
 import RequestBody from '../models/RequestBody';
+import BlobContainer from '../models/BlobContainer';
 
 export type ResponseParser<T> = (response: Response) => Promise<T>;
 
@@ -92,8 +93,14 @@ export default interface IHttpClient {
     ): Promise<HttpResponse<TResponse>>;
 
     /**
-     *  Performs a GET request and converts the response to a File
+     *  Performs a GET request and converts the response to a Blob
      * @param url Request url
      */
-    getBlobAsync<TExpectedErrorResponse>(url: string): Promise<File>;
+    getBlobAsync<TExpectedErrorResponse>(url: string): Promise<BlobContainer>;
+
+    /**
+    *  Performs a GET request and converts the response to a File
+    * @param url Request url
+    */
+    getFileAsync<TExpectedErrorResponse>(url: string): Promise<File>;
 }
