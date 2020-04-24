@@ -12,6 +12,7 @@ import {
 import ensureRequestInit from './ensureRequestInit';
 import { useFusionContext } from '../../core/FusionContext';
 import RequestBody from '../models/RequestBody';
+import BlobContainer from '../models/BlobContainer';
 import JSON from '../../utils/JSON';
 import TelemetryLogger from '../../utils/TelemetryLogger';
 import DistributedState, { IDistributedState } from '../../utils/DistributedState';
@@ -244,6 +245,33 @@ export default class HttpClient implements IHttpClient {
     async getBlobAsync<TExpectedErrorResponse>(
         url: string,
         init?: RequestInit | null
+    ): Promise<BlobContainer> {
+        if (!init) {
+            init = {
+                headers: new Headers({ Accept: '*/*' }),
+            };
+        }
+
+        init = ensureRequestInit(init, init => ({
+            ...init,
+            method: 'GET',
+        }));
+
+        const response = await this.performFetchAsync<TExpectedErrorResponse>(url, init);
+        const blob = await response.blob();
+
+        const fileName = this.resolveFileNameFromHeader(response);
+
+        if (!fileName) {
+            throw new Error('Cannot download file without filename');
+        }
+
+        return { blob, fileName }
+    }
+
+    async getFileAsync<TExpectedErrorResponse>(
+        url: string,
+        init?: RequestInit | null
     ): Promise<File> {
         if (!init) {
             init = {
@@ -269,7 +297,7 @@ export default class HttpClient implements IHttpClient {
     }
 
     protected responseIsRetriable(response: Response, retryTimeout: number) {
-        if(retryTimeout > 20000 || response.headers.get("x-fusion-retriable") === "false") {
+        if (retryTimeout > 20000 || response.headers.get("x-fusion-retriable") === "false") {
             return false;
         }
 
@@ -277,7 +305,7 @@ export default class HttpClient implements IHttpClient {
             || response.status === 424
             || response.status === 500
             || response.status === 502
-            || response.status === 503 
+            || response.status === 503
             || response.status === 504;
     }
 
@@ -290,7 +318,7 @@ export default class HttpClient implements IHttpClient {
         await new Promise((resolve) => setTimeout(resolve, retryTimeout));
 
         // Abort the request if the signal has been aborted while waiting
-        if(this.abortControllerManager.getCurrentSignal()?.aborted) {
+        if (this.abortControllerManager.getCurrentSignal()?.aborted) {
             throw new Error(`Request ${init.method} ${url} was aborted`);
         }
 
@@ -308,7 +336,7 @@ export default class HttpClient implements IHttpClient {
             const response = await fetch(url, options);
 
             if (!response.ok) {
-                if(this.responseIsRetriable(response, retryTimeout)) {
+                if (this.responseIsRetriable(response, retryTimeout)) {
                     return this.retryRequestAsync<TExpectedErrorResponse>(url, init, retryTimeout);
                 }
 
