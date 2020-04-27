@@ -1,4 +1,5 @@
 import BaseResourceCollection from './BaseResourceCollection';
+import { combineUrls } from '../../utils/url';
 import {
     AccumulatedContainer,
     HandoverMcpkg,
@@ -62,5 +63,26 @@ export default class DataProxyResourceCollection extends BaseResourceCollection 
         action: keyof AccumulatedActions
     ): string {
         return this.getSiteAndProjectUrl(siteCode, projectIdentifier, `${action}-accumulated`);
+    }
+
+    milestones(contextId: string): string {
+        return combineUrls(this.getBaseUrl(), `api/contexts/${contextId}/milestones`);
+    }
+
+    workOrders(contextId: string): string {
+        return combineUrls(this.getBaseUrl(), `api/contexts/${contextId}/work-orders`);
+    }
+
+    workOrdersMaterials(contextId: string, workOrderId: string): string {
+        return combineUrls(
+            this.getBaseUrl(),
+            `api/contexts/${contextId}/work-orders/${workOrderId}/material`
+        );
+    }
+    workOrdersMccr(contextId: string, workOrderId: string): string {
+        return combineUrls(
+            this.getBaseUrl(),
+            `api/contexts/${contextId}/work-orders/${workOrderId}/mccr`
+        );
     }
 }
