@@ -73,8 +73,9 @@ export default class AuthCache extends ReliableDictionary {
 
     async clearAppLoginLock(clientId: string) {
         const currentAppIdLock = await this.getAsync<string, string>(CacheKey.APP_LOGIN_LOCK);
-        if (currentAppIdLock === clientId)
-            await this.setAsync(CacheKey.APP_LOGIN_LOCK, "");
+        if (currentAppIdLock === clientId) {
+            await this.setAsync(CacheKey.APP_LOGIN_LOCK, "")
+        };
     }
 
     async isAppLoginLocked() {
