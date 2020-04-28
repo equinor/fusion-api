@@ -12,7 +12,7 @@ export class FusionAuthAppNotFoundError extends Error {
     }
 }
 
-export class FusionAuthLoginError extends Error {}
+export class FusionAuthLoginError extends Error { }
 
 export interface IAuthContainer {
     /**
@@ -60,7 +60,7 @@ export interface IAuthContainer {
 
     /**
      * Set the telemetry logger
-     * @param telemetryLogger 
+     * @param telemetryLogger
      */
     setTelemetryLogger(telemetryLogger: TelemetryLogger): void;
 }
@@ -168,6 +168,7 @@ export default class AuthContainer implements IAuthContainer {
         const cachedToken = await this.cache.getTokenAsync(newApp);
 
         if (cachedToken !== null) {
+            await this.cache.clearAppLoginLock(clientId);
             return true;
         }
 
@@ -176,10 +177,15 @@ export default class AuthContainer implements IAuthContainer {
 
     async loginAsync(clientId: string): Promise<void> {
         const app = this.resolveApp(clientId);
-
         if (app === null) {
             throw new FusionAuthAppNotFoundError(clientId);
         }
+
+        const isLocked = await this.cache.isAppLoginLocked();
+        if (isLocked) {
+            return;
+        }
+        await this.cache.setAppLoginLock(clientId);
 
         const nonce = AuthNonce.createNew(app);
         this.cache.storeRedirectUrl(getTopLevelWindow(window).location.href);
