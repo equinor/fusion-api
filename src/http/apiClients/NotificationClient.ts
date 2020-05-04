@@ -2,6 +2,7 @@ import BaseApiClient from './BaseApiClient';
 import { FusionApiHttpErrorResponse } from '.';
 import GlobalNotification from './models/GlobalNotification/GlobalNotification';
 import { CreateNotification } from './models/GlobalNotification/CreateNotification';
+import PagedCollection from '../models/PagedCollection';
 
 export default class NotificationClient extends BaseApiClient {
     protected getBaseUrl() {
@@ -34,7 +35,10 @@ export default class NotificationClient extends BaseApiClient {
 
     async getPersonNotificationsAsync(personId: string) {
         const url = this.resourceCollections.notification.personNotifications(personId);
-        return this.httpClient.getAsync<GlobalNotification[], FusionApiHttpErrorResponse>(url);
+        return this.httpClient.getAsync<
+            PagedCollection<GlobalNotification[]>,
+            FusionApiHttpErrorResponse
+        >(url);
     }
 
     async createPersonNotificationAsync(personId: string, payload: CreateNotification) {
