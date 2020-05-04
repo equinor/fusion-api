@@ -5,7 +5,7 @@ import { useFusionContext } from './FusionContext';
 import DistributedState, { IDistributedState } from '../utils/DistributedState';
 import EventHub, { IEventHub } from '../utils/EventHub';
 
-export type NotificationLevel = 'low' | 'medium' | 'high';
+export type NotificationLevel = 'low' | 'medium' | 'high' | 'global';
 export type NotificationPriority = 'low' | 'medium' | 'high';
 
 /**
@@ -143,7 +143,7 @@ export default class NotificationCenter extends ReliableDictionary<
         this.presenters.state = [...this.presenters.state, notificationPresenter];
 
         return () => {
-            this.presenters.state = this.presenters.state.filter(p => p !== notificationPresenter);
+            this.presenters.state = this.presenters.state.filter(p => p !== notificationPresenter); 
         };
     }
 
@@ -175,7 +175,7 @@ export default class NotificationCenter extends ReliableDictionary<
 
     private getTimeoutForLevel(notificationRequest: NotificationRequest): number | null {
         switch (notificationRequest.level) {
-            case 'low':
+            case 'low': 
                 return notificationRequest.timeout
                     ? Math.max(4000, Math.min(10000, notificationRequest.timeout))
                     : 4000;
@@ -279,8 +279,8 @@ export const useNotificationContext = () => React.useContext(NotificationContext
 
 export const useNotificationCenter = () => {
     const { notificationCenter } = useFusionContext();
-    const nofificationContext = React.useContext(NotificationContext);
+    const notificationContext = React.useContext(NotificationContext);
 
     return (notificationRequest: NotificationRequest) =>
-        notificationCenter.sendAsync(notificationRequest, nofificationContext);
+        notificationCenter.sendAsync(notificationRequest, notificationContext);
 };
