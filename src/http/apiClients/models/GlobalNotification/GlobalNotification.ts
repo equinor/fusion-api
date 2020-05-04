@@ -1,6 +1,8 @@
 import { PersonNotification } from './PersonNotification';
 import { Application } from './Application';
 
+export { PersonNotification, Application as GlobalNotificationApplication };
+
 type GlobalNotification = {
     id: string;
     targetAzureUniqueId: string;
