@@ -1,9 +1,9 @@
 import { PersonNotification } from './PersonNotification';
 import { Application } from './Application';
 
-export { PersonNotification, Application as GlobalNotificationApplication };
+export { PersonNotification, Application as NotificationCardApplication };
 
-type GlobalNotification = {
+type NotificationCard = {
     id: string;
     targetAzureUniqueId: string;
     title: string;
@@ -15,4 +15,4 @@ type GlobalNotification = {
     seen: Date | null;
 };
 
-export default GlobalNotification;
+export default NotificationCard;

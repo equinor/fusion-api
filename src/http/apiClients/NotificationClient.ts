@@ -1,7 +1,7 @@
 import BaseApiClient from './BaseApiClient';
 import { FusionApiHttpErrorResponse } from '.';
-import GlobalNotification from './models/GlobalNotification/GlobalNotification';
-import { CreateNotification } from './models/GlobalNotification/CreateNotification';
+import NotificationCard from './models/NotificationCard/NotificationCard';
+import { CreateNotification } from './models/NotificationCard/CreateNotification';
 import PagedCollection from '../models/PagedCollection';
 
 export default class NotificationClient extends BaseApiClient {
@@ -11,17 +11,17 @@ export default class NotificationClient extends BaseApiClient {
 
     async getNotificationAsync(notificationId: string) {
         const url = this.resourceCollections.notification.notification(notificationId);
-        return this.httpClient.getAsync<GlobalNotification, FusionApiHttpErrorResponse>(url);
+        return this.httpClient.getAsync<NotificationCard, FusionApiHttpErrorResponse>(url);
     }
 
     async updateNotificationAsync(
         notificationId: string,
-        updatedProperties: Partial<GlobalNotification>
+        updatedProperties: Partial<NotificationCard>
     ) {
         const url = this.resourceCollections.notification.notification(notificationId);
         return this.httpClient.patchAsync<
-            Partial<GlobalNotification>,
-            GlobalNotification,
+            Partial<NotificationCard>,
+            NotificationCard,
             FusionApiHttpErrorResponse
         >(url, updatedProperties);
     }
@@ -36,7 +36,7 @@ export default class NotificationClient extends BaseApiClient {
     async getPersonNotificationsAsync(personId: string) {
         const url = this.resourceCollections.notification.personNotifications(personId);
         return this.httpClient.getAsync<
-            PagedCollection<GlobalNotification[]>,
+            PagedCollection<NotificationCard[]>,
             FusionApiHttpErrorResponse
         >(url);
     }
@@ -45,7 +45,7 @@ export default class NotificationClient extends BaseApiClient {
         const url = this.resourceCollections.notification.personNotifications(personId);
         return this.httpClient.postAsync<
             CreateNotification,
-            GlobalNotification,
+            NotificationCard,
             FusionApiHttpErrorResponse
         >(url, payload);
     }

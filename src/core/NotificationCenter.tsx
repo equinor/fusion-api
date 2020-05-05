@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import uuid from 'uuid/v1';
 import ReliableDictionary, { LocalStorageProvider } from '../utils/ReliableDictionary';
+import { useEventEmitterValue } from '../utils/EventEmitter';
 import { useFusionContext } from './FusionContext';
 import DistributedState, { IDistributedState } from '../utils/DistributedState';
 import EventHub, { IEventHub } from '../utils/EventHub';
+;import ApiClients from '../http/apiClients';
+;import NotificationClient from '../http/apiClients/NotificationClient';
+import NotificationCard from '../http/apiClients/models/NotificationCard/NotificationCard';
 
-export type NotificationLevel = 'low' | 'medium' | 'high' | 'global';
+export type NotificationLevel = 'low' | 'medium' | 'high';
 export type NotificationPriority = 'low' | 'medium' | 'high';
 
 /**
@@ -39,7 +43,6 @@ export type NotificationResponse = {
     confirmed: boolean;
     cancelled: boolean;
 };
-
 export type Notification = {
     id: string;
     request: NotificationRequest;
@@ -69,6 +72,7 @@ type NotificationEvents = {
     confirmed: (notification: NotificationRequest) => void;
     cancelled: (notification: NotificationRequest) => void;
     finished: (notification: NotificationRequest) => void;
+    'notification-card-updated': (notificationCards: NotificationCard[]) => void
 };
 
 export type NotificationResolver = (response: NotificationResponse) => void;
@@ -83,22 +87,26 @@ export type NotificationPresenterRegistration = {
     level: NotificationLevel;
     present: NotificationPresenter;
 };
-
 export default class NotificationCenter extends ReliableDictionary<
     NotificationCache,
     NotificationEvents
 > {
     private presenters: IDistributedState<NotificationPresenterRegistration[]>;
+    private notificationCards: IDistributedState<NotificationCard[]>;
+    private notificationClient: NotificationClient
 
-    constructor(eventHub: IEventHub) {
+    constructor(eventHub: IEventHub, apiClients: ApiClients) {
         super(
             new LocalStorageProvider('NOTIFICATION_CENTER', new EventHub(), { notifications: [] })
         );
+        this.notificationCards = new DistributedState<NotificationCard[]>('NotificationCenter.NotificationCards', [], eventHub);
+     
         this.presenters = new DistributedState<NotificationPresenterRegistration[]>(
             'NotificationCenter.presenters',
             [],
             eventHub
         );
+        this.notificationClient = apiClients.notification
     }
 
     async sendAsync(
@@ -133,6 +141,29 @@ export default class NotificationCenter extends ReliableDictionary<
         await this.persistAsync(notificationWithResponse);
 
         return response;
+    }
+
+    // async sendCardAsync(card, silent: boolean){
+
+    // }
+
+    async getAllNotificationCardsAsync() {
+        const response = await this.notificationClient.getPersonNotificationsAsync("me");
+        this.mergeNotificationCards(response.data.value);
+        return response.data.value
+    }
+
+    private mergeNotificationCards(tasks: NotificationCard[]) {
+        const newNotificationCards = tasks.filter(t => !this.notificationCards.state.find(e => e.id === t.id));
+
+        const mergedNotificationCards = [...this.notificationCards.state, ...newNotificationCards];
+
+        this.notificationCards.state = mergedNotificationCards.map(t => tasks.find(n => n.id === t.id) || t);
+        this.emit('notification-card-updated', this.notificationCards.state);
+    }
+
+    getNotificationCards() {
+        return [...this.notificationCards.state]
     }
 
     registerPresenter(level: NotificationLevel, present: NotificationPresenter) {
@@ -284,3 +315,30 @@ export const useNotificationCenter = () => {
     return (notificationRequest: NotificationRequest) =>
         notificationCenter.sendAsync(notificationRequest, notificationContext);
 };
+
+export const useNotificationCards = () => {
+    const { notificationCenter } = useFusionContext();
+    const defaultData = notificationCenter.getNotificationCards();
+
+    const [error, setError] = useState(null);
+    const [isFetching, setIsFetching] = useState(false);
+    const [data, setData] = useEventEmitterValue(notificationCenter, "notification-card-updated", n => n, defaultData);
+    const fetch = async () => {
+        setIsFetching(true);
+
+        try {
+            const data = await notificationCenter.getAllNotificationCardsAsync();
+            setData(data);
+        } catch (e) {
+            setError(e);
+        }
+
+        setIsFetching(false);
+    };
+
+    useEffect(() => {
+        fetch();
+    }, []);
+
+    return [error, isFetching, data];
+}
