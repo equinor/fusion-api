@@ -322,13 +322,13 @@ export const useNotificationCards = () => {
 
     const [error, setError] = useState(null);
     const [isFetching, setIsFetching] = useState(false);
-    const [data, setData] = useEventEmitterValue(notificationCenter, "notification-card-updated", n => n, defaultData);
+    const [notificationCards, setNotificationCards] = useEventEmitterValue(notificationCenter, "notification-card-updated", n => n, defaultData);
     const fetch = async () => {
         setIsFetching(true);
 
         try {
             const data = await notificationCenter.getAllNotificationCardsAsync();
-            setData(data);
+            setNotificationCards(data);
         } catch (e) {
             setError(e);
         }
@@ -340,5 +340,5 @@ export const useNotificationCards = () => {
         fetch();
     }, []);
 
-    return [error, isFetching, data];
+    return {notificationCards, isFetching, error};
 }
