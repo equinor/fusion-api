@@ -7,7 +7,7 @@ type NotificationCard = {
     id: string;
     targetAzureUniqueId: string;
     title: string;
-    card: string;
+    card: object;
     created: Date;
     createdBy: PersonNotification;
     createdByApplication: Application;

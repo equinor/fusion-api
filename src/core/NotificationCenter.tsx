@@ -5,8 +5,8 @@ import { useEventEmitterValue } from '../utils/EventEmitter';
 import { useFusionContext } from './FusionContext';
 import DistributedState, { IDistributedState } from '../utils/DistributedState';
 import EventHub, { IEventHub } from '../utils/EventHub';
-;import ApiClients from '../http/apiClients';
-;import NotificationClient from '../http/apiClients/NotificationClient';
+import ApiClients from '../http/apiClients';
+import NotificationClient from '../http/apiClients/NotificationClient';
 import NotificationCard from '../http/apiClients/models/NotificationCard/NotificationCard';
 
 export type NotificationLevel = 'low' | 'medium' | 'high';
@@ -43,6 +43,7 @@ export type NotificationResponse = {
     confirmed: boolean;
     cancelled: boolean;
 };
+
 export type Notification = {
     id: string;
     request: NotificationRequest;
@@ -60,6 +61,8 @@ export type RegisterNotificationPresenter = (
 export interface INotificationContext {
     presenters: NotificationPresenterRegistration[];
     registerPresenter: RegisterNotificationPresenter;
+    cardPresenter: NotificationCardPresenterRegistration;
+    registerCardPresenter: RegisterNotificationCardPresenter;
 }
 
 type NotificationCache = {
@@ -72,7 +75,7 @@ type NotificationEvents = {
     confirmed: (notification: NotificationRequest) => void;
     cancelled: (notification: NotificationRequest) => void;
     finished: (notification: NotificationRequest) => void;
-    'notification-card-updated': (notificationCards: NotificationCard[]) => void
+    'notification-card-updated': (notificationCards: NotificationCard[]) => void;
 };
 
 export type NotificationResolver = (response: NotificationResponse) => void;
@@ -87,26 +90,45 @@ export type NotificationPresenterRegistration = {
     level: NotificationLevel;
     present: NotificationPresenter;
 };
+
+type NotificationCardPresenter = (notificationCard: NotificationCard) => void;
+
+type NotificationCardPresenterRegistration = {
+    present: NotificationCardPresenter;
+} | null;
+
+export type RegisterNotificationCardPresenter = (present: NotificationCardPresenter) => () => void;
+
 export default class NotificationCenter extends ReliableDictionary<
     NotificationCache,
     NotificationEvents
 > {
     private presenters: IDistributedState<NotificationPresenterRegistration[]>;
+    private cardPresenter: IDistributedState<NotificationCardPresenterRegistration>;
     private notificationCards: IDistributedState<NotificationCard[]>;
-    private notificationClient: NotificationClient
+    private notificationClient: NotificationClient;
 
     constructor(eventHub: IEventHub, apiClients: ApiClients) {
         super(
             new LocalStorageProvider('NOTIFICATION_CENTER', new EventHub(), { notifications: [] })
         );
-        this.notificationCards = new DistributedState<NotificationCard[]>('NotificationCenter.NotificationCards', [], eventHub);
-     
+        this.notificationCards = new DistributedState<NotificationCard[]>(
+            'NotificationCenter.NotificationCards',
+            [],
+            eventHub
+        );
+
         this.presenters = new DistributedState<NotificationPresenterRegistration[]>(
             'NotificationCenter.presenters',
             [],
             eventHub
         );
-        this.notificationClient = apiClients.notification
+        this.cardPresenter = new DistributedState<NotificationCardPresenterRegistration>(
+            'NotificationCenter.cardPresenter',
+            null,
+            eventHub
+        );
+        this.notificationClient = apiClients.notification;
     }
 
     async sendAsync(
@@ -143,27 +165,44 @@ export default class NotificationCenter extends ReliableDictionary<
         return response;
     }
 
-    // async sendCardAsync(card, silent: boolean){
+    sendCard(
+        notificationCard: NotificationCard,
+        notificationContext?: INotificationContext,
+        silent?: boolean
+    ) {
+        this.mergeNotificationCards([notificationCard]);
+        !silent && this.presentCardAsync(notificationCard, notificationContext);
+    }
 
-    // }
+    presentCardAsync(notification: NotificationCard, notificationContext?: INotificationContext) {
+        const presenter = this.getCardPresenter(notificationContext);
+        if (!presenter) {
+            throw new Error('No presenter for notification cards ');
+        }
+        presenter.present(notification);
+    }
 
     async getAllNotificationCardsAsync() {
-        const response = await this.notificationClient.getPersonNotificationsAsync("me");
+        const response = await this.notificationClient.getPersonNotificationsAsync('me');
         this.mergeNotificationCards(response.data.value);
-        return response.data.value
+        return response.data.value;
     }
 
     private mergeNotificationCards(tasks: NotificationCard[]) {
-        const newNotificationCards = tasks.filter(t => !this.notificationCards.state.find(e => e.id === t.id));
+        const newNotificationCards = tasks.filter(
+            (t) => !this.notificationCards.state.find((e) => e.id === t.id)
+        );
 
         const mergedNotificationCards = [...this.notificationCards.state, ...newNotificationCards];
 
-        this.notificationCards.state = mergedNotificationCards.map(t => tasks.find(n => n.id === t.id) || t);
+        this.notificationCards.state = mergedNotificationCards.map(
+            (t) => tasks.find((n) => n.id === t.id) || t
+        );
         this.emit('notification-card-updated', this.notificationCards.state);
     }
 
     getNotificationCards() {
-        return [...this.notificationCards.state]
+        return [...this.notificationCards.state];
     }
 
     registerPresenter(level: NotificationLevel, present: NotificationPresenter) {
@@ -174,7 +213,9 @@ export default class NotificationCenter extends ReliableDictionary<
         this.presenters.state = [...this.presenters.state, notificationPresenter];
 
         return () => {
-            this.presenters.state = this.presenters.state.filter(p => p !== notificationPresenter); 
+            this.presenters.state = this.presenters.state.filter(
+                (p) => p !== notificationPresenter
+            );
         };
     }
 
@@ -186,7 +227,7 @@ export default class NotificationCenter extends ReliableDictionary<
     private async shouldPresentNotificationAsync(notificationRequest: NotificationRequest) {
         const allNotifications = await this.getAllNotificationsAsync();
 
-        if (allNotifications.find(n => n.responded !== null && n.id === notificationRequest.id)) {
+        if (allNotifications.find((n) => n.responded !== null && n.id === notificationRequest.id)) {
             return false;
         }
 
@@ -206,7 +247,7 @@ export default class NotificationCenter extends ReliableDictionary<
 
     private getTimeoutForLevel(notificationRequest: NotificationRequest): number | null {
         switch (notificationRequest.level) {
-            case 'low': 
+            case 'low':
                 return notificationRequest.timeout
                     ? Math.max(4000, Math.min(10000, notificationRequest.timeout))
                     : 4000;
@@ -222,14 +263,14 @@ export default class NotificationCenter extends ReliableDictionary<
 
         const notifications = await this.getAllNotificationsAsync();
 
-        const existing = notifications.find(n => n.id === notification.id);
+        const existing = notifications.find((n) => n.id === notification.id);
 
         if (!existing) {
             await this.setAsync('notifications', [...notifications, notification]);
         } else {
             await this.setAsync(
                 'notifications',
-                notifications.map(n => (n.id === notification.id ? notification : n))
+                notifications.map((n) => (n.id === notification.id ? notification : n))
             );
         }
     }
@@ -263,17 +304,21 @@ export default class NotificationCenter extends ReliableDictionary<
         });
     }
 
+    private getCardPresenter(notificationContext?: INotificationContext) {
+        const contextualPresenter = notificationContext?.cardPresenter;
+        return contextualPresenter || this.cardPresenter.state;
+    }
     private getPresenter(
         notification: NotificationRequest,
         notificationContext?: INotificationContext
     ) {
         const contextualPresenter = notificationContext?.presenters?.find(
-            presenter => presenter.level === notification.level
+            (presenter) => presenter.level === notification.level
         );
 
         return (
             contextualPresenter ||
-            this.presenters.state.find(presenter => presenter.level === notification.level)
+            this.presenters.state.find((presenter) => presenter.level === notification.level)
         );
     }
 }
@@ -282,6 +327,9 @@ const NotificationContext = React.createContext<INotificationContext>({} as INot
 
 export const NotificationContextProvider: React.FC = ({ children }) => {
     const [presenters, setPresenters] = React.useState<NotificationPresenterRegistration[]>([]);
+    const [cardPresenter, setCardPresenter] = React.useState<NotificationCardPresenterRegistration>(
+        null
+    );
 
     const registerPresenter = React.useCallback(
         (level: NotificationLevel, present: NotificationPresenter) => {
@@ -290,17 +338,30 @@ export const NotificationContextProvider: React.FC = ({ children }) => {
                 present,
             };
 
-            setPresenters(p => [notificationPresenter, ...p]);
+            setPresenters((p) => [notificationPresenter, ...p]);
 
             return () => {
-                setPresenters(p => p.filter(presenter => presenter !== notificationPresenter));
+                setPresenters((p) => p.filter((presenter) => presenter !== notificationPresenter));
             };
         },
         []
     );
 
+    const registerCardPresenter = React.useCallback((present: NotificationCardPresenter) => {
+        const notificationPresenter = {
+            present,
+        };
+        setCardPresenter(notificationPresenter);
+
+        return () => {
+            setCardPresenter(null);
+        };
+    }, []);
+
     return (
-        <NotificationContext.Provider value={{ presenters, registerPresenter }}>
+        <NotificationContext.Provider
+            value={{ presenters, registerPresenter, cardPresenter, registerCardPresenter }}
+        >
             {children}
         </NotificationContext.Provider>
     );
@@ -322,7 +383,14 @@ export const useNotificationCards = () => {
 
     const [error, setError] = useState(null);
     const [isFetching, setIsFetching] = useState(false);
-    const [notificationCards, setNotificationCards] = useEventEmitterValue(notificationCenter, "notification-card-updated", n => n, defaultData);
+    const [notificationCards, setNotificationCards] = useEventEmitterValue(
+        notificationCenter,
+        'notification-card-updated',
+        (n) => n,
+        defaultData
+    );
+    const notificationContext = React.useContext(NotificationContext);
+
     const fetch = async () => {
         setIsFetching(true);
 
@@ -340,5 +408,11 @@ export const useNotificationCards = () => {
         fetch();
     }, []);
 
-    return {notificationCards, isFetching, error};
-}
+    const sendCard = React.useCallback(
+        () => (notificationCard: NotificationCard, silent?: boolean) =>
+            notificationCenter.sendCard(notificationCard, notificationContext, silent),
+        []
+    );
+
+    return { notificationCards, isFetching, error, sendCard };
+};
