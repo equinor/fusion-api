@@ -205,6 +205,16 @@ export default class NotificationCenter extends ReliableDictionary<
         return [...this.notificationCards.state];
     }
 
+    registerCardPresenter(present: NotificationCardPresenter) {
+        const notificationPresenter = {
+            present,
+        };
+        this.cardPresenter.state = notificationPresenter;
+        return () => {
+            this.cardPresenter.state = null
+        }
+    }
+
     registerPresenter(level: NotificationLevel, present: NotificationPresenter) {
         const notificationPresenter = {
             level,
