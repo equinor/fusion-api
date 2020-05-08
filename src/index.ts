@@ -169,6 +169,7 @@ export {
     RegisterNotificationPresenter,
     INotificationContext,
     useNotificationCards,
+    useNotificationCardActions,
 } from './core/NotificationCenter';
 
 export {
