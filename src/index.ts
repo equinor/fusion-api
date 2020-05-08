@@ -169,7 +169,7 @@ export {
     RegisterNotificationPresenter,
     INotificationContext,
     useNotificationCards,
-    useNotificationCardActions,
+    useMarkNotificationsAsSeen,
 } from './core/NotificationCenter';
 
 export {

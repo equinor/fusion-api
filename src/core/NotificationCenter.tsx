@@ -432,14 +432,28 @@ export const useNotificationCards = () => {
     return { notificationCards, isFetching, error };
 };
 
-export const useNotificationCardActions = () => {
+export const useMarkNotificationsAsSeen = () => {
     const { notificationCenter } = useFusionContext();
+    const [isMarkingNotifications, setIsMarkingNotifications] = React.useState<boolean>(false);
+    const [markError, setMarkError] = React.useState<Error | null>(null);
 
-    const markNotificationAsSeenAsync = React.useCallback(
-        async (notificationCard: NotificationCard) =>
-            await notificationCenter.markNotificationCardAsSeenAsync(notificationCard),
+    const markNotificationsAsSeenAsync = React.useCallback(
+        async (notificationCards: NotificationCard[]) => {
+            setIsMarkingNotifications(true);
+            setMarkError(null);
+            try {
+                const response = notificationCards.map(
+                    async (card) => await notificationCenter.markNotificationCardAsSeenAsync(card)
+                );
+                Promise.all(response);
+            } catch (e) {
+                setMarkError(e);
+            } finally {
+                setIsMarkingNotifications(false);
+            }
+        },
         [notificationCenter]
     );
 
-    return { markNotificationAsSeenAsync };
+    return { markNotificationsAsSeenAsync, isMarkingNotifications, markError };
 };
