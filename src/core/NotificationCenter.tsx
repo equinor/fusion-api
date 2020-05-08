@@ -188,15 +188,15 @@ export default class NotificationCenter extends ReliableDictionary<
         return response.data.value;
     }
 
-    private mergeNotificationCards(tasks: NotificationCard[]) {
-        const newNotificationCards = tasks.filter(
+    private mergeNotificationCards(cards: NotificationCard[]) {
+        const newNotificationCards = cards.filter(
             (t) => !this.notificationCards.state.find((e) => e.id === t.id)
         );
 
         const mergedNotificationCards = [...this.notificationCards.state, ...newNotificationCards];
 
         this.notificationCards.state = mergedNotificationCards.map(
-            (t) => tasks.find((n) => n.id === t.id) || t
+            (c) => cards.find((n) => n.id === c.id) || c
         );
         this.emit('notification-card-updated', this.notificationCards.state);
     }
@@ -211,8 +211,20 @@ export default class NotificationCenter extends ReliableDictionary<
         };
         this.cardPresenter.state = notificationPresenter;
         return () => {
-            this.cardPresenter.state = null
-        }
+            this.cardPresenter.state = null;
+        };
+    }
+
+    async markNotificationCardAsSeenAsync(notificationCard: NotificationCard) {
+        const payload = {
+            seenByUser: true,
+        };
+        const response = await this.notificationClient.updateNotificationAsync(
+            notificationCard.id,
+            payload
+        );
+        this.mergeNotificationCards([response.data]);
+        return response.data;
     }
 
     registerPresenter(level: NotificationLevel, present: NotificationPresenter) {
@@ -399,7 +411,6 @@ export const useNotificationCards = () => {
         (n) => n,
         defaultData
     );
-    const notificationContext = React.useContext(NotificationContext);
 
     const fetch = async () => {
         setIsFetching(true);
@@ -418,11 +429,17 @@ export const useNotificationCards = () => {
         fetch();
     }, []);
 
-    const sendCard = React.useCallback(
-        () => (notificationCard: NotificationCard, silent?: boolean) =>
-            notificationCenter.sendCard(notificationCard, notificationContext, silent),
-        []
+    return { notificationCards, isFetching, error };
+};
+
+export const useNotificationCardActions = () => {
+    const { notificationCenter } = useFusionContext();
+
+    const markNotificationAsSeenAsync = React.useCallback(
+        async (notificationCard: NotificationCard) =>
+            await notificationCenter.markNotificationCardAsSeenAsync(notificationCard),
+        [notificationCenter]
     );
 
-    return { notificationCards, isFetching, error, sendCard };
+    return { markNotificationAsSeenAsync };
 };
