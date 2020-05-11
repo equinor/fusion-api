@@ -19,6 +19,7 @@ export default (hubName: string) => {
             setHubDetails(response.data);
         } catch (e) {
             setHubConnectionError(e);
+            console.error(e);
         }
     }, [apiClients]);
 
@@ -36,6 +37,7 @@ export default (hubName: string) => {
             setHubConnection(hubConnect);
         } catch (e) {
             setHubConnectionError(e);
+            console.error(e);
         } finally {
             setIsEstablishingHubConnection(false);
         }
