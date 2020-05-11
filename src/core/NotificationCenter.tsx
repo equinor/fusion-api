@@ -8,6 +8,7 @@ import EventHub, { IEventHub } from '../utils/EventHub';
 import ApiClients from '../http/apiClients';
 import NotificationClient from '../http/apiClients/NotificationClient';
 import NotificationCard from '../http/apiClients/models/NotificationCard/NotificationCard';
+import useSignalRHub from '../hooks/useSignalRHub';
 
 export type NotificationLevel = 'low' | 'medium' | 'high';
 export type NotificationPriority = 'low' | 'medium' | 'high';
@@ -403,6 +404,8 @@ export const useNotificationCards = () => {
     const { notificationCenter } = useFusionContext();
     const defaultData = notificationCenter.getNotificationCards();
 
+    const { hubConnection } = useSignalRHub('notifications');
+
     const [error, setError] = useState(null);
     const [isFetching, setIsFetching] = useState(false);
     const [notificationCards, setNotificationCards] = useEventEmitterValue(
@@ -410,6 +413,13 @@ export const useNotificationCards = () => {
         'notification-card-updated',
         (n) => n,
         defaultData
+    );
+
+    const sendNotification = React.useCallback(
+        (notification: NotificationCard) => {
+            notificationCenter.sendCard(notification);
+        },
+        [notificationCenter]
     );
 
     const fetch = async () => {
@@ -428,6 +438,12 @@ export const useNotificationCards = () => {
     useEffect(() => {
         fetch();
     }, []);
+
+    useEffect(() => {
+        if (hubConnection) {
+            hubConnection.on('notifications', sendNotification);
+        }
+    }, [hubConnection]);
 
     return { notificationCards, isFetching, error };
 };
