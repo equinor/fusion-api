@@ -49,9 +49,9 @@ export default class FusionClient extends BaseApiClient {
     async negotiateSignalRHub(hubName: string) {
         const url = this.resourceCollections.fusion.signalRHub(hubName);
         return await this.httpClient.postAsync<
-            null,
+            void,
             SignalRNegotiation,
             FusionApiHttpErrorResponse
-        >(url, null);
+        >(url, undefined);
     }
 }

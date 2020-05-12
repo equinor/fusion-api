@@ -47,8 +47,8 @@ export default class FusionResourceCollection extends BaseResourceCollection {
         return combineUrls(this.getBaseUrl(), 'log', 'features');
     }
 
-    signalRHub(hubName: string){
-        return combineUrls(this.getBaseUrl(), 'api', hubName, 'negotiate')
+    signalRHub(hubName: string) {
+        return combineUrls(this.getBaseUrl(), 'signalr', 'hubs', hubName, 'negotiate');
     }
 
     private getBundlesPath() {
