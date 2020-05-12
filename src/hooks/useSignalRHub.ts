@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
-import {  useApiClients } from '..';
 import { SignalRNegotiation } from '../http/apiClients/models/fusion/SignalRNegotiation';
+import useApiClients from '../http/hooks/useApiClients';
 
 export default (hubName: string) => {
     const [hubDetails, setHubDetails] = useState<SignalRNegotiation | null>(null);
