@@ -114,7 +114,8 @@ export default class AuthContainer implements IAuthContainer {
                 redirectUrl &&
                 AuthContainer.getResourceOrigin(redirectUrl) === window.location.origin
             ) {
-                window.location.href = redirectUrl;
+                window.history.replaceState(null, "", redirectUrl);
+                window.location.reload(true);
             }
         } catch (e) {
             this.logError(e);
