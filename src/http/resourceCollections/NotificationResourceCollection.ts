@@ -10,7 +10,12 @@ export default class NotificationResourceCollection extends BaseResourceCollecti
         return combineUrls(this.getBaseUrl(), 'notifications', id);
     }
 
-    personNotifications(personIdentifier: string) {
-        return combineUrls(this.getBaseUrl(), 'persons', personIdentifier, 'notifications');
+    personNotifications(personIdentifier: string, filter?: string) {
+        const url = combineUrls(this.getBaseUrl(), 'persons', personIdentifier, 'notifications');
+        if (!filter) {
+            return url;
+        }
+        const filterString = `?$filter=${filter}`;
+        return `${url}${filterString}`;
     }
 }

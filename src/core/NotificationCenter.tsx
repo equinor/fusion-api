@@ -9,6 +9,7 @@ import ApiClients from '../http/apiClients';
 import NotificationClient from '../http/apiClients/NotificationClient';
 import NotificationCard from '../http/apiClients/models/NotificationCard/NotificationCard';
 import useSignalRHub from '../hooks/useSignalRHub';
+import { formatDate } from '../intl/DateTime';
 
 export type NotificationLevel = 'low' | 'medium' | 'high';
 export type NotificationPriority = 'low' | 'medium' | 'high';
@@ -183,8 +184,8 @@ export default class NotificationCenter extends ReliableDictionary<
         presenter.present(notification);
     }
 
-    async getAllNotificationCardsAsync() {
-        const response = await this.notificationClient.getPersonNotificationsAsync('me');
+    async getNotificationCardsAsync(filter?: string) {
+        const response = await this.notificationClient.getPersonNotificationsAsync('me', filter);
         this.mergeNotificationCards(response.data.value);
         return response.data.value;
     }
@@ -226,6 +227,11 @@ export default class NotificationCenter extends ReliableDictionary<
         );
         this.mergeNotificationCards([response.data]);
         return response.data;
+    }
+    async deleteNotificationCardAsync(notificationCard: NotificationCard) {
+        await this.notificationClient.deleteNotificationAsync(notificationCard.id);
+        this.mergeNotificationCards([notificationCard]);
+        return;
     }
 
     registerPresenter(level: NotificationLevel, present: NotificationPresenter) {
@@ -426,7 +432,8 @@ export const useNotificationCards = () => {
         setIsFetching(true);
 
         try {
-            const data = await notificationCenter.getAllNotificationCardsAsync();
+            const dayFilter = formatDate(new Date(new Date().getTime() - 24 * 60 * 60 * 1000 * 30)); //Latest 30 days filter
+            const data = await notificationCenter.getNotificationCardsAsync(dayFilter);
             setNotificationCards(data);
         } catch (e) {
             setError(e);
@@ -448,10 +455,15 @@ export const useNotificationCards = () => {
     return { notificationCards, isFetching, error };
 };
 
-export const useMarkNotificationsAsSeen = () => {
+export const useNotificationCardActions = () => {
     const { notificationCenter } = useFusionContext();
+    const notificationContext = useNotificationContext();
+
     const [isMarkingNotifications, setIsMarkingNotifications] = React.useState<boolean>(false);
     const [markError, setMarkError] = React.useState<Error | null>(null);
+
+    const [isDeletingNotification, setIsDeletingNotification] = React.useState<boolean>(false);
+    const [deleteError, setDeleteError] = React.useState<Error | null>(null);
 
     const markNotificationsAsSeenAsync = React.useCallback(
         async (notificationCards: NotificationCard[]) => {
@@ -471,5 +483,46 @@ export const useMarkNotificationsAsSeen = () => {
         [notificationCenter]
     );
 
-    return { markNotificationsAsSeenAsync, isMarkingNotifications, markError };
+    const deleteNotificationAsync = React.useCallback(
+        async (notificationCard: NotificationCard) => {
+            setIsDeletingNotification(true);
+            setDeleteError(null);
+            try {
+                await notificationCenter.deleteNotificationCardAsync(notificationCard);
+            } catch (e) {
+                setDeleteError(e);
+            } finally {
+                setIsDeletingNotification(false);
+            }
+        },
+        [notificationCenter]
+    );
+
+    const deleteNotificationCard = React.useCallback(
+        async (notificationCard: NotificationCard) => {
+            const notificationRequest: NotificationRequest = {
+                level: 'high',
+                title: 'You are about to permanently delete this notification',
+                confirmLabel: 'Delete notification',
+                cancelLabel: 'Dismiss',
+            };
+            const response = await notificationCenter.sendAsync(
+                notificationRequest,
+                notificationContext
+            );
+            if (response.confirmed) {
+                await deleteNotificationAsync(notificationCard);
+            }
+        },
+        [notificationContext, notificationCenter]
+    );
+
+    return {
+        markNotificationsAsSeenAsync,
+        isMarkingNotifications,
+        markError,
+        deleteNotificationCard,
+        isDeletingNotification,
+        deleteError,
+    };
 };

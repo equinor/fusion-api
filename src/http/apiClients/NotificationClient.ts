@@ -33,8 +33,8 @@ export default class NotificationClient extends BaseApiClient {
         );
     }
 
-    async getPersonNotificationsAsync(personId: string) {
-        const url = this.resourceCollections.notification.personNotifications(personId);
+    async getPersonNotificationsAsync(personId: string, filter?: string) {
+        const url = this.resourceCollections.notification.personNotifications(personId, filter);
         return this.httpClient.getAsync<
             PagedCollection<NotificationCard[]>,
             FusionApiHttpErrorResponse
