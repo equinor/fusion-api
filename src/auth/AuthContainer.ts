@@ -114,7 +114,8 @@ export default class AuthContainer implements IAuthContainer {
                 redirectUrl &&
                 AuthContainer.getResourceOrigin(redirectUrl) === window.location.origin
             ) {
-                window.location.href = redirectUrl;
+                window.history.replaceState(null, "", redirectUrl);
+                window.location.reload(true);
             }
         } catch (e) {
             this.logError(e);
@@ -159,7 +160,12 @@ export default class AuthContainer implements IAuthContainer {
 
         if (existingApp !== null) {
             existingApp.updateResources(resources);
-            return (await this.cache.getTokenAsync(existingApp)) !== null;
+            const cachedToken = await this.cache.getTokenAsync(existingApp);
+            if (cachedToken === null) {
+                return false;
+            }
+            await this.cache.clearAppLoginLock(existingApp.clientId);
+            return true;
         }
 
         const newApp = new AuthApp(clientId, resources);
@@ -168,7 +174,7 @@ export default class AuthContainer implements IAuthContainer {
         const cachedToken = await this.cache.getTokenAsync(newApp);
 
         if (cachedToken !== null) {
-            await this.cache.clearAppLoginLock(clientId);
+            await this.cache.clearAppLoginLock(newApp.clientId);
             return true;
         }
 
@@ -185,8 +191,7 @@ export default class AuthContainer implements IAuthContainer {
         if (isLocked) {
             return;
         }
-        await this.cache.setAppLoginLock(clientId);
-
+        await this.cache.setAppLoginLock(app.clientId);
         const nonce = AuthNonce.createNew(app);
         this.cache.storeRedirectUrl(getTopLevelWindow(window).location.href);
 
