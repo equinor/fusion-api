@@ -203,6 +203,13 @@ export default class NotificationCenter extends ReliableDictionary<
         this.emit('notification-card-updated', this.notificationCards.state);
     }
 
+    private deleteNotificationCards(cards: NotificationCard[]) {
+        this.notificationCards.state = [...this.notificationCards.state].filter(
+            (c) => !cards.some((deletedCard) => deletedCard.id === c.id)
+        );
+        this.emit('notification-card-updated', this.notificationCards.state);
+    }
+
     getNotificationCards() {
         return [...this.notificationCards.state];
     }
@@ -230,7 +237,7 @@ export default class NotificationCenter extends ReliableDictionary<
     }
     async deleteNotificationCardAsync(notificationCard: NotificationCard) {
         await this.notificationClient.deleteNotificationAsync(notificationCard.id);
-        this.mergeNotificationCards([notificationCard]);
+        this.deleteNotificationCards([notificationCard]);
         return;
     }
 
