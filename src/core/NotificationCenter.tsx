@@ -432,7 +432,8 @@ export const useNotificationCards = () => {
         setIsFetching(true);
 
         try {
-            const dayFilter = formatDate(new Date(new Date().getTime() - 24 * 60 * 60 * 1000 * 30)); //Latest 30 days filter
+            const filterFromDate = formatDate(new Date(new Date().getTime() - 24 * 60 * 60 * 1000 * 30)); //Latest 30 days filter
+            const dayFilter = `created gt '${filterFromDate}'`
             const data = await notificationCenter.getNotificationCardsAsync(dayFilter);
             setNotificationCards(data);
         } catch (e) {
