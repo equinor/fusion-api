@@ -478,10 +478,10 @@ export const useNotificationCardActions = () => {
             setIsMarkingNotifications(true);
             setMarkError(null);
             try {
-                const response = notificationCards.map(
-                    async (card) => await notificationCenter.markNotificationCardAsSeenAsync(card)
+                const response = notificationCards.map((card) =>
+                    notificationCenter.markNotificationCardAsSeenAsync(card)
                 );
-                Promise.all(response);
+                await Promise.all(response);
             } catch (e) {
                 setMarkError(e);
             } finally {
