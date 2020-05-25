@@ -440,7 +440,7 @@ export const useNotificationCards = () => {
         setIsFetchingUnRead(true);
 
         try {
-            const unReadFilter = 'filter=seenByUser eq false';
+            const unReadFilter = 'seenByUser eq false';
             const data = await notificationCenter.getNotificationCardsAsync(unReadFilter);
             setNotificationCards(data);
         } catch (e) {
