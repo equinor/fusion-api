@@ -420,7 +420,8 @@ export const useNotificationCards = () => {
     const { hubConnection } = useSignalRHub('notifications');
 
     const [error, setError] = useState(null);
-    const [isFetching, setIsFetching] = useState(false);
+    const [isFetchingUnRead, setIsFetchingUnRead] = useState(false);
+    const [isFetchingRead, setIsFetchingRead] = useState(false);
     const [notificationCards, setNotificationCards] = useEventEmitterValue(
         notificationCenter,
         'notification-cards-updated',
@@ -436,7 +437,7 @@ export const useNotificationCards = () => {
     );
 
     const getUnReadNotificationCardsAsync = async () => {
-        setIsFetching(true);
+        setIsFetchingUnRead(true);
 
         try {
             const unReadFilter = 'filter=seenByUser eq false';
@@ -446,11 +447,11 @@ export const useNotificationCards = () => {
             setError(e);
         }
 
-        setIsFetching(false);
+        setIsFetchingUnRead(false);
     };
 
     const getReadNotificationCardsAsync = async () => {
-        setIsFetching(true);
+        setIsFetchingRead(true);
 
         try {
             // const filterFromDate = formatDate(new Date(new Date().getTime() - 24 * 60 * 60 * 1000 * 30)); //Latest 30 days filter
@@ -461,7 +462,7 @@ export const useNotificationCards = () => {
             setError(e);
         }
 
-        setIsFetching(false);
+        setIsFetchingRead(false);
     };
 
     useEffect(() => {
@@ -475,7 +476,13 @@ export const useNotificationCards = () => {
         }
     }, [hubConnection]);
 
-    return { notificationCards, isFetching, error, getReadNotificationCardsAsync };
+    return {
+        notificationCards,
+        isFetchingRead,
+        isFetchingUnRead,
+        error,
+        getReadNotificationCardsAsync,
+    };
 };
 
 export const useGlobalNotificationCardsActions = () => {
