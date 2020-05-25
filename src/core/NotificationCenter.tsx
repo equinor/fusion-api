@@ -440,7 +440,12 @@ export const useNotificationCards = () => {
         setIsFetchingUnRead(true);
 
         try {
-            const data = await notificationCenter.getNotificationCardsAsync('seenByUser eq false');
+            const filterFromDate = formatDate(
+                new Date(new Date().getTime() - 24 * 60 * 60 * 1000 * 30)
+            ); //30 days from today
+
+            const filter = `created gt ${filterFromDate} and seenByUser eq true`;
+            const data = await notificationCenter.getNotificationCardsAsync(filter);
             setNotificationCards(data);
         } catch (e) {
             setError(e);
