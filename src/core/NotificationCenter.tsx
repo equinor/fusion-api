@@ -440,8 +440,7 @@ export const useNotificationCards = () => {
         setIsFetchingUnRead(true);
 
         try {
-            const unReadFilter = 'seenByUser eq false';
-            const data = await notificationCenter.getNotificationCardsAsync(unReadFilter);
+            const data = await notificationCenter.getNotificationCardsAsync('seenByUser eq false');
             setNotificationCards(data);
         } catch (e) {
             setError(e);
@@ -454,8 +453,6 @@ export const useNotificationCards = () => {
         setIsFetchingRead(true);
 
         try {
-            // const filterFromDate = formatDate(new Date(new Date().getTime() - 24 * 60 * 60 * 1000 * 30)); //Latest 30 days filter
-            // const dayFilter = `created gt ${filterFromDate} and seenByUser eq true`
             const data = await notificationCenter.getNotificationCardsAsync('seenByUser eq true');
             setNotificationCards(data);
         } catch (e) {
