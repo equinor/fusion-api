@@ -170,6 +170,7 @@ export {
     INotificationContext,
     useNotificationCards,
     useNotificationCardActions,
+    useGlobalNotificationCardsActions,
 } from './core/NotificationCenter';
 
 export {
