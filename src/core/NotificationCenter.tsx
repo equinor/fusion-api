@@ -435,13 +435,27 @@ export const useNotificationCards = () => {
         [notificationCenter]
     );
 
-    const fetch = async () => {
+    const getUnReadNotificationCardsAsync = async () => {
+        setIsFetching(true);
+
+        try {
+            const unReadFilter = 'filter=seenByUser eq false';
+            const data = await notificationCenter.getNotificationCardsAsync(unReadFilter);
+            setNotificationCards(data);
+        } catch (e) {
+            setError(e);
+        }
+
+        setIsFetching(false);
+    };
+
+    const getReadNotificationCardsAsync = async () => {
         setIsFetching(true);
 
         try {
             // const filterFromDate = formatDate(new Date(new Date().getTime() - 24 * 60 * 60 * 1000 * 30)); //Latest 30 days filter
-            // const dayFilter = `created gt ${filterFromDate}`
-            const data = await notificationCenter.getNotificationCardsAsync();
+            // const dayFilter = `created gt ${filterFromDate} and seenByUser eq true`
+            const data = await notificationCenter.getNotificationCardsAsync('seenByUser eq true');
             setNotificationCards(data);
         } catch (e) {
             setError(e);
@@ -451,7 +465,7 @@ export const useNotificationCards = () => {
     };
 
     useEffect(() => {
-        fetch();
+        getUnReadNotificationCardsAsync();
     }, []);
 
     useEffect(() => {
@@ -461,7 +475,7 @@ export const useNotificationCards = () => {
         }
     }, [hubConnection]);
 
-    return { notificationCards, isFetching, error };
+    return { notificationCards, isFetching, error, getReadNotificationCardsAsync };
 };
 
 export const useGlobalNotificationCardsActions = () => {
