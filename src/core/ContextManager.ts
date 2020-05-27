@@ -139,6 +139,10 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         const buildUrl = this.appContainer.currentApp?.context?.buildUrl;
         const currentContext = await this.getAsync('current');
 
+        if(currentContext?.id === context?.id) {
+            return this.ensureCurrentContextExistsInUrl();
+        }
+
         const appPath = `/apps/${this.appContainer.currentApp?.key}`;
         const hasAppPath = this.history.location.pathname.indexOf(appPath) !== -1;
         const scopedPath = this.history.location.pathname.replace(appPath, '');
