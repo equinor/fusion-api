@@ -3,6 +3,11 @@ import AssignedPerson from './AssignedPerson';
 
 type PositionInstanceType = 'Normal' | 'Rotation';
 
+type PositionInstanceProperties = {
+    workPackId?: string;
+    hasRequest?: boolean;
+};
+
 type PositionInstance = {
     id: string;
     obs: string;
@@ -12,7 +17,7 @@ type PositionInstance = {
     type: PositionInstanceType; // Normal/Offshore/Vacation etc.
     location: PositionLocation;
     assignedPerson: AssignedPerson | null;
-    properties: object; // dynamic metadata
+    properties: PositionInstanceProperties | null;
     rotationId: string | null;
     taskOwnerIds: string[] | null;
     reportsToIds?: string[];
@@ -20,7 +25,6 @@ type PositionInstance = {
     positionId: string;
     externalId: string;
     parentPositionId: string | null;
-
 };
 
 export default PositionInstance;
