@@ -103,12 +103,9 @@ export default class PeopleClient extends BaseApiClient {
 
     async getPresenceAsync(userId: string, apiVersion?: string) {
         const url = this.resourceCollections.people.personPresence(userId);
-        const requestHeader: RequestInit = {
-            headers: { 'api-version': apiVersion || '1.0' },
-        };
+        const version = apiVersion ? `?api-version=${apiVersion}` : '';
         return await this.httpClient.getAsync<PersonPresence, FusionApiHttpErrorResponse>(
-            url,
-            requestHeader
+            `${url}${version}`
         );
     }
 }
