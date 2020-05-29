@@ -121,6 +121,7 @@ export {
     PersonRoleScope,
     PersonAccountType,
     PersonCompany,
+    PersonPresence,
 } from './http/apiClients/models/people/PersonDetails';
 
 export { default as RoleDefinition } from './http/apiClients/models/people/RoleDefinition';
