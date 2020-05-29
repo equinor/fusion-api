@@ -6,7 +6,7 @@ import PersonBasePosition from './PersonBasePosition';
 import PersonRoleScope from './PersonRoleScope';
 import PersonAccountType from './PersonAccountType';
 import PersonCompany from './PersonCompany';
-import PersonPresence from './PersonPresence';
+import PersonPresence, { PersonPresenceAvailability } from './PersonPresence';
 
 export {
     PersonRole,
@@ -18,6 +18,7 @@ export {
     PersonAccountType,
     PersonCompany,
     PersonPresence,
+    PersonPresenceAvailability,
 };
 
 type PersonDetails = {

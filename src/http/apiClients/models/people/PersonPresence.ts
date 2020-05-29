@@ -1,5 +1,14 @@
+export type PersonPresenceAvailability =
+    | 'Offline'
+    | 'Online'
+    | 'None'
+    | 'IdleBusy'
+    | 'DoNotDisturb'
+    | 'BeRightBack';
+
 type PersonPresence = {
-    availability: string;
+    mail: string | null;
+    availability: PersonPresenceAvailability;
     activity: string | null;
     deviceType: string;
 };
