@@ -16,7 +16,7 @@ export default class PeopleResourceCollection extends BaseResourceCollection {
 
         if (!oDataExpand) return url;
 
-        const expand = oDataExpand ? oDataExpand.map(s => s) : [];
+        const expand = oDataExpand ? oDataExpand.map((s) => s) : [];
         const oDataQuery = buildQuery({ expand });
 
         return `${url}${oDataQuery}`;
@@ -47,6 +47,10 @@ export default class PeopleResourceCollection extends BaseResourceCollection {
 
     roleStatus(userId: string, roleName: string): string {
         return combineUrls(this.getBaseUrl(), 'persons', userId, 'roles', roleName);
+    }
+
+    getPersonPresence(userId: string) {
+        return combineUrls(this.getPersonDetails(userId), 'presence');
     }
 }
 
