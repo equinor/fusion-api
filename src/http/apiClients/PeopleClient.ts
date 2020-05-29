@@ -85,7 +85,7 @@ export default class PeopleClient extends BaseApiClient {
     }
 
     async getPresenceAsync(userId: string, apiVersion?: string) {
-        const url = this.resourceCollections.people.getPersonPresence(userId);
+        const url = this.resourceCollections.people.personPresence(userId);
         const requestHeader: RequestInit = {
             headers: { 'api-version': apiVersion || '1.0' },
         };

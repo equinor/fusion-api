@@ -49,7 +49,7 @@ export default class PeopleResourceCollection extends BaseResourceCollection {
         return combineUrls(this.getBaseUrl(), 'persons', userId, 'roles', roleName);
     }
 
-    getPersonPresence(userId: string) {
+    personPresence(userId: string) {
         return combineUrls(this.getPersonDetails(userId), 'presence');
     }
 }
