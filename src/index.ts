@@ -110,6 +110,9 @@ export {
     PublishDetails,
     PositionReportPath,
     RoleDescription,
+    OrgSnapshot,
+    OrgSnapshotApproval,
+    ApproveSnapshotRequest,
 } from './http/apiClients/models/org/OrgProject';
 export {
     default as PersonDetails,
@@ -122,7 +125,7 @@ export {
     PersonAccountType,
     PersonCompany,
     PersonPresence,
-    PersonPresenceAvailability
+    PersonPresenceAvailability,
 } from './http/apiClients/models/people/PersonDetails';
 
 export { default as RoleDefinition } from './http/apiClients/models/people/RoleDefinition';
@@ -197,7 +200,7 @@ export { default as useDebounce } from './hooks/useDebounce';
 export { default as useEffectAsync } from './hooks/useEffectAsync';
 export { default as useAsyncData } from './hooks/useAsyncData';
 export { default as useFusionEnvironment } from './hooks/useFusionEnvironment';
-export {default as useSignalRHub } from "./hooks/useSignalRHub";
+export { default as useSignalRHub } from './hooks/useSignalRHub';
 
 export { Day, Month, Calendar, CalendarDate, createCalendar, isSameDate } from './utils/Calendar';
 
