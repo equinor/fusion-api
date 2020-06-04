@@ -8,6 +8,8 @@ import OrgProject, {
     PublishDetails,
     PositionReportPath,
     RoleDescription,
+    OrgSnapshot,
+    ApproveSnapshotRequest,
 } from './models/org/OrgProject';
 import Position from './models/org/Position';
 
@@ -287,7 +289,7 @@ export default class OrgClient extends BaseApiClient {
                 url
             );
 
-            const disciplines = res.data.map(d => d.discipline);
+            const disciplines = res.data.map((d) => d.discipline);
             const distinct = disciplines.reduce((acc: string[], curr: string) => {
                 if (curr && acc.indexOf(curr) === -1 && curr.trim().length > 0) {
                     acc.push(curr);
@@ -318,6 +320,38 @@ export default class OrgClient extends BaseApiClient {
                 'api-version': '2.0',
             },
         });
+    }
+
+    public async getSnapshotsAsync(projectId: string) {
+        const url = this.resourceCollections.org.snapshots(projectId);
+        return await this.httpClient.getAsync<OrgSnapshot[], FusionApiHttpErrorResponse>(url);
+    }
+
+    public async getSnapshotAsync(projectId: string, snapshotId: string) {
+        const url = this.resourceCollections.org.snapshot(projectId, snapshotId);
+        return await this.httpClient.getAsync<OrgSnapshot, FusionApiHttpErrorResponse>(url);
+    }
+
+    public async createSnapshotAsync(projectId: string, snapshotRequest: CreateSnapshotRequest) {
+        const url = this.resourceCollections.org.snapshots(projectId);
+        return await this.httpClient.postAsync<
+            CreateSnapshotRequest,
+            OrgSnapshot,
+            FusionApiHttpErrorResponse
+        >(url, snapshotRequest);
+    }
+
+    public async approveSnapshotAsync(
+        projectId: string,
+        snapshotId: string,
+        approvePayload: ApproveSnapshotRequest
+    ) {
+        const url = this.resourceCollections.org.approveSnapshot(projectId, snapshotId);
+        return await this.httpClient.postAsync<
+            ApproveSnapshotRequest,
+            OrgSnapshot,
+            FusionApiHttpErrorResponse
+        >(url, approvePayload);
     }
 
     protected getBaseUrl() {
