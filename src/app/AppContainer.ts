@@ -17,7 +17,7 @@ type AppRegistration = {
     shortName?: string;
     description?: string;
     context?: ContextManifest;
-    auth?: AppAuth;
+    auth?: AppAuth[];
     icon?: string;
 };
 
