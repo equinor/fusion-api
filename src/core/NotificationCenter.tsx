@@ -9,7 +9,6 @@ import ApiClients from '../http/apiClients';
 import NotificationClient from '../http/apiClients/NotificationClient';
 import NotificationCard from '../http/apiClients/models/NotificationCard/NotificationCard';
 import useSignalRHub from '../hooks/useSignalRHub';
-import { formatDate } from '../intl/DateTime';
 
 export type NotificationLevel = 'low' | 'medium' | 'high';
 export type NotificationPriority = 'low' | 'medium' | 'high';
@@ -440,9 +439,10 @@ export const useNotificationCards = () => {
         setIsFetchingUnRead(true);
 
         try {
-            const filterFromDate = formatDate(
-                new Date(new Date().getTime() - 24 * 60 * 60 * 1000 * 30)
-            ); //30 days from today
+            const filterFromDate = new Date(
+                new Date().getTime() - 24 * 60 * 60 * 1000 * 30
+            ).toISOString();
+            //30 days from today
 
             const filter = `created gt ${filterFromDate} and seenByUser eq false`;
             const data = await notificationCenter.getNotificationCardsAsync(filter);
