@@ -12,7 +12,8 @@ import PublishDetails from './PublishDetails';
 import PositionReportPath from './PositionReportPath';
 import RoleDescription from './RoleDescription';
 import OrgSnapshot, { OrgSnapshotApproval } from './OrgSnapshot';
-import ApproveSnapshotRequest from "./ApproveSnapshotRequest";
+import ApproveSnapshotRequest from './ApproveSnapshotRequest';
+import CreateSnapshotRequest from './CreateSnapshotRequest';
 
 type OrgProject = {
     dates: OrgProjectDates;
@@ -40,7 +41,8 @@ export {
     RoleDescription,
     OrgSnapshot,
     OrgSnapshotApproval,
-    ApproveSnapshotRequest
+    ApproveSnapshotRequest,
+    CreateSnapshotRequest,
 };
 
 export default OrgProject;
