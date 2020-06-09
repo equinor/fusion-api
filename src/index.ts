@@ -113,6 +113,7 @@ export {
     OrgSnapshot,
     OrgSnapshotApproval,
     ApproveSnapshotRequest,
+    CreateSnapshotRequest,
 } from './http/apiClients/models/org/OrgProject';
 export {
     default as PersonDetails,

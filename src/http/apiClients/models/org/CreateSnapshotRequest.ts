@@ -4,3 +4,5 @@ type CreateSnapshotRequest = {
     description?: string;
     approvalRequired?: boolean;
 }
+
+export default CreateSnapshotRequest;

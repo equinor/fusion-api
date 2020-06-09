@@ -10,6 +10,7 @@ import OrgProject, {
     RoleDescription,
     OrgSnapshot,
     ApproveSnapshotRequest,
+    CreateSnapshotRequest,
 } from './models/org/OrgProject';
 import Position from './models/org/Position';
 
