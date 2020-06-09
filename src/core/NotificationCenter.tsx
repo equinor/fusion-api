@@ -444,7 +444,7 @@ export const useNotificationCards = () => {
                 new Date(new Date().getTime() - 24 * 60 * 60 * 1000 * 30)
             ); //30 days from today
 
-            const filter = `created gt ${filterFromDate} and seenByUser eq true`;
+            const filter = `created gt ${filterFromDate} and seenByUser eq false`;
             const data = await notificationCenter.getNotificationCardsAsync(filter);
             setNotificationCards(data);
         } catch (e) {
