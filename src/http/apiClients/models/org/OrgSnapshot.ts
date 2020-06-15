@@ -18,6 +18,7 @@ type OrgSnapshot = {
     description?: string;
     approvalRequired: boolean;
     created: Date;
+    appliesForDate: Date;
     createdBy: PersonDetails | null;
     approval?: OrgSnapshotApproval
 };
