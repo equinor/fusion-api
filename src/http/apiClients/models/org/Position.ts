@@ -3,7 +3,7 @@ import PositionInstance from './PositionInstance';
 
 type Position = {
     id: string;
-    externalId: string;
+    externalId: string | null;
     name: string;
     basePosition: BasePosition;
     instances: PositionInstance[];

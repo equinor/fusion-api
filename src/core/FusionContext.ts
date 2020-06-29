@@ -144,7 +144,8 @@ export const createFusionContext = (
         authContainer,
         resourceCache,
         abortControllerManager,
-        telemetryLogger
+        telemetryLogger,
+        new EventHub(),
     );
     const apiClients = createApiClients(httpClient, resourceCollections, serviceResolver);
 
@@ -166,9 +167,15 @@ export const createFusionContext = (
     );
     appContainerFactory(appContainer);
 
-    const contextManager = new ContextManager(apiClients, appContainer, featureLogger, history);
+    const contextManager = new ContextManager(
+        apiClients,
+        appContainer,
+        featureLogger,
+        telemetryLogger,
+        history
+    );
     const tasksContainer = new TasksContainer(apiClients, new EventHub());
-    const notificationCenter = new NotificationCenter(new EventHub());
+    const notificationCenter = new NotificationCenter(new EventHub(), apiClients);
     const peopleContainer = new PeopleContainer(apiClients, resourceCollections, new EventHub());
     const userMenuSectionsContainer = new UserMenuContainer(new EventHub());
     const environment = ensureFusionEnvironment(options);

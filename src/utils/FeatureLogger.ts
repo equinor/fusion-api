@@ -25,6 +25,7 @@ export type FeatureLogEntry = {
     payload?: any;
     metadata: { [key: string]: any };
     dateTimeUtc: Date;
+    url: string | null;
 };
 
 const getSessionId = () => {
@@ -77,6 +78,7 @@ export default class FeatureLogger {
             payload,
             dateTimeUtc: new Date(),
             metadata: {},
+            url: window.location.href,
         });
 
         this.logEntries = [...this.logEntries, entry];

@@ -9,6 +9,7 @@ import OrgClient from './OrgClient';
 import ReportClient from './ReportClient';
 import PowerBIClient from './PowerBIClient';
 import ServiceResolver from '../resourceCollections/ServiceResolver';
+import NotificationClient from './NotificationClient';
 
 export { FusionApiHttpErrorResponse } from './models/common/FusionApiHttpErrorResponse';
 
@@ -21,6 +22,7 @@ type ApiClients = {
     org: OrgClient;
     report: ReportClient;
     powerBI: PowerBIClient;
+    notification: NotificationClient;
 };
 
 export const createApiClients = (
@@ -36,6 +38,7 @@ export const createApiClients = (
     org: new OrgClient(httpClient, resources, serviceResolver),
     report: new ReportClient(httpClient, resources, serviceResolver),
     powerBI: new PowerBIClient(httpClient, resources, serviceResolver),
+    notification: new NotificationClient(httpClient, resources, serviceResolver),
 });
 
 export default ApiClients;

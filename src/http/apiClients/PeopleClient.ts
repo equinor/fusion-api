@@ -9,6 +9,7 @@ import PersonDetails, {
     PersonPosition,
     PersonProject,
     PersonRoleScope,
+    PersonPresence,
 } from './models/people/PersonDetails';
 import RoleDefinition from './models/people/RoleDefinition';
 import { FusionApiHttpErrorResponse } from './models/common/FusionApiHttpErrorResponse';
@@ -97,6 +98,14 @@ export default class PeopleClient extends BaseApiClient {
             {
                 isActive: active,
             }
+        );
+    }
+
+    async getPresenceAsync(userId: string, apiVersion?: string) {
+        const url = this.resourceCollections.people.personPresence(userId);
+        const version = apiVersion ? `?api-version=${apiVersion}` : '';
+        return await this.httpClient.getAsync<PersonPresence, FusionApiHttpErrorResponse>(
+            `${url}${version}`
         );
     }
 }

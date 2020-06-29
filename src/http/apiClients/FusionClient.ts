@@ -3,6 +3,7 @@ import { FusionApiHttpErrorResponse } from './models/common/FusionApiHttpErrorRe
 import AppManifest from './models/fusion/apps/AppManifest';
 import { FeatureLogBatch } from './models/fusion/FeatureLogEntryRequest';
 import getScript from '../../utils/getScript';
+import { SignalRNegotiation } from './models/fusion/SignalRNegotiation';
 
 export default class FusionClient extends BaseApiClient {
     protected getBaseUrl() {
@@ -43,5 +44,14 @@ export default class FusionClient extends BaseApiClient {
                 return await response.text();
             }
         );
+    }
+
+    async negotiateSignalRHub(hubName: string) {
+        const url = this.resourceCollections.fusion.signalRHub(hubName);
+        return await this.httpClient.postAsync<
+            void,
+            SignalRNegotiation,
+            FusionApiHttpErrorResponse
+        >(url, undefined);
     }
 }

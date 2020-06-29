@@ -16,7 +16,7 @@ type AppManifest = {
     type: AppType;
     tags: string[];
     context?: ContextManifest;
-    auth?: AppAuth;
+    auth?: AppAuth[];
     icon?: string;
     order: number | null;
     publishedDate: Date | null;

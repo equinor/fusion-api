@@ -9,10 +9,16 @@ import FeatureLogger from '../utils/FeatureLogger';
 import DistributedState, { IDistributedState } from '../utils/DistributedState';
 import { IEventHub } from '../utils/EventHub';
 import { ContextManifest } from '../http/apiClients/models/context/ContextManifest';
+import { AppAuth } from '../http/apiClients/models/fusion/apps/AppManifest';
 
 type AppRegistration = {
     AppComponent: React.ComponentType;
+    name?: string;
+    shortName?: string;
+    description?: string;
     context?: ContextManifest;
+    auth?: AppAuth[];
+    icon?: string;
 };
 
 type AppContainerEvents = {
@@ -134,6 +140,11 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
             },
         });
 
+        if (!app.context) {
+            // Reset context on feature logger if current app does not support it
+            this.featureLogger.setCurrentContext(null, null);
+        }
+
         this.featureLogger.log('App selected', '0.0.1', {
             selectedApp: {
                 key: app.key,
@@ -210,17 +221,12 @@ const registerApp = (appKey: string, manifest: AppRegistration): void => {
 
 const useCurrentApp = () => {
     const { app } = useFusionContext();
-    const [currentApp] = useEventEmitterValue(
-        app.container,
-        'change',
-        app => app,
-        app.container.currentApp
-    );
+    useEventEmitterValue(app.container, 'change', app => app, app.container.currentApp);
 
     // Only to get notified/rerendered when changes are made to the current app
-    const [_] = useEventEmitterValue(app.container, 'update');
+    useEventEmitterValue(app.container, 'update');
 
-    return currentApp;
+    return app.container.currentApp;
 };
 
 const useApps = (): [Error | null, boolean, AppManifest[]] => {

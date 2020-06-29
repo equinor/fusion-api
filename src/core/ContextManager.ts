@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import ApiClients from '../http/apiClients';
 import ContextClient from '../http/apiClients/ContextClient';
 import { useFusionContext } from './FusionContext';
-import { Context, ContextTypes } from '../http/apiClients/models/context';
+import { Context, ContextTypes, ContextManifest } from '../http/apiClients/models/context';
 import ReliableDictionary, { LocalStorageProvider } from '../utils/ReliableDictionary';
 import useDebouncedAbortable from '../hooks/useDebouncedAbortable';
 import useApiClients from '../http/hooks/useApiClients';
@@ -12,6 +12,7 @@ import AppManifest from '../http/apiClients/models/fusion/apps/AppManifest';
 import { History } from 'history';
 import { combineUrls } from '../utils/url';
 import FeatureLogger from '../utils/FeatureLogger';
+import TelemetryLogger from '../utils/TelemetryLogger';
 
 type ContextCache = {
     current: Context | null;
@@ -27,42 +28,72 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         apiClients: ApiClients,
         private appContainer: AppContainer,
         private featureLogger: FeatureLogger,
+        private telemetryLogger: TelemetryLogger,
         private history: History
     ) {
         super(new LocalStorageProvider(`FUSION_CURRENT_CONTEXT`, new EventHub()));
         this.contextClient = apiClients.context;
 
-        const unlistenAppContainer = this.appContainer.on('change', app => {
+        const unlistenAppContainer = this.appContainer.on('change', (app) => {
             this.resolveContextFromUrlOrLocalStorageAsync(app);
             unlistenAppContainer();
         });
+
+        this.history.listen(this.ensureCurrentContextExistsInUrl);
     }
+
+    private appHasContext = (): boolean => Boolean(this.appContainer.currentApp?.context);
+
+    private getAppPath = () => `/apps/${this.appContainer.currentApp?.key}`;
+
+    private urlHasPath = (path: string): boolean =>
+        this.history.location.pathname.indexOf(path) !== -1;
+
+    private getScopedPath = (path: string): string =>
+        this.history.location.pathname.replace(path, '');
+
+    private buildUrlWithContext = async () => {
+        const currentContext = await this.getCurrentContextAsync();
+        const buildUrl = this.appContainer.currentApp?.context?.buildUrl;
+
+        if (
+            !this.appHasContext() ||
+            !buildUrl ||
+            !currentContext?.id ||
+            this.history.location.pathname.indexOf(currentContext.id) !== -1
+        )
+            return null;
+
+        const appPath = this.getAppPath();
+        const newUrl = combineUrls(
+            this.urlHasPath(appPath) ? appPath : '',
+            buildUrl(currentContext, this.getScopedPath(appPath))
+        );
+
+        return newUrl;
+    };
+
+    private ensureCurrentContextExistsInUrl = async () => {
+        if (!this.appHasContext()) return;
+
+        const newUrl = await this.buildUrlWithContext();
+        if (newUrl && this.history.location.pathname.indexOf(newUrl) !== 0)
+            this.history.push(newUrl);
+    };
 
     private async resolveContextFromUrlOrLocalStorageAsync(app: AppManifest | null) {
         if (!app || !app.context) return;
 
-        const {
-            context: { getContextFromUrl, buildUrl },
-        } = app;
+        const getContextFromUrl = app.context.getContextFromUrl;
 
-        const appPath = `/apps/${app.key}`;
-        const scopedPath = this.history.location.pathname.replace(appPath, '');
         const contextId =
             getContextFromUrl && this.history.location && this.history.location.pathname
-                ? getContextFromUrl(scopedPath)
+                ? getContextFromUrl(this.getScopedPath(this.getAppPath()))
                 : null;
 
-        const hasAppPath = this.history.location.pathname.indexOf(appPath) !== -1;
         if (contextId) return this.setCurrentContextFromIdAsync(contextId);
 
-        const currentContext = await this.getCurrentContextAsync();
-        if (buildUrl && currentContext) {
-            const newUrl = combineUrls(
-                hasAppPath ? appPath : '',
-                buildUrl(currentContext, scopedPath)
-            );
-            if (this.history.location.pathname.indexOf(newUrl) !== 0) this.history.push(newUrl);
-        }
+        this.ensureCurrentContextExistsInUrl();
     }
 
     private async validateContext(context: Context | null) {
@@ -70,11 +101,37 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
 
         try {
             const validContext = await this.contextClient.getContextAsync(context.id);
-            if (validContext?.data) return;
+            if (validContext?.data) {
+                this.featureLogger.setCurrentContext(context.id, context.title);
+
+                const history = await this.getAsync('history');
+                this.featureLogger.log('Context selected', '0.0.1', {
+                    selectedContext: context
+                        ? {
+                              id: context.id,
+                              name: context.title,
+                          }
+                        : null,
+                    previusContexts: (history || []).map((c) => ({ id: c.id, name: c.title })),
+                });
+
+                this.telemetryLogger.trackEvent({
+                    name: 'Project selected',
+                    properties: {
+                        projectId: context.id,
+                        projectName: context.title,
+                        currentApp: this.appContainer.currentApp?.name,
+                    },
+                });
+
+                return;
+            }
 
             await this.setAsync('current', null);
+            this.featureLogger.setCurrentContext(null, null);
         } catch {
             await this.setAsync('current', null);
+            this.featureLogger.setCurrentContext(null, null);
         }
     }
 
@@ -82,14 +139,21 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         const buildUrl = this.appContainer.currentApp?.context?.buildUrl;
         const currentContext = await this.getAsync('current');
 
+        if(currentContext?.id === context?.id) {
+            return this.ensureCurrentContextExistsInUrl();
+        }
+
         const appPath = `/apps/${this.appContainer.currentApp?.key}`;
         const hasAppPath = this.history.location.pathname.indexOf(appPath) !== -1;
         const scopedPath = this.history.location.pathname.replace(appPath, '');
 
-        if (buildUrl)
-            this.history.push(
-                combineUrls(hasAppPath ? appPath : '', buildUrl(context, scopedPath))
+        if (buildUrl) {
+            const newUrl = combineUrls(
+                hasAppPath ? appPath : '',
+                buildUrl(context, scopedPath + this.history.location.search)
             );
+            if (this.history.location.pathname.indexOf(newUrl) !== 0) this.history.push(newUrl);
+        }
 
         await this.setAsync('current', context);
         this.validateContext(context);
@@ -106,22 +170,19 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         } catch {
             return;
         }
+    }
 
-        const history = await this.getAsync('history');
-        this.featureLogger.log('Context selected', '0.0.1', {
-            selectedContext: context
-                ? {
-                      id: context.id,
-                      name: context.title,
-                  }
-                : null,
-            previusContexts: (history || []).map(c => ({ id: c.id, name: c.title })),
-        });
+    async setCurrentContextIdAsync(id: string | null) {
+        if (!id) {
+            return await this.setCurrentContextAsync(null);
+        }
 
-        if (context) {
-            this.featureLogger.setCurrentContext(context.id, context.title);
-        } else {
-            this.featureLogger.setCurrentContext(null, null);
+        try {
+            const response = await this.contextClient.getContextAsync(id);
+            await this.setCurrentContextAsync(response.data);
+        } catch (e) {
+            this.telemetryLogger.trackException(e);
+            await this.setCurrentContextAsync(null);
         }
     }
 
@@ -132,10 +193,10 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         if (history) {
             history
                 // Remove the current context from the previous history (it's added to the start of the history)
-                .filter(c => c.id !== currentContext.id)
+                .filter((c) => c.id !== currentContext.id)
                 // Remove historical contexts after the last 10 (currentContext + 9)
                 .slice(0, 9)
-                .forEach(c => newHistory.push(c));
+                .forEach((c) => newHistory.push(c));
         }
 
         await this.setAsync('history', newHistory);
@@ -160,7 +221,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         const linkedContextId = links[context.id];
 
         const history = await this.getAsync('history');
-        const contextFromHistory = history ? history.find(c => c.id === linkedContextId) : null;
+        const contextFromHistory = history ? history.find((c) => c.id === linkedContextId) : null;
 
         if (contextFromHistory) {
             return contextFromHistory;
@@ -314,20 +375,26 @@ const useContextQuery = (): {
 
     const canQueryWithText = (text: string) => !!text && text.length > 2;
 
-    const fetchContexts = useCallback(async (query: string) => {
-        if (canQueryWithText(query)) {
-            setContexts([]);
-            try {
-                var response = await apiClients.context.queryContextsAsync(query, ...currentTypes);
-                setContexts(response.data);
-                setIsQuerying(false);
-            } catch (e) {
-                setError(e);
+    const fetchContexts = useCallback(
+        async (query: string) => {
+            if (canQueryWithText(query)) {
                 setContexts([]);
-                setIsQuerying(false);
+                try {
+                    var response = await apiClients.context.queryContextsAsync(
+                        query,
+                        ...currentTypes
+                    );
+                    setContexts(response.data);
+                    setIsQuerying(false);
+                } catch (e) {
+                    setError(e);
+                    setContexts([]);
+                    setIsQuerying(false);
+                }
             }
-        }
-    }, []);
+        },
+        [currentTypes]
+    );
 
     useDebouncedAbortable(fetchContexts, queryText);
 
@@ -338,4 +405,10 @@ const useContextQuery = (): {
     return { error, isQuerying, contexts, search };
 };
 
-export { useContextManager, useCurrentContext, useContextQuery, useCurrentContextTypes };
+export {
+    useContextManager,
+    useCurrentContext,
+    useContextQuery,
+    useCurrentContextTypes,
+    useContextHistory,
+};

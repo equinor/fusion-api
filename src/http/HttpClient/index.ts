@@ -12,8 +12,11 @@ import {
 import ensureRequestInit from './ensureRequestInit';
 import { useFusionContext } from '../../core/FusionContext';
 import RequestBody from '../models/RequestBody';
+import BlobContainer from '../models/BlobContainer';
 import JSON from '../../utils/JSON';
 import TelemetryLogger from '../../utils/TelemetryLogger';
+import DistributedState, { IDistributedState } from '../../utils/DistributedState';
+import { IEventHub } from '../../utils/EventHub';
 
 // Export interface, response and error types
 export {
@@ -24,25 +27,33 @@ export {
     HttpClientRequestFailedError,
 };
 
+type RequestsInProgress = { [key: string]: Promise<HttpResponse<any>> };
+
 export default class HttpClient implements IHttpClient {
     private authContainer: IAuthContainer;
     private resourceCache: ResourceCache;
     private abortControllerManager: AbortControllerManager;
     private telemetryLogger: TelemetryLogger;
 
-    private requestsInProgress: { [key: string]: Promise<HttpResponse<any>> } = {};
+    private requestsInProgress: IDistributedState<RequestsInProgress>;
     private sessionId = uuid();
 
     constructor(
         authContainer: IAuthContainer,
         resourceCache: ResourceCache,
         abortControllerManager: AbortControllerManager,
-        telemetryLogger: TelemetryLogger
+        telemetryLogger: TelemetryLogger,
+        eventHub: IEventHub
     ) {
         this.authContainer = authContainer;
         this.resourceCache = resourceCache;
         this.abortControllerManager = abortControllerManager;
         this.telemetryLogger = telemetryLogger;
+        this.requestsInProgress = new DistributedState<RequestsInProgress>(
+            'FusionHttpClient.requestsInProgress',
+            {},
+            eventHub
+        );
     }
 
     async getAsync<TResponse, TExpectedErrorResponse>(
@@ -234,6 +245,33 @@ export default class HttpClient implements IHttpClient {
     async getBlobAsync<TExpectedErrorResponse>(
         url: string,
         init?: RequestInit | null
+    ): Promise<BlobContainer> {
+        if (!init) {
+            init = {
+                headers: new Headers({ Accept: '*/*' }),
+            };
+        }
+
+        init = ensureRequestInit(init, init => ({
+            ...init,
+            method: 'GET',
+        }));
+
+        const response = await this.performFetchAsync<TExpectedErrorResponse>(url, init);
+        const blob = await response.blob();
+
+        const fileName = this.resolveFileNameFromHeader(response);
+
+        if (!fileName) {
+            throw new Error('Cannot download file without filename');
+        }
+
+        return { blob, fileName }
+    }
+
+    async getFileAsync<TExpectedErrorResponse>(
+        url: string,
+        init?: RequestInit | null
     ): Promise<File> {
         if (!init) {
             init = {
@@ -258,9 +296,39 @@ export default class HttpClient implements IHttpClient {
         return new File([blob], fileName);
     }
 
+    protected responseIsRetriable(response: Response, retryTimeout: number) {
+        if (retryTimeout > 20000 || response.headers.get("x-fusion-retriable") === "false") {
+            return false;
+        }
+
+        return response.status === 408
+            || response.status === 424
+            || response.status === 500
+            || response.status === 502
+            || response.status === 503
+            || response.status === 504;
+    }
+
+    protected async retryRequestAsync<TExpectedErrorResponse>(
+        url: string,
+        init: RequestInit,
+        retryTimeout: number,
+    ): Promise<Response> {
+        // Wait before retrying the request
+        await new Promise((resolve) => setTimeout(resolve, retryTimeout));
+
+        // Abort the request if the signal has been aborted while waiting
+        if (this.abortControllerManager.getCurrentSignal()?.aborted) {
+            throw new Error(`Request ${init.method} ${url} was aborted`);
+        }
+
+        return this.performFetchAsync<TExpectedErrorResponse>(url, init, retryTimeout + 3000);
+    }
+
     private async performFetchAsync<TExpectedErrorResponse>(
         url: string,
-        init: RequestInit
+        init: RequestInit,
+        retryTimeout: number = 3000,
     ): Promise<Response> {
         try {
             const options = await this.transformRequestAsync(url, init);
@@ -268,6 +336,10 @@ export default class HttpClient implements IHttpClient {
             const response = await fetch(url, options);
 
             if (!response.ok) {
+                if (this.responseIsRetriable(response, retryTimeout)) {
+                    return this.retryRequestAsync<TExpectedErrorResponse>(url, init, retryTimeout);
+                }
+
                 // Add more info
                 const errorResponse = await this.parseResponseJSONAsync<TExpectedErrorResponse>(
                     response
@@ -304,17 +376,21 @@ export default class HttpClient implements IHttpClient {
         const requestPerformer = async () => {
             try {
                 const data = await handler();
-                delete this.requestsInProgress[url];
+                const requestsInProgres = this.requestsInProgress.state;
+                delete requestsInProgres[url];
+                this.requestsInProgress.state = { ...requestsInProgres };
                 return data;
             } catch (error) {
-                delete this.requestsInProgress[url];
+                const requestsInProgres = this.requestsInProgress.state;
+                delete requestsInProgres[url];
+                this.requestsInProgress.state = { ...requestsInProgres };
                 throw error;
             }
         };
 
         const request = requestPerformer();
 
-        this.requestsInProgress[url] = request;
+        this.requestsInProgress.state = { ...this.requestsInProgress.state, [url]: request };
 
         return await request;
     }
@@ -428,7 +504,7 @@ export default class HttpClient implements IHttpClient {
 
     // Utils
     private getRequestInProgress<T>(url: string) {
-        return this.requestsInProgress[url] as Promise<HttpResponse<T>>;
+        return this.requestsInProgress.state[url] as Promise<HttpResponse<T>>;
     }
 
     private createRequestBody<TBody extends RequestBody>(body: TBody) {
