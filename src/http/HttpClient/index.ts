@@ -303,7 +303,7 @@ export default class HttpClient implements IHttpClient {
 
         return response.status === 408
             || response.status === 424
-            || response.status === 500
+            || (response.status === 500 && response.headers.get("x-fusion-retriable") === "true")
             || response.status === 502
             || response.status === 503
             || response.status === 504;
