@@ -35,10 +35,11 @@ const compareApp = (a: AppManifest, b?: AppManifest) => {
             case 'auth':
             //@todo maybe?!?!
             case 'context':
-            case 'category':
             case 'tags':
                 return false;
 
+            case 'category':
+                return a.category?.id !== b.category?.id;
             // Dates
             case 'publishedDate':
                 return String(a[key]) !== String(b[key]);
@@ -221,7 +222,9 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
 
     private addOrUpdate(apps: Record<string, AppManifest>) {
         if (compareApps(this.apps.state, apps)) {
-            this.apps.state = Object.freeze({ ...this.apps.state, ...apps });
+            const nextState = Object.keys(apps).reduce((cur, key) => ({ ...cur, [key]: { ...cur[key], ...apps[key] } })
+                , { ...this.apps.state });
+            this.apps.state = Object.freeze(nextState);
         }
     }
 }
