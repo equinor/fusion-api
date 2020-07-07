@@ -3,7 +3,7 @@ import EventEmitter, { useEventEmitterValue } from '../utils/EventEmitter';
 import ApiClients from '../http/apiClients';
 import FusionClient from '../http/apiClients/FusionClient';
 import { useFusionContext } from '../core/FusionContext';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useReducer } from 'react';
 import TelemetryLogger from '../utils/TelemetryLogger';
 import FeatureLogger from '../utils/FeatureLogger';
 import DistributedState, { IDistributedState } from '../utils/DistributedState';
@@ -22,17 +22,64 @@ type AppRegistration = {
 };
 
 type AppContainerEvents = {
-    update: (app: AppManifest[]) => void;
+    update: (app: Record<string, AppManifest>) => void;
     change: (app: AppManifest | null) => void;
+    fetch: (status: boolean) => void;
 };
+
+const compareApp = (a: AppManifest, b?: AppManifest) => {
+    if (!b) return true;
+    const attr = Object.keys(a) as Array<keyof AppManifest>;
+    return attr.some(key => {
+        switch (key) {
+            case 'auth':
+            //@todo maybe?!?!
+            case 'context':
+            case 'category':
+            case 'tags':
+                return false;
+
+            // Dates
+            case 'publishedDate':
+                return String(a[key]) !== String(b[key]);
+
+            default:
+                return a[key] !== b[key];
+        }
+    });
+}
+
+const compareApps = (a: Record<string, AppManifest>, b: Record<string, AppManifest>): boolean => {
+    if (!a || !b) return (a as any) === (b as any);
+    if (Object.keys(a).length !== Object.keys(b).length) return true;
+    return Object.keys(a).some(key => compareApp(a[key], b[key]));
+}
+
 
 export default class AppContainer extends EventEmitter<AppContainerEvents> {
     private _currentApp: IDistributedState<AppManifest | null>;
-    private apps: IDistributedState<AppManifest[]>;
-    previousApps: IDistributedState<AppManifest[]>;
+    private apps: IDistributedState<Record<string, AppManifest>>;
+    previousApps: IDistributedState<Record<string, AppManifest>>;
+
+    private _isUpdating?: boolean;
+    get isUpdating(): boolean { return !!this._isUpdating }
+
+    private _lastUpdated?: number;
+    get lastUpdated() { return this._lastUpdated }
+
+    get requireUpdate(): boolean {
+        return !this._isUpdating;
+    }
+
+    private _updatePromise: Promise<void> = Promise.resolve();
+    get updateComplete() { return this._updatePromise };
 
     get currentApp() {
         return this._currentApp.state;
+    }
+
+    get allApps() {
+        return this.apps.state;
     }
 
     private readonly fusionClient: FusionClient;
@@ -56,58 +103,42 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
             this.emit('change', updatedApp);
         });
 
-        this.apps = new DistributedState<AppManifest[]>('AppContainer.apps', [], eventHub);
-        this.apps.on('change', (apps: AppManifest[]) => {
+        this.apps = new DistributedState<Record<string, AppManifest>>('AppContainer.apps', {}, eventHub);
+        this.apps.on('change', (apps) => {
             this.emit('update', apps);
         });
 
-        this.previousApps = new DistributedState<AppManifest[]>(
+        this.previousApps = new DistributedState<Record<string, AppManifest>>(
             'AppContainer.previousApps',
-            [],
+            {},
             eventHub
         );
+
+        this.on('fetch', fetching => this._isUpdating = fetching);
     }
 
     updateManifest(appKey: string, manifest: AppManifest): void {
-        const existingApp = this.get(appKey);
-
-        // Ensure app key on the manifest
-        manifest = {
-            ...manifest,
-            key: appKey,
-        };
-
-        if (existingApp === null) {
-            const newApp = manifest;
-            this.addOrUpdate(newApp);
-            this.fetchIconAsync(appKey);
-        } else {
-            const updatedApp = { ...existingApp, ...manifest };
-            this.addOrUpdate(updatedApp);
-        }
+        this.addOrUpdate({ [appKey]: manifest });
     }
 
     get(appKey: string | null) {
-        return this.apps.state.find(app => app.key === appKey) || null;
+        return appKey && this.apps.state[appKey];
     }
 
     getAll() {
-        return [...this.apps.state];
+        return Object.values(this.apps.state);
     }
 
     async setCurrentAppAsync(appKey: string | null): Promise<void> {
         const previousApp = this.previousApps.state[0];
         if (this.currentApp && (!previousApp || previousApp.key !== appKey)) {
-            this.previousApps.state = [this.currentApp, ...this.previousApps.state];
+            this.previousApps.state = { ...this.previousApps.state, [this.currentApp.key]: this.currentApp };
         }
 
         if (!appKey) {
             this.featureLogger.log('App selected', '0.0.1', {
                 selectedApp: null,
-                previousApps: this.previousApps.state.map(pa => ({
-                    key: pa.key,
-                    name: pa.name,
-                })),
+                previousApps: Object.keys(this.previousApps.state).map(key => ({ key, name: this.previousApps.state[key].name })),
             });
 
             this.featureLogger.setCurrentApp(null);
@@ -136,7 +167,7 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
             properties: {
                 previousApp: this._currentApp.state ? this._currentApp.state.name : null,
                 selectedApp: app.name,
-                previousApps: this.previousApps.state.map(pa => pa.name),
+                previousApps: Object.keys(this.previousApps.state).map(key => this.previousApps.state[key].name),
                 currentApp: app.name,
             },
         });
@@ -151,10 +182,7 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
                 key: app.key,
                 name: app.name,
             },
-            previousApps: this.previousApps.state.map(pa => ({
-                key: pa.key,
-                name: pa.name,
-            })),
+            previousApps: Object.keys(this.previousApps.state).map(key => ({ key, name: this.previousApps.state[key].name })),
         });
 
         this.featureLogger.setCurrentApp(app.key);
@@ -164,36 +192,37 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
     }
 
     async getAllAsync() {
-        const response = await this.fusionClient.getAppsAsync();
-        response.data.forEach(manifest =>
-            this.updateManifest(manifest.key, manifest as AppManifest)
-        );
-
-        return this.getAll();
+        await this.requestUpdate();
+        return this.allApps;
     }
 
-    private async fetchIconAsync(appKey: string) {
-        const app = this.get(appKey);
 
-        if (!app) {
-            return;
-        }
-
-        const response = await this.fusionClient.getAppIconAsync(appKey);
-        const appWithIcon = { ...app, icon: response.data };
-        this.addOrUpdate(appWithIcon);
+    public requestUpdate(): Promise<void> {
+        return this.requireUpdate ? this.update() : this._updatePromise;
     }
 
-    private addOrUpdate(app: AppManifest) {
-        const existingApp = this.get(app.key);
+    private update(): Promise<void> {
+        this._updatePromise = new Promise(async (resolve, reject) => {
+            try {
+                this.emit('fetch', true);
+                const response = await this.fusionClient.getAppsAsync();
+                const apps = response.data.reduce((cur, val) => Object.assign(cur, { [val.key]: val }), {});
+                this.addOrUpdate(apps);
+                this._lastUpdated = Date.now();
+                resolve();
+            } catch (err) {
+                reject(err);
+            } finally {
+                this.emit('fetch', false);
+            }
+        })
+        return this._updatePromise;
+    }
 
-        if (existingApp) {
-            this.apps.state = this.apps.state.map(a => (a.key === app.key ? app : a));
-        } else {
-            this.apps.state = [...this.apps.state, app];
+    private addOrUpdate(apps: Record<string, AppManifest>) {
+        if (compareApps(this.apps.state, apps)) {
+            this.apps.state = Object.freeze({ ...this.apps.state, ...apps });
         }
-
-        this.emit('update', this.apps.state);
     }
 }
 
@@ -242,31 +271,27 @@ const useCurrentApp = () => {
     return app.container.currentApp;
 };
 
-const useApps = (): [Error | null, boolean, AppManifest[]] => {
-    const { app } = useFusionContext();
-    const [apps, setApps] = useState<AppManifest[]>([]);
+const useApps = (buffer = 60000): {
+    error: Error | null,
+    initialized: boolean,
+    isFetching: boolean,
+    apps: Record<string, AppManifest>,
+} => {
+    const { app: { container } } = useFusionContext();
+    const [apps, setApps] = useState(container.allApps);
+    const [isFetching, setIsFetching] = useState<boolean>(container.isUpdating);
+    const [initialized, setInitialized] = useState<boolean>((container.lastUpdated || 0) + buffer >= Date.now());
     const [error, setError] = useState<Error | null>(null);
-    const [isFetching, setIsFetching] = useState(false);
 
-    const fetchApps = async () => {
-        setIsFetching(true);
-
-        try {
-            const allApps = await app.container.getAllAsync();
-            setApps(allApps);
-        } catch (e) {
-            setError(e);
-        }
-
-        setIsFetching(false);
-    };
-
+    useEffect(() => container.on('fetch', status => setIsFetching(status)), []);
     useEffect(() => {
-        fetchApps();
-        return app.container.on('update', () => setApps(app.container.getAll()));
+        !initialized && container.requestUpdate()
+            .then(() => setInitialized(true))
+            .catch(setError);
+        return container.on('update', setApps);
     }, []);
 
-    return [error, isFetching, apps];
+    return { error, initialized, isFetching, apps };
 };
 
 export { registerApp, appContainerFactory, AppManifest, useCurrentApp, useApps };

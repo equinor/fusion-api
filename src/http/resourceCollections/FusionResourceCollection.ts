@@ -11,20 +11,16 @@ export default class FusionResourceCollection extends BaseResourceCollection {
         this.options = options;
     }
 
-    protected getBaseUrl() {
-        return this.serviceResolver.getFusionBaseUrl();
-    }
-
     apps(): string {
-        return combineUrls(this.getBaseUrl(), 'bundles', 'apps');
+        return combineUrls(this.getBaseUrl(), 'api', 'apps');
     }
 
     app(appKey: string) {
-        return combineUrls(this.getBaseUrl(), this.getBundlesPath(), 'apps', appKey);
+        return combineUrls(this.apps(), appKey);
     }
 
     appManifest(appKey: string) {
-        return combineUrls(this.app(appKey), this.getAppManifestFileName());
+        return this.app(appKey);
     }
 
     token(resource: string) {
@@ -33,10 +29,10 @@ export default class FusionResourceCollection extends BaseResourceCollection {
 
     appScript(appKey: string) {
         if (this.options && this.options.loadBundlesFromDisk) {
-            return combineUrls(this.app(appKey), `app-bundle.js?v=${+new Date()}`);
+            return combineUrls(this.getBaseUrl(), 'js', 'apps', appKey, `app-bundle.js?v=${+new Date()}`);
         }
 
-        return this.app(appKey) + '.js';
+        return combineUrls(this.getBaseUrl(), 'bundles', 'apps', `${appKey}.js?v=${+new Date()}`);
     }
 
     appIcon(appKey: string) {
@@ -59,6 +55,10 @@ export default class FusionResourceCollection extends BaseResourceCollection {
         return this.options && this.options.loadBundlesFromDisk
             ? `app-manifest.json?v=${+new Date()}`
             : '';
+    }
+
+    protected getBaseUrl() {
+        return this.serviceResolver.getFusionBaseUrl();
     }
 
     private getResourcesPath() {

@@ -1,4 +1,6 @@
 import { ContextManifest } from '../../context';
+import AppCategory from './AppCategory';
+import AppType from './AppType';
 
 export type AppAuth = {
     clientId: string;
@@ -11,10 +13,16 @@ type AppManifest = {
     shortName: string;
     version: string;
     description: string;
+    type: AppType;
     tags: string[];
     context?: ContextManifest;
     auth?: AppAuth[];
     icon?: string;
+    order: number | null;
+    publishedDate: Date | null;
+    accentColor: string | null;
+    categoryId: string | null;
+    category: AppCategory | null;
 };
 
 export default AppManifest;
