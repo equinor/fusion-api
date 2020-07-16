@@ -105,9 +105,7 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
         });
 
         this.apps = new DistributedState<Record<string, AppManifest>>('AppContainer.apps', {}, eventHub);
-        this.apps.on('change', (apps) => {
-            this.emit('update', apps);
-        });
+        this.apps.on('change', (apps) => this.emit('update', apps));
 
         this.previousApps = new DistributedState<Record<string, AppManifest>>(
             'AppContainer.previousApps',
@@ -118,8 +116,8 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
         this.on('fetch', fetching => this._isUpdating = fetching);
     }
 
-    updateManifest(appKey: string, manifest: AppManifest): void {
-        this.addOrUpdate({ [appKey]: manifest });
+    updateManifest(manifest: AppManifest): void {
+        this.addOrUpdate({ [manifest.key]: manifest });
     }
 
     get(appKey: string | null) {
@@ -153,8 +151,8 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
 
         if (!app) {
             const { data: manifest } = await this.fusionClient.getAppManifestAsync(appKey);
-            const appManifest = manifest as AppManifest;
-            this.updateManifest(appKey, appManifest);
+            const appManifest = { ...manifest, key: appKey } as AppManifest;
+            this.updateManifest(appManifest);
             return await this.setCurrentAppAsync(appKey);
         }
 
@@ -222,8 +220,7 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
 
     private addOrUpdate(apps: Record<string, AppManifest>) {
         if (compareApps(this.apps.state, apps)) {
-            const nextState = Object.keys(apps).reduce((cur, key) => ({ ...cur, [key]: { ...cur[key], ...apps[key] } })
-                , { ...this.apps.state });
+            const nextState = Object.keys(apps).reduce((cur, key) => ({ ...cur, [key]: { ...cur[key], ...apps[key] } }), { ...this.apps.state });
             this.apps.state = Object.freeze(nextState);
         }
     }
@@ -258,9 +255,9 @@ const getAppContainer = (): Promise<AppContainer> => {
     return appContainerPromise;
 };
 
-const registerApp = (appKey: string, manifest: AppRegistration): void => {
+const registerApp = (key: string, manifest: AppRegistration): void => {
     getAppContainer().then(appContainer =>
-        appContainer.updateManifest(appKey, manifest as AppManifest)
+        appContainer.updateManifest({ ...manifest, key } as AppManifest)
     );
 };
 
