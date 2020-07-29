@@ -5,12 +5,13 @@ import EmbedConfig from './models/report/EmbedConfig';
 import AccessToken from './models/report/AccessToken';
 import ConfigValidation from './models/report/ConfigValidation';
 import BaseApiClient from './BaseApiClient';
+import UpdateMarkdown from './models/report/UpdateMarkdown';
 
 export default class ReportClient extends BaseApiClient {
     protected getBaseUrl() {
         return this.serviceResolver.getReportsBaseUrl();
     }
-    
+
     async getReportsAsync() {
         const url = this.resourceCollections.report.reports();
         return await this.httpClient.getAsync<Report[], FusionApiHttpErrorResponse>(url);
@@ -36,7 +37,17 @@ export default class ReportClient extends BaseApiClient {
         return await this.httpClient.getAsync<string, FusionApiHttpErrorResponse>(
             url,
             null,
-            response => response.text()
+            (response) => response.text()
+        );
+    }
+
+    async updateDescription(reportId: string, description: string | null) {
+        const url = this.resourceCollections.report.description(reportId);
+        return await this.httpClient.putAsync<UpdateMarkdown, string, FusionApiHttpErrorResponse>(
+            url,
+            { content: description },
+            null,
+            (response) => response.text()
         );
     }
 
@@ -45,7 +56,17 @@ export default class ReportClient extends BaseApiClient {
         return await this.httpClient.getAsync<string, FusionApiHttpErrorResponse>(
             url,
             null,
-            response => response.text()
+            (response) => response.text()
+        );
+    }
+
+    async updateAccessDescription(reportId: string, description: string | null) {
+        const url = this.resourceCollections.report.accessDescription(reportId);
+        return await this.httpClient.putAsync<UpdateMarkdown, string, FusionApiHttpErrorResponse>(
+            url,
+            { content: description },
+            null,
+            (response) => response.text()
         );
     }
 
@@ -54,7 +75,16 @@ export default class ReportClient extends BaseApiClient {
         return await this.httpClient.getAsync<string, FusionApiHttpErrorResponse>(
             url,
             null,
-            response => response.text()
+            (response) => response.text()
+        );
+    }
+
+    async getRlsRequirements(reportId: string) {
+        const url = this.resourceCollections.report.rlsRequirements(reportId);
+        return await this.httpClient.getAsync<string, FusionApiHttpErrorResponse>(
+            url,
+            null,
+            (response) => response.text()
         );
     }
 
