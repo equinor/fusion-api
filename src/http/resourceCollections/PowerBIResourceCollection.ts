@@ -17,4 +17,8 @@ export default class PowerBIResourceCollection extends BaseResourceCollection {
     dashboards(groupId: string) {
         return combineUrls(this.getBaseUrl(), 'groups', groupId, 'dashboards');
     }
+
+    datasets(groupId: string, dataSet: string) {
+        return combineUrls(this.getBaseUrl(), 'groups', groupId, 'datasets', dataSet);
+    }
 }
