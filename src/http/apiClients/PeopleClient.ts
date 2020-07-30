@@ -43,9 +43,10 @@ export default class PeopleClient extends BaseApiClient {
 
     private apiSigninAsync() {
         try {
-            this.httpClient.getAsync<void, unknown>(
+            this.httpClient.postAsync<any, unknown, unknown>(
                 this.resourceCollection.people.apiSignin(),
                 { credentials: 'include' },
+                null,
                 async () => Promise.resolve()
             );
         } catch (e) {
