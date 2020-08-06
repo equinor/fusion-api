@@ -4,7 +4,7 @@ import PbiReport from './models/powerbi/PowerBIReport';
 import ApiError from './models/powerbi/PowerBIError';
 import AuthToken from '../../auth/AuthToken';
 import BaseApiClient from './BaseApiClient';
-import PowerBIDataset from './models/powerbi/PoweBIDataset';
+import PowerBIDataset from './models/powerbi/PowerBIDataset';
 
 interface IReportItem {
     [groupId: string]: PbiReport[];
@@ -44,7 +44,7 @@ export default class PowerBIClient extends BaseApiClient {
             options
         );
 
-        return await this.handleResponse(response);
+        return (await this.handleResponse(response)) as PowerBIDataset;
     }
 
     async getGroupsAsync() {
