@@ -3,27 +3,11 @@ type BasePositionCondition = {
     name: string | null;
 };
 
-enum userTypes {
-    Unknown = 'Unknown',
-    PermanentEmployee = 'PermanentEmployee',
-    ExtHire = 'ExtHire',
-    Consultant = 'Consultant',
-    External = 'External',
-}
+type UserTypes = 'Unknown' | 'PermanentEmployee' | 'ExtHire' | 'Consultant' | 'External';
 
-enum ConditionsMatch {
-    Unknown = 'Unknown',
-    All = 'All',
-    Any = 'Any',
-}
+type ConditionsMatch = 'Unknown' | 'All' | 'Any';
 
-enum RoleMemberShipType {
-    Unknown = 'Unknown',
-    Department = 'Department',
-    AdGroup = 'AdGroup',
-    DomainMembership = 'DomainMembership',
-    Account = 'Account',
-}
+type RoleMemberShipType = 'Unknown' | 'Department' | 'AdGroup' | 'DomainMembership' | 'Account';
 
 type AccessITRole = {
     id: string;
@@ -42,7 +26,7 @@ type Conditions = {
     pmt: boolean | null;
     basePositions: BasePositionCondition[] | null;
     disciplines: string[] | null;
-    userTypes: userTypes[] | null;
+    userTypes: UserTypes[] | null;
 };
 
 type ProjectMembershipConfig = {
@@ -82,7 +66,7 @@ type RlsRoleDomainMembershipConfig = {
 type RlsRoleMembershipRequirement = {
     type: RoleMemberShipType;
     identifiers: string[] | null;
-    userTypes: userTypes[] | null;
+    userTypes: UserTypes[] | null;
     allowExternals: boolean;
     adGroups?: RlsAdGroup[] | null;
     domaingConfig?: RlsRoleDomainMembershipConfig | null;
