@@ -1,33 +1,14 @@
-import Report from './Report';
-import SecurityRequirement from './SecurityRequirement';
-import ConfigValidation, { ValidationItem } from './ConfigValidation';
-import AccessToken from './AccessToken';
-import EmbedInfo from './EmbedInfo';
-import Person from './Person';
-import EmbedConfig, { TokenType } from './EmbedConfig';
-import ReportType from './ReportType';
-import ResourceType from './ResourceType';
-import RlsConfiguration from './RlsConfiguration';
-import SecurityDetails from './SecurityDetails';
-import SecurityRequirementsPolicy from './SecurityRequirementsPolicy';
-import SecurityType from './SecurityType';
-import UpdateMarkdown from './UpdateMarkdown';
-
-export {
-    AccessToken,
-    ConfigValidation,
-    EmbedConfig,
-    EmbedInfo,
-    Person,
-    Report,
-    ReportType,
-    ResourceType,
-    RlsConfiguration,
-    SecurityDetails,
-    SecurityRequirement,
-    SecurityRequirementsPolicy,
-    SecurityType,
-    UpdateMarkdown,
-    ValidationItem,
-    TokenType,
-};
+export { default as Report } from './Report';
+export { default as SecurityRequirement } from './SecurityRequirement';
+export { default as ConfigValidation, ValidationItem } from './ConfigValidation';
+export { default as AccessToken } from './AccessToken';
+export { default as EmbedInfo } from './EmbedInfo';
+export { default as Person } from './Person';
+export { default as EmbedConfig, TokenType } from './EmbedConfig';
+export { default as ReportType } from './ReportType';
+export { default as ResourceType } from './ResourceType';
+export { default as RlsConfiguration } from './RlsConfiguration';
+export { default as SecurityDetails } from './SecurityDetails';
+export { default as SecurityRequirementsPolicy } from './SecurityRequirementsPolicy';
+export { default as SecurityType } from './SecurityType';
+export { default as UpdateMarkdown } from './UpdateMarkdown';
