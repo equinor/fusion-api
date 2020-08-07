@@ -1,15 +1,18 @@
-type EmbedType = 'report' | 'dashboard';
-type TokenType = 'AAD' | 'Embed';
+import RlsConfiguration from './RlsConfiguration';
+import ResourceType from './ResourceType';
+export type TokenType = 'AAD' | 'Embed';
 
 type EmbedConfig = {
-    name?: string;
-    embedType: EmbedType;
+    embedType: ResourceType;
     embedUrl: string;
     tokenType: TokenType;
+    name?: string;
     dashboardId?: string;
+    datasetId?: string;
     groupId?: string;
     reportId?: string;
     tileId?: string;
+    rlsConfiguration?: RlsConfiguration | null;
 };
 
 export default EmbedConfig;

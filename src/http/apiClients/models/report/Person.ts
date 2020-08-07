@@ -1,7 +1,8 @@
-type Person = {
-    azureUniqueId: string;
-    name: string;
-    mail: string;
+import { PersonDetails } from '../../PeopleClient';
+
+type Person = PersonDetails & {
+    id: string;
+    isAffiliateAccess: boolean;
 };
 
 export default Person;

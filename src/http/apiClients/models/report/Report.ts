@@ -6,7 +6,7 @@ import ReportType from './ReportType';
 type Report = {
     id: string;
     title: string;
-    ownedBy: Person;
+    ownedBy: Person | null;
     publishedBy?: Person;
     userTargetGroup: string;
     dataRefreshRate: string;
@@ -15,12 +15,12 @@ type Report = {
     datePublishedUtc: Date | null;
     dataSources: string;
     access: string;
-    isPublished: boolean;
     allowExternalUsers: boolean;
-    securityRequirementCheck: SecurityRequirementsPolicy | null;
+    isPublished: boolean;
+    isEmbedOnly: boolean;
+    securityRequirementCheck: SecurityRequirementsPolicy;
     securityRequirements?: SecurityRequirement[];
     reportType: ReportType;
-    isEmbedOnly: boolean;
 };
 
 export default Report;
