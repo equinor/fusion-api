@@ -14,10 +14,6 @@ export default class ReportResourceCollection extends BaseResourceCollection {
         return combineUrls(this.getBaseUrl(), 'reports', reportId);
     }
 
-    embedInfo(reportId: string): string {
-        return combineUrls(this.getBaseUrl(), 'reports', reportId, 'config', 'embedinfo');
-    }
-
     accessToken(reportId: string): string {
         return combineUrls(this.getBaseUrl(), 'reports', reportId, 'token');
     }
@@ -34,12 +30,20 @@ export default class ReportResourceCollection extends BaseResourceCollection {
         return combineUrls(this.getBaseUrl(), 'reports', reportId, 'accessdescription', 'content');
     }
 
-    updateConfig(reportId: string): string {
-        return combineUrls(this.getBaseUrl(), 'reports', reportId, 'config');
+    securityPermission(reportId: string): string {
+        return combineUrls(this.getBaseUrl(), 'reports', reportId, 'securitypermission', 'content');
     }
 
     validateConfig(): string {
         return combineUrls(this.getBaseUrl(), 'reports', 'config', 'validate');
+    }
+
+    updateConfig(reportId: string): string {
+        return combineUrls(this.getBaseUrl(), 'reports', reportId, 'config');
+    }
+
+    embedInfo(reportId: string): string {
+        return combineUrls(this.getBaseUrl(), 'reports', reportId, 'config', 'embedinfo');
     }
 
     publishReport(reportId: string): string {
@@ -48,5 +52,13 @@ export default class ReportResourceCollection extends BaseResourceCollection {
 
     unPublishReport(reportId: string): string {
         return combineUrls(this.getBaseUrl(), 'reports', reportId, 'unpublish');
+    }
+
+    rlsRequirements(reportId: string) {
+        return combineUrls(this.getBaseUrl(), 'reports', reportId, 'rlsrequirements');
+    }
+
+    auditLog(reportId: string) {
+        return combineUrls(this.getBaseUrl(), 'reports', reportId, 'auditlog');
     }
 }

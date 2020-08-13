@@ -4,6 +4,7 @@ import PbiReport from './models/powerbi/PowerBIReport';
 import ApiError from './models/powerbi/PowerBIError';
 import AuthToken from '../../auth/AuthToken';
 import BaseApiClient from './BaseApiClient';
+import PowerBIDataset from './models/powerbi/PowerBIDataset';
 
 interface IReportItem {
     [groupId: string]: PbiReport[];
@@ -22,7 +23,7 @@ export default class PowerBIClient extends BaseApiClient {
     protected getBaseUrl() {
         return this.serviceResolver.getReportsBaseUrl();
     }
-    
+
     private async getPowerBITokenAsync(): Promise<string> {
         if (this.powerBiToken && AuthToken.parse(this.powerBiToken).isValid())
             return this.powerBiToken;
@@ -31,9 +32,19 @@ export default class PowerBIClient extends BaseApiClient {
             'https://analysis.windows.net/powerbi/api'
         );
 
-        const response = await this.httpClient.getAsync<string, any>(url, null, r => r.text());
+        const response = await this.httpClient.getAsync<string, any>(url, null, (r) => r.text());
         this.powerBiToken = response.data;
         return response.data;
+    }
+
+    public async getDatasetAsync(groupId: string, dataSet: string) {
+        const options = await this.buildRequestOptionsWithToken();
+        const response = await fetch(
+            this.resourceCollections.powerBI.datasets(groupId, dataSet),
+            options
+        );
+
+        return (await this.handleResponse(response)) as PowerBIDataset;
     }
 
     async getGroupsAsync() {
