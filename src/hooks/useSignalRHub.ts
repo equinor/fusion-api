@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { useFusionContext } from '../core/FusionContext';
 
@@ -16,7 +16,7 @@ export default (hubName: string) => {
 
     const signalRHubUrl = useMemo(() => fusion.signalRHub(hubName), [hubName, fusion]);
 
-    const createHubConnectionAsync = async () => {
+    const createHubConnectionAsync = useCallback(async () => {
         setHubConnectionError(null);
         const hubConnect = new HubConnectionBuilder()
             .withAutomaticReconnect()
@@ -35,7 +35,7 @@ export default (hubName: string) => {
         } finally {
             setIsEstablishingHubConnection(false);
         }
-    };
+    }, [signalRHubUrl, auth]);
 
     useEffect(() => {
         createHubConnectionAsync();
@@ -43,7 +43,7 @@ export default (hubName: string) => {
         return () => {
             hubConnection?.stop();
         };
-    }, [signalRHubUrl]);
+    }, [signalRHubUrl, createHubConnectionAsync]);
 
     return { hubConnection, hubConnectionError, isEstablishingHubConnection };
 };
