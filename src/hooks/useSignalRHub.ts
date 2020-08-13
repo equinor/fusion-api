@@ -1,35 +1,30 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
-import { SignalRNegotiation } from '../http/apiClients/models/fusion/SignalRNegotiation';
-import useApiClients from '../http/hooks/useApiClients';
+import { useFusionContext } from '../core/FusionContext';
 
 export default (hubName: string) => {
-    const [hubDetails, setHubDetails] = useState<SignalRNegotiation | null>(null);
     const [hubConnection, setHubConnection] = useState<HubConnection | null>(null);
     const [hubConnectionError, setHubConnectionError] = useState<Error | null>(null);
     const [isEstablishingHubConnection, setIsEstablishingHubConnection] = useState<boolean>(false);
-    const apiClients = useApiClients();
 
-    const getSignalRHubNegotiationDetails = useCallback(async () => {
-        setIsEstablishingHubConnection(true);
+    const {
+        http: {
+            resourceCollections: { fusion },
+        },
+        auth,
+    } = useFusionContext();
+
+    const signalRHubUrl = useMemo(() => fusion.signalRHub(hubName), [hubName, fusion]);
+
+    const createHubConnectionAsync = async () => {
         setHubConnectionError(null);
-
-        try {
-            const response = await apiClients.fusion.negotiateSignalRHub(hubName);
-            setHubDetails(response.data);
-        } catch (e) {
-            setHubConnectionError(e);
-            console.error(e);
-        }
-    }, [apiClients]);
-
-    const createHubConnectionAsync = useCallback(async (hubDetails: SignalRNegotiation) => {
-        setHubConnectionError(null);
-
         const hubConnect = new HubConnectionBuilder()
             .withAutomaticReconnect()
-            .withUrl(hubDetails.url, {
-                accessTokenFactory: async () => hubDetails.accessToken,
+            .withUrl(signalRHubUrl, {
+                accessTokenFactory: async () => {
+                    const token = await auth.container.acquireTokenAsync(signalRHubUrl);
+                    return token || '';
+                },
             })
             .build();
         try {
@@ -40,21 +35,15 @@ export default (hubName: string) => {
         } finally {
             setIsEstablishingHubConnection(false);
         }
-    }, []);
+    };
 
     useEffect(() => {
-        getSignalRHubNegotiationDetails();
-    }, []);
-
-    useEffect(() => {
-        if (hubDetails) {
-            createHubConnectionAsync(hubDetails);
-        }
+        createHubConnectionAsync();
 
         return () => {
             hubConnection?.stop();
         };
-    }, [hubDetails]);
+    }, [signalRHubUrl]);
 
     return { hubConnection, hubConnectionError, isEstablishingHubConnection };
 };
