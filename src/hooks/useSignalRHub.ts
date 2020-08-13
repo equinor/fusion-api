@@ -43,7 +43,7 @@ export default (hubName: string) => {
         return () => {
             hubConnection?.stop();
         };
-    }, [signalRHubUrl, createHubConnectionAsync]);
+    }, [createHubConnectionAsync]);
 
     return { hubConnection, hubConnectionError, isEstablishingHubConnection };
 };
