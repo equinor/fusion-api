@@ -28,8 +28,8 @@ export default class FusionResourceCollection extends BaseResourceCollection {
     }
 
     appScript(appKey: string) {
-        if (this.options && this.options.loadBundlesFromDisk) {
-            return combineUrls(this.getBaseUrl(), 'js', 'apps', appKey, `app-bundle.js?v=${+new Date()}`);
+        if (this.options?.loadBundlesFromDisk) {
+            return `/js/apps/${appKey}/app-bundle.js?v=${+new Date()}`;
         }
 
         return combineUrls(this.getBaseUrl(), 'bundles', 'apps', `${appKey}.js?v=${+new Date()}`);
