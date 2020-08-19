@@ -4,6 +4,11 @@ import { useEffect } from 'react';
 import { IEventHub } from '../utils/EventHub';
 import { IDistributedState } from '../utils/DistributedState';
 import DistributedState from '../utils/DistributedState';
+import { PersonDetails } from '../http/apiClients/PeopleClient';
+
+export type UserMenuComponentProps = {
+    personDetails?: PersonDetails
+}
 
 export type UserMenuSectionItem = {
     key: string;
@@ -12,6 +17,7 @@ export type UserMenuSectionItem = {
     isSelected?: boolean;
     isDisabled?: boolean;
     onClick?: (item: UserMenuSectionItem) => void;
+    component?: React.FC<UserMenuComponentProps>;
 };
 
 export type UserMenuSection = {

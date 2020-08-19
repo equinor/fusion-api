@@ -194,6 +194,7 @@ export {
     useCustomUserMenuSection,
     UserMenuSection,
     UserMenuSectionItem,
+    UserMenuComponentProps,
 } from './core/UserMenuContainer';
 
 export {
