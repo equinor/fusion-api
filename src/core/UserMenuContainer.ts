@@ -7,8 +7,8 @@ import DistributedState from '../utils/DistributedState';
 import { PersonDetails } from '../http/apiClients/PeopleClient';
 
 export type UserMenuComponentProps = {
-    personDetails?: PersonDetails
-}
+    personDetails?: PersonDetails;
+};
 
 export type UserMenuSectionItem = {
     key: string;
@@ -16,7 +16,7 @@ export type UserMenuSectionItem = {
     aside?: string | React.ReactNode;
     isSelected?: boolean;
     isDisabled?: boolean;
-    onClick?: (item: UserMenuSectionItem) => void;
+    onClick?: (item: UserMenuSectionItem, personDetails?: PersonDetails) => void;
     component?: React.FC<UserMenuComponentProps>;
 };
 
@@ -53,7 +53,7 @@ export default class UserMenuContainer extends EventEmitter<SectionEvents> {
     }
 
     private unregisterSection(section: UserMenuSection) {
-        this._sections.state = this.sections.filter(s => s.key !== section.key);
+        this._sections.state = this.sections.filter((s) => s.key !== section.key);
         this.emit('change', this.sections);
     }
 }
