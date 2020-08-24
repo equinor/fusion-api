@@ -1,7 +1,7 @@
-export interface QuickFact {
+export type QuickFact = {
     title:          string;
     anchor:         string;
-    bodyMarkdown:   null;
+    bodyMarkdown:   string|null;
     created:        string;
     createdBy:      CreatedBy;
     collectionPath: string;
@@ -9,7 +9,7 @@ export interface QuickFact {
     contentUrl?:    string;
 }
 
-export interface CreatedBy {
+export type CreatedBy = {
     azureUniqueId: string;
     mail:          string;
     name:          string;
