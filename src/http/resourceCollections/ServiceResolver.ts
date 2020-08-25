@@ -11,6 +11,7 @@ type ServiceResolver = {
     getReportsBaseUrl: () => string;
     getPowerBiApiBaseUrl: () => string;
     getNotificationBaseUrl: () => string;
+    getInfoUrl: () => string;
 };
 
 export default ServiceResolver;
