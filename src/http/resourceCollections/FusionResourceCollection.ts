@@ -32,7 +32,7 @@ export default class FusionResourceCollection extends BaseResourceCollection {
             return `/js/apps/${appKey}/app-bundle.js?v=${+new Date()}`;
         }
 
-        return combineUrls(this.getBaseUrl(), 'bundles', 'apps', `${appKey}.js?v=${+new Date()}`);
+        return combineUrls(this.getBaseUrl(), `/bundles/apps/${appKey}/app-bundle.js`);
     }
 
     appIcon(appKey: string) {
