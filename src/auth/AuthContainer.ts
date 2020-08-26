@@ -79,6 +79,8 @@ export default class AuthContainer implements IAuthContainer {
     protected cachedUser: AuthUser | null = null;
     protected telemetryLogger?: TelemetryLogger;
 
+    private _tokenQueue: Record<string, Promise<string | null>> = {};
+
     constructor() {
         this.apps = [];
         this.cache = new AuthCache();
@@ -123,28 +125,52 @@ export default class AuthContainer implements IAuthContainer {
         }
     }
 
-    async acquireTokenAsync(resource: string): Promise<string | null> {
-        const app = this.resolveApp(resource);
+    private async _acquireTokenAsync(app: AuthApp, resource: string): Promise<string | null> {
 
+        try {
+
+            // try to use previous token (if any and not expired)
+            const cachedToken = await this.cache.getTokenAsync(app);
+            if (cachedToken !== null && cachedToken.isValid()) {
+                return cachedToken.toString();
+            }
+
+            // clear previous token for app
+            await this.cache.clearTokenAsync(app);
+
+            const refreshedToken = await this.refreshTokenAsync(resource);
+            if (!refreshedToken) {
+                throw Error('invalid token')
+            }
+
+            // add new token to cache for app
+            await this.updateTokenForAppAsync(app, refreshedToken);
+
+            return refreshedToken;
+        } catch {
+            // failed to acquire new token
+            return null;
+        } finally {
+            // remove request from queue
+            delete this._tokenQueue[app.clientId]
+        }
+    }
+
+    acquireTokenAsync(resource: string): Promise<string | null> {
+        const app = this.resolveApp(resource);
         if (app === null) {
             throw new FusionAuthAppNotFoundError(resource);
         }
-
-        const cachedToken = await this.cache.getTokenAsync(app);
-
-        if (cachedToken !== null && cachedToken.isValid()) {
-            return cachedToken.toString();
+        
+        /**
+         * since acquiring token is async we need to make sure that only
+         * one thread is clearing old token and acquires a new one
+         */
+        if (!this._tokenQueue[app.clientId]) {
+            this._tokenQueue[app.clientId] = this._acquireTokenAsync(app, resource);
         }
 
-        const refreshedToken = await this.refreshTokenAsync(resource);
-
-        if (!refreshedToken) {
-            return null;
-        }
-
-        await this.updateTokenForAppAsync(app, refreshedToken);
-
-        return refreshedToken;
+        return this._tokenQueue[app.clientId];
     }
 
     protected async refreshTokenAsync(resource: string): Promise<string | null> {
