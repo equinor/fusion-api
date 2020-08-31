@@ -147,7 +147,8 @@ export default class AuthContainer implements IAuthContainer {
             await this.updateTokenForAppAsync(app, refreshedToken);
 
             return refreshedToken;
-        } catch {
+        } catch(err) {
+            console.log(err);
             // failed to acquire new token
             return null;
         } finally {
@@ -336,6 +337,7 @@ export default class AuthContainer implements IAuthContainer {
         const resourceOrigin = AuthContainer.getResourceOrigin(resource);
         const app = this.apps.find(
             app =>
+                app.resources.some(r => r === resource) ||
                 app.resources.indexOf(resourceOrigin) !== -1 ||
                 app.clientId === resourceOrigin ||
                 app.clientId === resource
