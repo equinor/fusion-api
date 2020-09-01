@@ -3,7 +3,7 @@ import { combineUrls } from '../../utils/url';
 
 export class InfoResourceCollection extends BaseResourceCollection {
     protected getBaseUrl() {
-        return combineUrls(this.serviceResolver.getNotificationBaseUrl());
+        return combineUrls(this.serviceResolver.getInfoUrl());
     }
 
     public quickFact(scope: string, id: string) {
