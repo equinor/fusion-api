@@ -75,6 +75,13 @@ export default class AuthCache extends ReliableDictionary {
         await this.setAsync(CacheKey.APP_LOGIN_LOCK, JSON.stringify(payload));
     }
 
+    /**
+     * Clears app lock from auth cache
+     * 
+     * @TODO remove parameter since never been used
+     * 
+     * @param _clientId [string] @deprecated
+     */
     async clearAppLoginLock(_clientId?: string) {
         return this.removeAsync(CacheKey.APP_LOGIN_LOCK);
     }
