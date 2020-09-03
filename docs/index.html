@@ -1,0 +1,870 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Fusion api</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">Fusion api</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1>Fusion api</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#fusion" id="fusion" style="color: inherit; text-decoration: none;">
+					<h1>Fusion</h1>
+				</a>
+				<p>Everything a Fusion app needs to communicate with the core.</p>
+				<p><a href="https://npmjs.org/package/@equinor/fusion"><img src="https://img.shields.io/npm/v/@equinor/fusion.svg" alt="Version"></a>
+					<a href="https://npmjs.org/package/@equinor/fusion"><img src="https://img.shields.io/npm/dw/@equinor/fusion.svg" alt="Downloads/week"></a>
+				<a href="https://github.com/equinor/fusion/blob/master/package.json"><img src="https://img.shields.io/npm/l/@equinor/fusion.svg" alt="License"></a></p>
+				<ul>
+					<li><a href="#install">Install</a></li>
+					<li><a href="#usage-as-app-developer">Usage as App developer</a><ul>
+							<li><a href="#current-user">Current user</a></li>
+							<li><a href="#core-resources">Core resources</a></li>
+							<li><a href="#core-settings">Core settings</a></li>
+							<li><a href="#app-settings">App settings</a></li>
+						</ul>
+					</li>
+					<li><a href="#usage-as-core-developer">Usage as Core developer</a><ul>
+							<li><a href="#bootstrap-the-fusion-core">Bootstrap the fusion core</a></li>
+						</ul>
+					</li>
+				</ul>
+				<a href="#install" id="install" style="color: inherit; text-decoration: none;">
+					<h1>Install</h1>
+				</a>
+				<a href="#yarn" id="yarn" style="color: inherit; text-decoration: none;">
+					<h3>Yarn</h3>
+				</a>
+				<pre><code class="language-sh-session">$ yarn add @equinor/fusion</code></pre>
+				<a href="#npm" id="npm" style="color: inherit; text-decoration: none;">
+					<h3>NPM</h3>
+				</a>
+				<pre><code class="language-sh-session">$ npm install @equinor/fusion --save</code></pre>
+				<a href="#usage-as-app-developer" id="usage-as-app-developer" style="color: inherit; text-decoration: none;">
+					<h1>Usage as App developer</h1>
+				</a>
+				<a href="#current-user" id="current-user" style="color: inherit; text-decoration: none;">
+					<h2>Current user</h2>
+				</a>
+				<pre><code class="language-javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { Spinner } <span class="hljs-keyword">from</span> <span class="hljs-string">"@equinor/fusion-components"</span>;
+<span class="hljs-keyword">import</span> { useCurrentUser } <span class="hljs-keyword">from</span> <span class="hljs-string">"@equinor/fusion"</span>;
+
+<span class="hljs-keyword">const</span> MyComponent = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    <span class="hljs-keyword">const</span> currentUser = useCurrentUser();
+
+    <span class="hljs-comment">// Current user might not be retrieved from the cache when the component loads,</span>
+    <span class="hljs-comment">// So check for nulL!</span>
+    <span class="hljs-keyword">if</span>(currentUser == <span class="hljs-literal">null</span>) {
+        <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Spinner</span> /&gt;</span></span>;
+    }
+
+    <span class="hljs-keyword">return</span> (
+        <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Hi {currentUser.name}!<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span></span>
+    );
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> MyComponent; 
+</code></pre>
+				<a href="#core-resources" id="core-resources" style="color: inherit; text-decoration: none;">
+					<h2>Core resources</h2>
+				</a>
+				<pre><code class="language-javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { Spinner } <span class="hljs-keyword">from</span> <span class="hljs-string">"@equinor/fusion-components"</span>;
+<span class="hljs-keyword">import</span> { useCurrentContext, ContextTypes, useHandover, useHandoverMcpkgs } <span class="hljs-keyword">from</span> <span class="hljs-string">"@equinor/fusion"</span>;
+
+<span class="hljs-keyword">const</span> MyHandoverCommpkgDetails = <span class="hljs-function">(<span class="hljs-params">{ id }</span>) =&gt;</span> {
+    <span class="hljs-keyword">const</span> currentProject = useCurrentContext(ContextTypes.PDP);
+    <span class="hljs-keyword">const</span> [isFetching, handoverMcpkgs] = useHandoverMcpkgs(currentProject, id);
+
+    <span class="hljs-keyword">if</span>(isFetching) {
+        <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Spinner</span> /&gt;</span></span>;
+    }
+
+    <span class="hljs-keyword">return</span> (
+        <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">ul</span>&gt;</span>
+            {handoverMcpkgs.map(mcpkg =&gt; (
+                <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>
+                    {mcpkg.mcPkgNo}
+                <span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+            ))}
+        <span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span></span>
+    );
+};
+
+<span class="hljs-keyword">const</span> MyHandoverComponent = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    <span class="hljs-keyword">const</span> currentProject = useCurrentContext(ContextTypes.PDP);
+    <span class="hljs-keyword">const</span> [isFetching, handoverData] = useHandover(currentProject);
+
+    <span class="hljs-keyword">if</span>(isFetching) {
+        <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Spinner</span> /&gt;</span></span>;
+    }
+
+    <span class="hljs-keyword">return</span> (
+        <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">ul</span>&gt;</span>
+            {handoverData.map(handoverItem =&gt; (
+                <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-name">h2</span>&gt;</span>{handoverItem.commpkgNo}<span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-name">MyHandoverCommpkgDetails</span> <span class="hljs-attr">id</span>=<span class="hljs-string">{handoverItem.id}</span>  /&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+            ))}
+        <span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span></span>
+    );
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> MyComponent; 
+</code></pre>
+				<a href="#core-settings" id="core-settings" style="color: inherit; text-decoration: none;">
+					<h2>Core settings</h2>
+				</a>
+				<p>Core settings are read-only for apps</p>
+				<pre><code class="language-javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { useCoreSettings, ComponentDisplayTypes } <span class="hljs-keyword">from</span> <span class="hljs-string">"@equinor/fusion"</span>;
+
+<span class="hljs-keyword">const</span> MyComponent = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    <span class="hljs-keyword">const</span> coreSettings = useCoreSettings();
+
+    <span class="hljs-keyword">if</span>(coreSettings.componentDisplayType === ComponentDisplayTypes.Compact) {
+        <span class="hljs-keyword">return</span> (<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">span</span>&gt;</span>Looks like you prefere compact mode!<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span></span>);
+    } <span class="hljs-keyword">else</span> {
+        <span class="hljs-keyword">return</span> (<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">h2</span>&gt;</span>Some more spacing for you!<span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span></span>)
+    }
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> MyComponent; 
+</code></pre>
+				<a href="#app-settings" id="app-settings" style="color: inherit; text-decoration: none;">
+					<h2>App settings</h2>
+				</a>
+				<p>App settings are automatically scoped to the current app</p>
+				<pre><code class="language-javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { Button } <span class="hljs-keyword">from</span> <span class="hljs-string">"@equinor/fusion-components"</span>;
+<span class="hljs-keyword">import</span> { useAppSettings } <span class="hljs-keyword">from</span> <span class="hljs-string">"@equinor/fusion"</span>;
+
+<span class="hljs-keyword">const</span> MyComponent = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    <span class="hljs-keyword">const</span> [appSettings, setAppSettings] = useAppSettings();
+
+    <span class="hljs-keyword">return</span> (
+        <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Button</span>
+            <span class="hljs-attr">primary</span> <span class="hljs-attr">contained</span>
+            <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> setAppSettings("toggle", !appSettings.toggle)}
+        &gt;
+            Click to toggle {appSettings.toggle ? "On" : "Off"}
+        <span class="hljs-tag">&lt;/<span class="hljs-name">Button</span>&gt;</span></span>
+    );
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> MyComponent; 
+</code></pre>
+				<a href="#usage-as-core-developer" id="usage-as-core-developer" style="color: inherit; text-decoration: none;">
+					<h1>Usage as Core developer</h1>
+				</a>
+				<a href="#bootstrap-the-fusion-core" id="bootstrap-the-fusion-core" style="color: inherit; text-decoration: none;">
+					<h2>Bootstrap the fusion core</h2>
+				</a>
+				<pre><code class="language-javascript"><span class="hljs-keyword">import</span> React, { useRef } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { render } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-dom"</span>;
+<span class="hljs-keyword">import</span> { Router } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-router"</span>;
+<span class="hljs-keyword">import</span> { createBrowserHistory } <span class="hljs-keyword">from</span> <span class="hljs-string">"history"</span>;
+<span class="hljs-keyword">import</span> {
+    AuthContainer,
+    createFusionContext,
+    FusionContext,
+    ServiceResolver,
+} <span class="hljs-keyword">from</span> <span class="hljs-string">"@equinor/fusion"</span>;
+
+<span class="hljs-keyword">const</span> serviceResolver: ServiceResolver = {
+    <span class="hljs-attr">getDataProxyUrl</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-string">"http://api.url.com"</span>,
+    <span class="hljs-attr">getOrgUrl</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-string">"http://api.url.com"</span>,
+};
+
+<span class="hljs-keyword">const</span> start = <span class="hljs-keyword">async</span> () =&gt; {
+    <span class="hljs-keyword">const</span> authContainer = <span class="hljs-keyword">new</span> AuthContainer();
+
+    <span class="hljs-comment">// Handle redirect from login</span>
+    <span class="hljs-keyword">await</span> authContainer.handleWindowCallbackAsync();
+
+    <span class="hljs-comment">// Register the main fusion AAD app (get the client id from config)</span>
+    <span class="hljs-keyword">const</span> coreAppClientId = <span class="hljs-string">"{client-id}"</span>;
+    <span class="hljs-keyword">const</span> coreAppRegistered = <span class="hljs-keyword">await</span> authContainer.registerAppAsync(
+        coreAppClientId,
+        [serviceResolver.getDataProxyUrl(), serviceResolver.getOrgUrl()]
+    );
+
+    <span class="hljs-keyword">if</span>(!coreAppRegistered) {
+        authContainer.login(coreAppClientId);
+    } <span class="hljs-keyword">else</span> {
+
+        <span class="hljs-keyword">const</span> Root = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+            <span class="hljs-keyword">const</span> root = useRef();
+            <span class="hljs-keyword">const</span> overlay = useRef();
+            <span class="hljs-keyword">const</span> fusionContext = createFusionContext(
+                authContainer,
+                serviceResolver,
+                { root, overlay, }
+            );
+
+            <span class="hljs-keyword">return</span> (
+                <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Router</span> <span class="hljs-attr">history</span>=<span class="hljs-string">{fusionContext.history}</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-name">FusionContext.Provider</span> <span class="hljs-attr">value</span>=<span class="hljs-string">{fusionContext}</span>&gt;</span>
+                        <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"fusion-root"</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">{rootRef}</span>&gt;</span>
+                            {/* The app component goes here */}
+                        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+                        <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"overlay-container"</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">{overlayRef}</span>&gt;</span>
+                            {/* Leave this empty. Used for dialogs, popovers, tooltips etc. */}
+                        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+                    <span class="hljs-tag">&lt;/<span class="hljs-name">FusionContext.Provider</span>&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-name">Router</span>&gt;</span></span>
+            );
+        };
+
+        render(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Root</span> /&gt;</span></span>, <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">"app"</span>));
+    }
+};
+
+start();</code></pre>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-enum">
+						<a href="enums/componentdisplaytype.html" class="tsd-kind-icon">Component<wbr>Display<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/contexttypes.html" class="tsd-kind-icon">Context<wbr>Types</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/tasksourcesystems.html" class="tsd-kind-icon">Task<wbr>Source<wbr>Systems</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/tasktypes.html" class="tsd-kind-icon">Task<wbr>Types</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/authapp.html" class="tsd-kind-icon">Auth<wbr>App</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/authcontainer.html" class="tsd-kind-icon">Auth<wbr>Container</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/authnonce.html" class="tsd-kind-icon">Auth<wbr>Nonce</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/authtoken.html" class="tsd-kind-icon">Auth<wbr>Token</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/authuser.html" class="tsd-kind-icon">Auth<wbr>User</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/contexttype.html" class="tsd-kind-icon">Context<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-class tsd-has-type-parameter">
+						<a href="classes/distributedstate.html" class="tsd-kind-icon">Distributed<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-class tsd-has-type-parameter">
+						<a href="classes/eventemitter.html" class="tsd-kind-icon">Event<wbr>Emitter</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/eventhub.html" class="tsd-kind-icon">Event<wbr>Hub</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/featurelogger.html" class="tsd-kind-icon">Feature<wbr>Logger</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/fusionauthloginerror.html" class="tsd-kind-icon">Fusion<wbr>Auth<wbr>Login<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/httpclient.html" class="tsd-kind-icon">Http<wbr>Client</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/httpclienterror.html" class="tsd-kind-icon">Http<wbr>Client<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/httpclientparseerror.html" class="tsd-kind-icon">Http<wbr>Client<wbr>Parse<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class tsd-has-type-parameter">
+						<a href="classes/httpclientrequestfailederror.html" class="tsd-kind-icon">Http<wbr>Client<wbr>Request<wbr>Failed<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class tsd-has-type-parameter">
+						<a href="classes/notificationcenter.html" class="tsd-kind-icon">Notification<wbr>Center</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/telemetrylogger.html" class="tsd-kind-icon">Telemetry<wbr>Logger</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/usermenucontainer.html" class="tsd-kind-icon">User<wbr>Menu<wbr>Container</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iauthcontainer.html" class="tsd-kind-icon">IAuth<wbr>Container</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/idistributedstate.html" class="tsd-kind-icon">IDistributed<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/ieventemitter.html" class="tsd-kind-icon">IEvent<wbr>Emitter</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ieventhub.html" class="tsd-kind-icon">IEvent<wbr>Hub</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ifusioncontext.html" class="tsd-kind-icon">IFusion<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ihistorycontext.html" class="tsd-kind-icon">IHistory<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ihttpclient.html" class="tsd-kind-icon">IHttp<wbr>Client</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/inotificationcontext.html" class="tsd-kind-icon">INotification<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#abortableaction" class="tsd-kind-icon">Abortable<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#apiclients" class="tsd-kind-icon">Api<wbr>Clients</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#appcategory" class="tsd-kind-icon">App<wbr>Category</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#appmanifest" class="tsd-kind-icon">App<wbr>Manifest</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#apptype" class="tsd-kind-icon">App<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#application" class="tsd-kind-icon">Application</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#approvesnapshotrequest" class="tsd-kind-icon">Approve<wbr>Snapshot<wbr>Request</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#assignedperson" class="tsd-kind-icon">Assigned<wbr>Person</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="globals.html#asyncoperation" class="tsd-kind-icon">Async<wbr>Operation</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#baseposition" class="tsd-kind-icon">Base<wbr>Position</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#calendar" class="tsd-kind-icon">Calendar</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#calendardate" class="tsd-kind-icon">Calendar<wbr>Date</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#context" class="tsd-kind-icon">Context</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#contextmanifest" class="tsd-kind-icon">Context<wbr>Manifest</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#contract" class="tsd-kind-icon">Contract</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#createorgproject" class="tsd-kind-icon">Create<wbr>Org<wbr>Project</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#createsnapshotrequest" class="tsd-kind-icon">Create<wbr>Snapshot<wbr>Request</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#day" class="tsd-kind-icon">Day</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#fusionapierrormessage" class="tsd-kind-icon">Fusion<wbr>Api<wbr>Error<wbr>Message</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#fusionapihttperrorresponse" class="tsd-kind-icon">Fusion<wbr>Api<wbr>Http<wbr>Error<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#fusionenvironment" class="tsd-kind-icon">Fusion<wbr>Environment</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#fusionproject" class="tsd-kind-icon">Fusion<wbr>Project</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#grouprolemapping" class="tsd-kind-icon">Group<wbr>Role<wbr>Mapping</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#month" class="tsd-kind-icon">Month</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#notificationcard" class="tsd-kind-icon">Notification<wbr>Card</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#notificationlevel" class="tsd-kind-icon">Notification<wbr>Level</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#notificationpresenter" class="tsd-kind-icon">Notification<wbr>Presenter</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#notificationpresenterregistration" class="tsd-kind-icon">Notification<wbr>Presenter<wbr>Registration</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#notificationpriority" class="tsd-kind-icon">Notification<wbr>Priority</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#notificationrequest" class="tsd-kind-icon">Notification<wbr>Request</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#notificationresolver" class="tsd-kind-icon">Notification<wbr>Resolver</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#notificationresponse" class="tsd-kind-icon">Notification<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#orgproject" class="tsd-kind-icon">Org<wbr>Project</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#orgprojectdates" class="tsd-kind-icon">Org<wbr>Project<wbr>Dates</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#orgprojecttype" class="tsd-kind-icon">Org<wbr>Project<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#orgsnapshot" class="tsd-kind-icon">Org<wbr>Snapshot</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#orgsnapshotapproval" class="tsd-kind-icon">Org<wbr>Snapshot<wbr>Approval</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#page" class="tsd-kind-icon">Page</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="globals.html#pagedresult" class="tsd-kind-icon">Paged<wbr>Result</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#pagination" class="tsd-kind-icon">Pagination</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#paginationrange" class="tsd-kind-icon">Pagination<wbr>Range</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#personaccounttype" class="tsd-kind-icon">Person<wbr>Account<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#personbaseposition" class="tsd-kind-icon">Person<wbr>Base<wbr>Position</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#personcompany" class="tsd-kind-icon">Person<wbr>Company</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#personcontract" class="tsd-kind-icon">Person<wbr>Contract</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#persondetails" class="tsd-kind-icon">Person<wbr>Details</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#personnotification" class="tsd-kind-icon">Person<wbr>Notification</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#personposition" class="tsd-kind-icon">Person<wbr>Position</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#personpresence" class="tsd-kind-icon">Person<wbr>Presence</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#personpresenceavailability" class="tsd-kind-icon">Person<wbr>Presence<wbr>Availability</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#personproject" class="tsd-kind-icon">Person<wbr>Project</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#personrole" class="tsd-kind-icon">Person<wbr>Role</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#personrolescope" class="tsd-kind-icon">Person<wbr>Role<wbr>Scope</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#position" class="tsd-kind-icon">Position</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#positioninstance" class="tsd-kind-icon">Position<wbr>Instance</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#positionlocation" class="tsd-kind-icon">Position<wbr>Location</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#positionreportpath" class="tsd-kind-icon">Position<wbr>Report<wbr>Path</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="globals.html#propertyaccessor" class="tsd-kind-icon">Property<wbr>Accessor</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="globals.html#propertyaccessorfunction" class="tsd-kind-icon">Property<wbr>Accessor<wbr>Function</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#publishdetails" class="tsd-kind-icon">Publish<wbr>Details</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#registernotificationpresenter" class="tsd-kind-icon">Register<wbr>Notification<wbr>Presenter</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#resourcecollections" class="tsd-kind-icon">Resource<wbr>Collections</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#roledefinition" class="tsd-kind-icon">Role<wbr>Definition</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#roledescription" class="tsd-kind-icon">Role<wbr>Description</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#serviceresolver" class="tsd-kind-icon">Service<wbr>Resolver</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#sortdirection" class="tsd-kind-icon">Sort<wbr>Direction</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#task" class="tsd-kind-icon">Task</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#tasksourcesystem" class="tsd-kind-icon">Task<wbr>Source<wbr>System</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#tasktype" class="tsd-kind-icon">Task<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#usermenucomponentprops" class="tsd-kind-icon">User<wbr>Menu<wbr>Component<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#usermenusection" class="tsd-kind-icon">User<wbr>Menu<wbr>Section</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#usermenusectionitem" class="tsd-kind-icon">User<wbr>Menu<wbr>Section<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#fusioncontext" class="tsd-kind-icon">Fusion<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#historycontext" class="tsd-kind-icon">History<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#datemask" class="tsd-kind-icon">date<wbr>Mask</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#datetimemask" class="tsd-kind-icon">date<wbr>Time<wbr>Mask</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#timemask" class="tsd-kind-icon">time<wbr>Mask</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#notificationcontextprovider" class="tsd-kind-icon">Notification<wbr>Context<wbr>Provider</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#applypagination" class="tsd-kind-icon">apply<wbr>Pagination</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#applysorting" class="tsd-kind-icon">apply<wbr>Sorting</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#combineurls" class="tsd-kind-icon">combine<wbr>Urls</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createapiclients" class="tsd-kind-icon">create<wbr>Api<wbr>Clients</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createcalendar" class="tsd-kind-icon">create<wbr>Calendar</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createfusioncontext" class="tsd-kind-icon">create<wbr>Fusion<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createpagination" class="tsd-kind-icon">create<wbr>Pagination</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createresourcecollections" class="tsd-kind-icon">create<wbr>Resource<wbr>Collections</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#enqueueasyncoperation" class="tsd-kind-icon">enqueue<wbr>Async<wbr>Operation</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#formatcurrency" class="tsd-kind-icon">format<wbr>Currency</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#formatdate" class="tsd-kind-icon">format<wbr>Date</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#formatdatetime" class="tsd-kind-icon">format<wbr>Date<wbr>Time</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#formatday" class="tsd-kind-icon">format<wbr>Day</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#formatnumber" class="tsd-kind-icon">format<wbr>Number</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#formatpercentage" class="tsd-kind-icon">format<wbr>Percentage</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#formattime" class="tsd-kind-icon">format<wbr>Time</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#formatweekday" class="tsd-kind-icon">format<wbr>Week<wbr>Day</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#issamedate" class="tsd-kind-icon">is<wbr>Same<wbr>Date</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#parsedate" class="tsd-kind-icon">parse<wbr>Date</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#parsedatetime" class="tsd-kind-icon">parse<wbr>Date<wbr>Time</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#registerapp" class="tsd-kind-icon">register<wbr>App</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#trimtrailingslash" class="tsd-kind-icon">trim<wbr>Trailing<wbr>Slash</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#useabortcontrollermanager" class="tsd-kind-icon">use<wbr>Abort<wbr>Controller<wbr>Manager</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#useappauth" class="tsd-kind-icon">use<wbr>App<wbr>Auth</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#useasyncpagination" class="tsd-kind-icon">use<wbr>Async<wbr>Pagination</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#usecomponentdisplayclassnames" class="tsd-kind-icon">use<wbr>Component<wbr>Display<wbr>Class<wbr>Names</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usecomponentdisplaytype" class="tsd-kind-icon">use<wbr>Component<wbr>Display<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usecontexthistory" class="tsd-kind-icon">use<wbr>Context<wbr>History</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usecontextmanager" class="tsd-kind-icon">use<wbr>Context<wbr>Manager</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usecontextquery" class="tsd-kind-icon">use<wbr>Context<wbr>Query</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usecurrentapp" class="tsd-kind-icon">use<wbr>Current<wbr>App</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usecurrentcontext" class="tsd-kind-icon">use<wbr>Current<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usecurrentcontexttypes" class="tsd-kind-icon">use<wbr>Current<wbr>Context<wbr>Types</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usecurrentpersondetails" class="tsd-kind-icon">use<wbr>Current<wbr>Person<wbr>Details</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usecustomusermenusection" class="tsd-kind-icon">use<wbr>Custom<wbr>User<wbr>Menu<wbr>Section</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#useeventemitter" class="tsd-kind-icon">use<wbr>Event<wbr>Emitter</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#useeventemittervalue" class="tsd-kind-icon">use<wbr>Event<wbr>Emitter<wbr>Value</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usefeaturelogger" class="tsd-kind-icon">use<wbr>Feature<wbr>Logger</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usefusioncontext" class="tsd-kind-icon">use<wbr>Fusion<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#useglobalnotificationcardsactions" class="tsd-kind-icon">use<wbr>Global<wbr>Notification<wbr>Cards<wbr>Actions</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usehandover" class="tsd-kind-icon">use<wbr>Handover</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#usehanoverchild" class="tsd-kind-icon">use<wbr>Hanover<wbr>Child</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usehttpclient" class="tsd-kind-icon">use<wbr>Http<wbr>Client</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usenotificationcardactions" class="tsd-kind-icon">use<wbr>Notification<wbr>Card<wbr>Actions</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usenotificationcards" class="tsd-kind-icon">use<wbr>Notification<wbr>Cards</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usenotificationcenter" class="tsd-kind-icon">use<wbr>Notification<wbr>Center</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usenotificationcontext" class="tsd-kind-icon">use<wbr>Notification<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#usepagination" class="tsd-kind-icon">use<wbr>Pagination</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usepeoplecontainer" class="tsd-kind-icon">use<wbr>People<wbr>Container</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usepersondetails" class="tsd-kind-icon">use<wbr>Person<wbr>Details</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usepersonimageurl" class="tsd-kind-icon">use<wbr>Person<wbr>Image<wbr>Url</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#usesorting" class="tsd-kind-icon">use<wbr>Sorting</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usetaskprioritysetter" class="tsd-kind-icon">use<wbr>Task<wbr>Priority<wbr>Setter</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usetasksourcesystems" class="tsd-kind-icon">use<wbr>Task<wbr>Source<wbr>Systems</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usetasktypes" class="tsd-kind-icon">use<wbr>Task<wbr>Types</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usetasks" class="tsd-kind-icon">use<wbr>Tasks</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usetaskscontainer" class="tsd-kind-icon">use<wbr>Tasks<wbr>Container</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usetelemetryinitializer" class="tsd-kind-icon">use<wbr>Telemetry<wbr>Initializer</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#usetelemetrylogger" class="tsd-kind-icon">use<wbr>Telemetry<wbr>Logger</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#withabortcontroller" class="tsd-kind-icon">with<wbr>Abort<wbr>Controller</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+name: Build docs
+
+on:
+    release:
+      types: 
+        - published
+
+jobs:
+    build:
+    
+        runs-on: ubuntu-latest
+    
+        strategy:
+        matrix:
+            node-version: [12.x]
+    
+        steps:
+        - uses: actions/checkout@v1
+        - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+            node-version: ${{ matrix.node-version }}
+        - name: Configure git
+        run: |
+            git config --local user.email "fusion@equinor.com"
+            git config --local user.name "GitHub Action by Fusion Team"
+        name: Checkout docs and merge master
+        run: |
+            git checkout docs
+            git merge master
+        - name: npm install and build docs
+        run: |
+            npm ci
+            npx typedoc
+        - name: Commit changes and push
+        run: |
+            git add -A
+            git commit -m "Build docs" || true
+            git push "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git" HEAD:docs
+        env:
+            CI: true

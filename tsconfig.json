@@ -25,5 +25,17 @@
     "exclude": [
         // "src/typings/@equinor",
         "./node_modules/@types"
-    ]
+    ],
+    "typeDocOptions": {
+        "src": [
+            "./src/index.ts"
+          ],
+          "mode": "library",
+          "includeDeclarations": true,
+          "out": "./docs",
+          "readme": "README.md",
+          "name": "Fusion api",
+          "ignoreCompilerErrors": true,
+          "plugin": "none"
+    }
 }
