@@ -12,7 +12,9 @@ jobs:
           matrix:
             node-version: [12.x]
         steps:
-        - uses: actions/checkout@v1
+        - uses: actions/checkout@v2
+          with:
+            ref: docs
         - name: Use Node.js ${{ matrix.node-version }}
           uses: actions/setup-node@v1
           with:
@@ -23,7 +25,6 @@ jobs:
             git config --local user.name "GitHub Action by Fusion Team"
         - name: Checkout docs and merge master
           run: |
-            git checkout docs
             git merge master
         - name: npm install and build docs
           run: |
@@ -33,6 +34,6 @@ jobs:
           run: |
             git add -A
             git commit -m "Build docs" || true
-            git push "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git" HEAD:docs
+            git push
           env:
             CI: true
