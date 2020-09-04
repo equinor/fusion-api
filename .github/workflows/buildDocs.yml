@@ -30,7 +30,7 @@ jobs:
         - name: npm install and build docs
           run: |
             npm ci
-            npx typedoc --out docs src/index.ts
+            npm run build-docs
         - name: Commit changes and push
           run: |
             git add -A
