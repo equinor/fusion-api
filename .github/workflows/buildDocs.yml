@@ -14,6 +14,7 @@ jobs:
         steps:
         - uses: actions/checkout@v2
           with:
+            fetch-depth: 0
             ref: docs
         - name: Use Node.js ${{ matrix.node-version }}
           uses: actions/setup-node@v1
@@ -25,7 +26,7 @@ jobs:
             git config --local user.name "GitHub Action by Fusion Team"
         - name: Checkout docs and merge master
           run: |
-            git merge master
+            git merge origin/master
         - name: npm install and build docs
           run: |
             npm ci
