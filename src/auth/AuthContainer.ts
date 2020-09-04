@@ -308,7 +308,7 @@ export default class AuthContainer implements IAuthContainer {
         return tokenPart.replace(`${key}=`, '');
     }
 
-    protected async buildLoginUrlAsync(app: AuthApp, nonce: AuthNonce, customParams: object = {}) {
+    protected async buildLoginUrlAsync(app: AuthApp, nonce: AuthNonce, customParams = {}) {
         const cachedUser = await this.getCachedUserAsync();
 
         const base =

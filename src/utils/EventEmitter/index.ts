@@ -1,11 +1,12 @@
 import { useState, useEffect, Dispatch, SetStateAction } from 'react';
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type Parameter<T extends (arg: any) => void> = T extends (arg: infer P) => void ? P : never;
 
 export type EventHandlerParameter<
     TEvent extends Events,
     TKey extends keyof TEvent,
     THandler extends TEvent[TKey] = TEvent[TKey]
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
 > = THandler extends (arg: infer P) => void ? P : never;
 
 type Handler<TEvents extends Events, TKey extends keyof TEvents = keyof TEvents> = {

@@ -21,7 +21,7 @@ type ReliableDictionaryEvents<TCacheType> = {
     change: (dictionary: TCacheType) => void;
 };
 
-type AdditionalEvents = {};
+type AdditionalEvents = Record<string, any>;
 
 export default abstract class ReliableDictionary<
     TCacheType = ReadonlyDictionary,
@@ -63,7 +63,7 @@ export default abstract class ReliableDictionary<
     }
 
     async toObjectAsync(): Promise<TCacheType> {
-        var value = await this.provider.toObjectAsync();
+        const value = await this.provider.toObjectAsync();
         return value as TCacheType;
     }
 

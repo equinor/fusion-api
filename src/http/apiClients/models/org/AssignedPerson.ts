@@ -1,5 +1,2 @@
-import PersonDetails from '../people/PersonDetails';
-
-type AssignedPerson = PersonDetails & {};
-
-export default AssignedPerson;
+/**@TODO fix this */
+export { default as AssignedPerson } from '../people/PersonDetails';

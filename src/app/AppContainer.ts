@@ -3,7 +3,7 @@ import EventEmitter, { useEventEmitterValue } from '../utils/EventEmitter';
 import ApiClients from '../http/apiClients';
 import FusionClient from '../http/apiClients/FusionClient';
 import { useFusionContext } from '../core/FusionContext';
-import { useEffect, useState, useReducer } from 'react';
+import { useEffect, useState } from 'react';
 import TelemetryLogger from '../utils/TelemetryLogger';
 import FeatureLogger from '../utils/FeatureLogger';
 import DistributedState, { IDistributedState } from '../utils/DistributedState';
@@ -73,7 +73,7 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
     }
 
     private _updatePromise: Promise<void> = Promise.resolve();
-    get updateComplete() { return this._updatePromise };
+    get updateComplete() { return this._updatePromise }
 
     get currentApp() {
         return this._currentApp.state;

@@ -10,7 +10,7 @@ type RequestInitTransformer = (init: RequestInit) => RequestInit;
 
 export default (init?: RequestInit | null, transform?: RequestInitTransformer): RequestInit => {
     const headers = new Headers();
-    for (let key in defaultHeaders) {
+    for (const key in defaultHeaders) {
         headers.append(key, defaultHeaders[key]);
     }
 

@@ -380,7 +380,7 @@ const useContextQuery = (): {
             if (canQueryWithText(query)) {
                 setContexts([]);
                 try {
-                    var response = await apiClients.context.queryContextsAsync(
+                    const response = await apiClients.context.queryContextsAsync(
                         query,
                         ...currentTypes
                     );

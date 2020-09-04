@@ -113,7 +113,7 @@ export default class OrgClient extends BaseApiClient {
         edit?: boolean
     ) {
         const url = this.resourceCollections.org.instance(projectId, positionId, instanceId);
-        return this.httpClient.patchAsync<object, PositionInstance, FusionApiHttpErrorResponse>(
+        return this.httpClient.patchAsync<Partial<PositionInstance> & { id: string }, PositionInstance, FusionApiHttpErrorResponse>(
             url,
             instanceProperties,
             {

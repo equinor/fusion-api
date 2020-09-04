@@ -9,7 +9,7 @@ enum CacheKey {
     USER = "USER",
     REDIRECT_URL = "REDIRECT_URL",
     APP_LOGIN_LOCK = "APP_LOGIN_LOCK",
-};
+}
 
 export default class AuthCache extends ReliableDictionary {
     constructor() {
@@ -88,7 +88,7 @@ export default class AuthCache extends ReliableDictionary {
 
     async getAppLoginLock(): Promise<{ clientId?: string; created?: string; }> {
         const payload = await this.getAsync<string, string>(CacheKey.APP_LOGIN_LOCK);
-        return (!!payload ? JSON.parse(payload) : {});
+        return (payload ? JSON.parse(payload) : {});
     }
 
     /**
