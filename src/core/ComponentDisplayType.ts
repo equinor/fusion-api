@@ -1,8 +1,8 @@
-import useCoreSettings from "../settings/useCoreSettings";
+import useCoreSettings from '../settings/useCoreSettings';
 
 export enum ComponentDisplayType {
-    Comfortable = "Comfortable",
-    Compact = "Compact",
+    Comfortable = 'Comfortable',
+    Compact = 'Compact',
 }
 
 export const useComponentDisplayType = () => {

@@ -49,9 +49,9 @@ export default abstract class EventEmitter<TEvents extends Events> {
         key: TKey,
         arg: TParameter
     ): this {
-        const handlers = this.handlers.filter(h => h.key === key);
+        const handlers = this.handlers.filter((h) => h.key === key);
 
-        handlers.forEach(handler => {
+        handlers.forEach((handler) => {
             const handlerFunction = handler.handler as TEvents[TKey];
             window.requestAnimationFrame(() => handlerFunction(arg));
         });
@@ -67,14 +67,14 @@ export const useEventEmitterValue = <
 >(
     emitter: EventEmitter<TEvents>,
     event: TKey,
-    transform: (value: TData) => TData | null = value => value,
+    transform: (value: TData) => TData | null = (value) => value,
     defaultData: TData | null = null
 ): [TData | null, Dispatch<SetStateAction<TData | null>>] => {
     const [value, setValue] = useState<TData | null>(defaultData);
     const [_, forceUpdate] = useState<null>(null);
 
     useEffect(() => {
-        return emitter.on(event, data => {
+        return emitter.on(event, (data) => {
             setValue(transform(data));
             forceUpdate(null);
         });

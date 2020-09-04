@@ -67,30 +67,32 @@ type AsyncOperation<T> = (abortSignal?: AbortSignal) => T;
 
 /**
  * Enqueue an operation to be run after the next repaint
- * @param operation 
- * @param abortSignal 
+ * @param operation
+ * @param abortSignal
  */
-const enqueueAsyncOperation = <T = void>(operation: AsyncOperation<T>, abortSignal?: AbortSignal): Promise<T> => {
+const enqueueAsyncOperation = <T = void>(
+    operation: AsyncOperation<T>,
+    abortSignal?: AbortSignal
+): Promise<T> => {
     return new Promise((resolve, reject) => {
-        if(abortSignal?.aborted) {
+        if (abortSignal?.aborted) {
             return reject();
         }
 
         window.requestAnimationFrame(() => {
-            if(abortSignal?.aborted) {
+            if (abortSignal?.aborted) {
                 return reject();
             }
 
             setTimeout(async () => {
-                if(abortSignal?.aborted) {
+                if (abortSignal?.aborted) {
                     return reject();
                 }
 
                 try {
                     const result = operation();
                     resolve(result);
-                }
-                catch(e) {
+                } catch (e) {
                     reject(e);
                 }
             }, 0);
@@ -98,4 +100,10 @@ const enqueueAsyncOperation = <T = void>(operation: AsyncOperation<T>, abortSign
     });
 };
 
-export { useAbortControllerManager, withAbortController, enqueueAsyncOperation, AbortableAction, AsyncOperation };
+export {
+    useAbortControllerManager,
+    withAbortController,
+    enqueueAsyncOperation,
+    AbortableAction,
+    AsyncOperation,
+};

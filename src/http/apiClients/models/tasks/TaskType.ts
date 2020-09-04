@@ -1,12 +1,12 @@
 export enum TaskTypes {
-    MeetingAction = "MeetingAction",
-    DocumentReview = "DocumentReview",
-    TechnicalQuery = "TechnicalQuery",
-    Risk = "Risk"
+    MeetingAction = 'MeetingAction',
+    DocumentReview = 'DocumentReview',
+    TechnicalQuery = 'TechnicalQuery',
+    Risk = 'Risk',
 }
 
 type TaskType = {
-    key: TaskTypes,
+    key: TaskTypes;
     displayName: string;
     singularName: string;
 };

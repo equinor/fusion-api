@@ -69,7 +69,7 @@ export default class HttpClient implements IHttpClient {
 
         return this.performReusableRequest<TResponse>(url, async () => {
             await this.resourceCache.setIsFetchingAsync(url);
-            init = ensureRequestInit(init, init => ({ ...init, method: 'GET' }));
+            init = ensureRequestInit(init, (init) => ({ ...init, method: 'GET' }));
 
             const response = await this.performFetchAsync<TExpectedErrorResponse>(url, init);
             const data = await this.parseResponseAsync<TResponse, TExpectedErrorResponse>(
@@ -90,7 +90,7 @@ export default class HttpClient implements IHttpClient {
         init?: RequestInit | null,
         responseParser?: ResponseParser<TResponse>
     ) {
-        init = ensureRequestInit(init, init => ({
+        init = ensureRequestInit(init, (init) => ({
             ...init,
             method: 'POST',
             body: this.createRequestBody(body),
@@ -110,7 +110,7 @@ export default class HttpClient implements IHttpClient {
         init?: RequestInit | null,
         responseParser?: ResponseParser<TResponse>
     ) {
-        init = ensureRequestInit(init, init => ({
+        init = ensureRequestInit(init, (init) => ({
             ...init,
             method: 'PUT',
             body: this.createRequestBody(body),
@@ -130,7 +130,7 @@ export default class HttpClient implements IHttpClient {
         init?: RequestInit | null,
         responseParser?: ResponseParser<TResponse>
     ) {
-        init = ensureRequestInit(init, init => ({
+        init = ensureRequestInit(init, (init) => ({
             ...init,
             method: 'PATCH',
             body: this.createRequestBody(body),
@@ -149,7 +149,7 @@ export default class HttpClient implements IHttpClient {
         init?: RequestInit | null,
         responseParser?: ResponseParser<TResponse>
     ) {
-        init = ensureRequestInit(init, init => ({
+        init = ensureRequestInit(init, (init) => ({
             ...init,
             method: 'DELETE',
         }));
@@ -167,7 +167,7 @@ export default class HttpClient implements IHttpClient {
         init?: RequestInit | null,
         responseParser?: ResponseParser<TResponse>
     ) {
-        init = ensureRequestInit(init, init => ({
+        init = ensureRequestInit(init, (init) => ({
             ...init,
             method: 'OPTIONS',
         }));
@@ -191,7 +191,7 @@ export default class HttpClient implements IHttpClient {
             const xhr = new XMLHttpRequest();
 
             if (onProgress) {
-                xhr.upload.addEventListener('progress', e => {
+                xhr.upload.addEventListener('progress', (e) => {
                     if (e.lengthComputable) {
                         const percentage = Math.round((e.loaded * 100) / e.total);
                         onProgress(percentage, e);
@@ -252,7 +252,7 @@ export default class HttpClient implements IHttpClient {
             };
         }
 
-        init = ensureRequestInit(init, init => ({
+        init = ensureRequestInit(init, (init) => ({
             ...init,
             method: 'GET',
         }));
@@ -266,7 +266,7 @@ export default class HttpClient implements IHttpClient {
             throw new Error('Cannot download file without filename');
         }
 
-        return { blob, fileName }
+        return { blob, fileName };
     }
 
     async getFileAsync<TExpectedErrorResponse>(
@@ -279,7 +279,7 @@ export default class HttpClient implements IHttpClient {
             };
         }
 
-        init = ensureRequestInit(init, init => ({
+        init = ensureRequestInit(init, (init) => ({
             ...init,
             method: 'GET',
         }));
@@ -297,22 +297,24 @@ export default class HttpClient implements IHttpClient {
     }
 
     protected responseIsRetriable(response: Response, retryTimeout: number) {
-        if (retryTimeout > 20000 || response.headers.get("x-fusion-retriable") === "false") {
+        if (retryTimeout > 20000 || response.headers.get('x-fusion-retriable') === 'false') {
             return false;
         }
 
-        return response.status === 408
-            || response.status === 424
-            || (response.status === 500 && response.headers.get("x-fusion-retriable") === "true")
-            || response.status === 502
-            || response.status === 503
-            || response.status === 504;
+        return (
+            response.status === 408 ||
+            response.status === 424 ||
+            (response.status === 500 && response.headers.get('x-fusion-retriable') === 'true') ||
+            response.status === 502 ||
+            response.status === 503 ||
+            response.status === 504
+        );
     }
 
     protected async retryRequestAsync<TExpectedErrorResponse>(
         url: string,
         init: RequestInit,
-        retryTimeout: number,
+        retryTimeout: number
     ): Promise<Response> {
         // Wait before retrying the request
         await new Promise((resolve) => setTimeout(resolve, retryTimeout));
@@ -328,7 +330,7 @@ export default class HttpClient implements IHttpClient {
     private async performFetchAsync<TExpectedErrorResponse>(
         url: string,
         init: RequestInit,
-        retryTimeout: number = 3000,
+        retryTimeout: number = 3000
     ): Promise<Response> {
         try {
             const options = await this.transformRequestAsync(url, init);
@@ -459,22 +461,24 @@ export default class HttpClient implements IHttpClient {
     }
 
     private addSessionIdHeader(init: RequestInit) {
-        return this.transformHeaders(init, headers =>
+        return this.transformHeaders(init, (headers) =>
             headers.append('X-Session-Id', this.sessionId)
         );
     }
 
     private addAcceptJsonHeader(init: RequestInit) {
-        return this.transformHeaders(init, headers => headers.append('Accept', 'application/json'));
+        return this.transformHeaders(init, (headers) =>
+            headers.append('Accept', 'application/json')
+        );
     }
 
     private addRefreshHeader(init: RequestInit) {
-        return this.transformHeaders(init, headers => headers.append('x-pp-refresh', 'true'));
+        return this.transformHeaders(init, (headers) => headers.append('x-pp-refresh', 'true'));
     }
 
     private async addAuthHeaderAsync(url: string, init: RequestInit) {
         const token = await this.authContainer.acquireTokenAsync(url);
-        return this.transformHeaders(init, headers =>
+        return this.transformHeaders(init, (headers) =>
             headers.append('Authorization', 'Bearer ' + token)
         );
     }
@@ -522,7 +526,7 @@ export default class HttpClient implements IHttpClient {
         if (!contentDisposition) return null;
 
         const parts = contentDisposition.split(';');
-        const fileNamePart = parts.find(part => part.indexOf('filename=') !== -1);
+        const fileNamePart = parts.find((part) => part.indexOf('filename=') !== -1);
 
         if (!fileNamePart) return null;
 

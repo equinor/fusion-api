@@ -1,4 +1,4 @@
 export type SignalRNegotiation = {
-    url: string,
+    url: string;
     accessToken: string;
-}
+};

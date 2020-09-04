@@ -59,7 +59,7 @@ export default class AuthUser {
     }
 
     get roles(): string[] {
-        return this._roles.map(role => role);
+        return this._roles.map((role) => role);
     }
 
     get upn(): string {
@@ -75,9 +75,9 @@ export default class AuthUser {
         this._givenName = token.givenName;
         this._familyName = token.familyName;
         this._upn = token.upn;
-        
+
         if (token.roles) {
-            token.roles.forEach(role => {
+            token.roles.forEach((role) => {
                 if (this._roles.indexOf(role) === -1) {
                     this._roles.push(role);
                 }

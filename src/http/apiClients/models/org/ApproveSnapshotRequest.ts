@@ -1,4 +1,4 @@
 type ApproveSnapshotRequest = {
-    comment: string
-}
+    comment: string;
+};
 export default ApproveSnapshotRequest;

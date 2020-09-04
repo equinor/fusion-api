@@ -1,12 +1,12 @@
-import BaseApiClient from "./BaseApiClient";
-import { FusionApiHttpErrorResponse } from "./models/common/FusionApiHttpErrorResponse";
-import { Context, ContextTypes } from "./models/context";
+import BaseApiClient from './BaseApiClient';
+import { FusionApiHttpErrorResponse } from './models/common/FusionApiHttpErrorResponse';
+import { Context, ContextTypes } from './models/context';
 
 export default class ContextClient extends BaseApiClient {
     protected getBaseUrl() {
         return this.serviceResolver.getContextBaseUrl();
     }
-    
+
     async getContextsAsync() {
         const url = this.resourceCollections.context.contexts();
         return await this.httpClient.getAsync<Context[], FusionApiHttpErrorResponse>(url);
@@ -29,11 +29,17 @@ export default class ContextClient extends BaseApiClient {
 
     async updateContext(context: Context) {
         const url = this.resourceCollections.context.context(context.id);
-        return await this.httpClient.putAsync<Context, Context, FusionApiHttpErrorResponse>(url, context);
+        return await this.httpClient.putAsync<Context, Context, FusionApiHttpErrorResponse>(
+            url,
+            context
+        );
     }
 
     async createContext(context: Context) {
         const url = this.resourceCollections.context.contexts();
-        return await this.httpClient.postAsync<Context, Context, FusionApiHttpErrorResponse>(url, context);
+        return await this.httpClient.postAsync<Context, Context, FusionApiHttpErrorResponse>(
+            url,
+            context
+        );
     }
 }

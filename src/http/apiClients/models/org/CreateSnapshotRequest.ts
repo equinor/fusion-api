@@ -4,6 +4,6 @@ type CreateSnapshotRequest = {
     appliesForDate: Date;
     description?: string;
     approvalRequired?: boolean;
-}
+};
 
 export default CreateSnapshotRequest;

@@ -1,8 +1,8 @@
 import IReliableDictionaryStorageProvider, {
     ReadonlyDictionary,
-} from "./IReliableDictionaryStorageProvider";
+} from './IReliableDictionaryStorageProvider';
 
-export { default as LocalStorageProvider } from "./LocalStorageProvider";
+export { default as LocalStorageProvider } from './LocalStorageProvider';
 
 export interface IReadonlyReliableDictionary<TCacheType> {
     getAsync<TKey extends keyof TCacheType, T>(key: TKey): Promise<T | null>;
@@ -26,7 +26,10 @@ export default abstract class ReadonlyReliableDictionary<TCacheType = ReadonlyDi
         return value as TCacheType;
     }
 
-    protected async setAsync<TKey extends keyof TCacheType, T = TCacheType[TKey]>(key: TKey, value: T): Promise<void> {
+    protected async setAsync<TKey extends keyof TCacheType, T = TCacheType[TKey]>(
+        key: TKey,
+        value: T
+    ): Promise<void> {
         await this.provider.setItemAsync(key.toString(), value);
     }
 
