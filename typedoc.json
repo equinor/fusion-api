@@ -4,7 +4,6 @@
       ],
       "mode": "library",
       "includeDeclarations": true,
-      "out": "docs src/index.tsx",
       "readme": "README.md",
       "name": "Fusion api",
       "ignoreCompilerErrors": true,
