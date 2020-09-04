@@ -69,6 +69,7 @@ export default interface IHttpClient {
 
     /**
      * Perform a OPTIONS request
+     *
      * @param url Request url
      * @param init Optional request init object
      */
