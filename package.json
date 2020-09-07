@@ -12,7 +12,7 @@
         "tsc:version": "tsc --version",
         "version": "echo \"export default '$npm_package_version';\" > src/version.ts && git commit -am \"Update version.ts\"",
         "build-docs": "npx typedoc --out docs src/index.ts",
-        "lint": "npx eslint ./src/**/*.{js,ts,tsx} --quiet"
+        "lint": "npx eslint './src/**/*.{js,ts,tsx}' --quiet"
     },
     "repository": {
         "type": "git",

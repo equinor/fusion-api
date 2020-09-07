@@ -18,10 +18,11 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: npm install, update version.ts, run tsc
+    - name: npm install, update version.ts, run tsc, run linter
       run: |
         npm ci
         npm run update-version-definition:no-commit
         npm run tsc
+        npm run linter
       env:
         CI: true
