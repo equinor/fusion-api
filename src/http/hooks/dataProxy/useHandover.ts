@@ -1,15 +1,12 @@
 import useApiClient, { ApiClientHookResult } from '../useApiClient';
-import {
-    HandoverItem,
-    HandoverActions,
-} from '../../apiClients/DataProxyClient';
+import { HandoverItem, HandoverActions } from '../../apiClients/DataProxyClient';
 
 export const useHandover = (
     siteCode: string,
     projectIdentifier: string
 ): ApiClientHookResult<HandoverItem[]> => {
     return useApiClient<HandoverItem[]>(
-        async apiClients => {
+        async (apiClients) => {
             const response = await apiClients.dataProxy.getHandoverAsync(
                 siteCode,
                 projectIdentifier
@@ -27,7 +24,7 @@ export function useHanoverChild<TKey extends keyof HandoverActions, T = Handover
     action: TKey
 ): ApiClientHookResult<T[]> {
     return useApiClient<T[]>(
-        async apiClients => {
+        async (apiClients) => {
             const response = await apiClients.dataProxy.getHandoverChildrenAsync<TKey, T>(
                 siteCode,
                 projectIdentifier,

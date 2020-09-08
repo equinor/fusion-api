@@ -31,7 +31,6 @@ export const isSameDate = (a: Date, b: Date) => {
     );
 };
 
-
 const createCalendarDate = (date: Date, month: Month): CalendarDate => {
     const today = new Date();
 

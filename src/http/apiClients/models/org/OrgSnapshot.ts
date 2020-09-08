@@ -20,7 +20,7 @@ type OrgSnapshot = {
     created: Date;
     appliesForDate: Date;
     createdBy: PersonDetails | null;
-    approval?: OrgSnapshotApproval
+    approval?: OrgSnapshotApproval;
 };
 
 export default OrgSnapshot;

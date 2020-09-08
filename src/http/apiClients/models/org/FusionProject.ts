@@ -1,15 +1,15 @@
 type FusionProjectMapping = {
-    id:string,
-    key:string;
-    projectId:string;
-    type:string;
-    value:string;
-}
+    id: string;
+    key: string;
+    projectId: string;
+    type: string;
+    value: string;
+};
 type FusionProject = {
-    id:string;
+    id: string;
     isDeleted: boolean;
-    name: string; 
-    mappings: FusionProjectMapping[]; 
-}
+    name: string;
+    mappings: FusionProjectMapping[];
+};
 
 export default FusionProject;

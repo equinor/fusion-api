@@ -63,9 +63,9 @@ export default class FeatureLogger {
         this.transformers = new DistributedState<FeatureLogEntryTransformer[]>(
             'FeatureLogger.transformers',
             [
-                entry => this.addAppToLogEntry(entry),
-                entry => this.addContextToLogEntry(entry),
-                entry => this.addScreenToLogEntry(entry),
+                (entry) => this.addAppToLogEntry(entry),
+                (entry) => this.addContextToLogEntry(entry),
+                (entry) => this.addScreenToLogEntry(entry),
             ],
             eventHub
         );
@@ -130,7 +130,7 @@ export default class FeatureLogger {
 
         this.isSendingBatch = true;
 
-        const entries: FeatureLogEntryRequest[] = this.logEntries.map(entry => ({
+        const entries: FeatureLogEntryRequest[] = this.logEntries.map((entry) => ({
             ...entry,
             appKey: entry.appKey || null,
             contextId: entry.contextId || null,

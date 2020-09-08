@@ -1,6 +1,6 @@
 export type CreateNotification = {
     title: string;
     description?: string;
-    card?: object;
+    card?: Record<string, unknown>;
     originalCreatorUniqueId?: string;
 };

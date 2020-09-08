@@ -1,11 +1,11 @@
 import React from 'react';
 
-import { AppAuth } from "../http/apiClients/models/fusion/apps/AppManifest";
+import { AppAuth } from '../http/apiClients/models/fusion/apps/AppManifest';
 import { useFusionContext } from '../core/FusionContext';
 
 /**
  * Note: will return true when appAuths is undefined
- * 
+ *
  * @example
  * const { app: { container: appContainer } } = useFusionContext();
  * const [app, setApp] = React.useState<AppManifest | null>(null);
@@ -15,8 +15,9 @@ import { useFusionContext } from '../core/FusionContext';
  * return <SomeComponent />
  */
 export const useAppAuth = (appAuths?: AppAuth[]) => {
-
-    const { auth: { container: authContainer } } = useFusionContext();
+    const {
+        auth: { container: authContainer },
+    } = useFusionContext();
     const [authenticated, setAuthenticated] = React.useState<boolean>(false);
 
     React.useEffect(() => {

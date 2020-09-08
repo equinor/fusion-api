@@ -33,7 +33,7 @@ export default (defaultSettings?: ReadonlySettings): AppSettingsHook => {
     const { settings } = useFusionContext();
     const currentApp = useCurrentApp();
 
-    let appSettings = ensureAppSettings(settings, currentApp ? currentApp.key : '');
+    const appSettings = ensureAppSettings(settings, currentApp ? currentApp.key : '');
 
     const [localAppSettings, setLocalAppsettings] = useState<ReadonlySettings>(
         appSettings.toObject() || {}

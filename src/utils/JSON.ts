@@ -6,7 +6,7 @@ const revivers: Parser[] = [
     (key: string, value: any) => {
         if (typeof value === 'string' && dateRegex.test(value)) {
             const parsedDate = new Date(value);
-            if (parsedDate.getTime() !== NaN) {
+            if (!isNaN(parsedDate.getTime())) {
                 return parsedDate;
             }
         }

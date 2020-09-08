@@ -48,7 +48,7 @@ export default class TasksContainer extends EventEmitter<TasksEvents> {
     async getAllTasksAsync() {
         const taskTypes = await this.getTaskTypesAsync();
 
-        const taskPromises = taskTypes.map(taskType => this.getTasksAsync(taskType.key));
+        const taskPromises = taskTypes.map((taskType) => this.getTasksAsync(taskType.key));
         await Promise.all(taskPromises);
         return this.tasks.state;
     }
@@ -77,7 +77,7 @@ export default class TasksContainer extends EventEmitter<TasksEvents> {
     }
 
     async setTaskPriorityAsync(id: string, priority: number) {
-        const task = this.getTasks().find(t => t.id === id);
+        const task = this.getTasks().find((t) => t.id === id);
 
         if (!task) {
             throw new Error("Can't find the task with id: " + id);
@@ -110,7 +110,7 @@ export default class TasksContainer extends EventEmitter<TasksEvents> {
             return [...this.tasks.state];
         }
 
-        return this.tasks.state.filter(t => t.taskTypeKey == taskType);
+        return this.tasks.state.filter((t) => t.taskTypeKey == taskType);
     }
 
     getTaskTypes() {
@@ -129,13 +129,13 @@ export default class TasksContainer extends EventEmitter<TasksEvents> {
 
     private mergeTasks(tasks: Task[]) {
         // Extract new tasks from the list of tasks
-        const newTasks = tasks.filter(t => !this.tasks.state.find(e => e.id === t.id));
+        const newTasks = tasks.filter((t) => !this.tasks.state.find((e) => e.id === t.id));
 
         // Merge new tasks with the existing
         const mergedTasks = [...this.tasks.state, ...newTasks];
 
         // Overwrite existing tasks with updated tasks
-        this.tasks.state = mergedTasks.map(t => tasks.find(n => n.id === t.id) || t);
+        this.tasks.state = mergedTasks.map((t) => tasks.find((n) => n.id === t.id) || t);
         this.emit('tasks-updated', this.tasks.state);
     }
 
@@ -168,7 +168,7 @@ const useTasksData = <
     const [isFetching, setIsFetching] = useState(false);
     const [defaultDataState] = useState<TData>(defaultData);
 
-    const [data, setData] = useEventEmitterValue(tasksContainer, event, t => t, defaultDataState);
+    const [data, setData] = useEventEmitterValue(tasksContainer, event, (t) => t, defaultDataState);
 
     const fetch = async () => {
         setIsFetching(true);
@@ -193,7 +193,7 @@ const useTasksData = <
 const useTaskSourceSystems = () => {
     return useTasksData(
         'source-systems-updated',
-        async tasksContainer => await tasksContainer.getSourceSystemsAsync(),
+        async (tasksContainer) => await tasksContainer.getSourceSystemsAsync(),
         useTasksContainer().getSourceSystems()
     );
 };
@@ -201,7 +201,7 @@ const useTaskSourceSystems = () => {
 const useTaskTypes = () => {
     return useTasksData(
         'task-types-updated',
-        async tasksContainer => await tasksContainer.getTaskTypesAsync(),
+        async (tasksContainer) => await tasksContainer.getTaskTypesAsync(),
         useTasksContainer().getTaskTypes()
     );
 };
@@ -219,7 +219,7 @@ const useTasks = () => {
 
     const [tasksError, isFetchingTasks, tasks] = useTasksData(
         'tasks-updated',
-        async tasksContainer => await tasksContainer.getAllTasksAsync(),
+        async (tasksContainer) => await tasksContainer.getAllTasksAsync(),
         useTasksContainer().getTasks()
     );
 

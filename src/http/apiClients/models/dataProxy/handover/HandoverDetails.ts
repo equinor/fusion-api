@@ -1,4 +1,4 @@
-import { HandoverChild } from "./HandoverChild";
+import { HandoverChild } from './HandoverChild';
 
 export type HandoverDetails = {
     nextToSign: string;

@@ -1,9 +1,9 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from 'react';
 
 export type PropertyAccessorFunction<T> = (item: T) => string | null;
 export type PropertyAccessor<T> = keyof T | PropertyAccessorFunction<T>;
 
-export type SortDirection = "asc" | "desc";
+export type SortDirection = 'asc' | 'desc';
 
 /**
  * Gets the value from an item based on the accessor (which may be a string or a function)
@@ -15,7 +15,7 @@ const getValue = <T>(item: T | null, accessor: PropertyAccessor<T>) => {
         return null;
     }
 
-    if (typeof accessor === "string") {
+    if (typeof accessor === 'string') {
         const value = item[accessor] as any;
         return value !== null && typeof value !== 'undefined' ? value.toString() : null;
     }
@@ -49,12 +49,12 @@ export const applySorting = <T>(
         if (!aValue && !bValue) {
             return 0;
         } else if (!aValue) {
-            return direction === "asc" ? 1 : -1;
+            return direction === 'asc' ? 1 : -1;
         } else if (!bValue) {
-            return direction === "asc" ? -1 : 1;
+            return direction === 'asc' ? -1 : 1;
         }
 
-        return direction === "asc" ? comparer(aValue, bValue) : comparer(bValue, aValue);
+        return direction === 'asc' ? comparer(aValue, bValue) : comparer(bValue, aValue);
     });
 };
 
@@ -64,9 +64,9 @@ export const applySorting = <T>(
  */
 const cycleSortDirection = (direction: SortDirection | null): SortDirection | null => {
     if (!direction) {
-        return "asc";
-    } else if (direction === "asc") {
-        return "desc";
+        return 'asc';
+    } else if (direction === 'asc') {
+        return 'desc';
     }
 
     return null;
@@ -87,14 +87,21 @@ export const useSorting = <T>(
     const [sortBy, setSortBy] = useState<PropertyAccessor<T> | null>(defaultSortBy);
     const [direction, setDirection] = useState<SortDirection | null>(defaultDirection);
 
-    const sortedData = useMemo(() => applySorting(data, sortBy, direction), [data, sortBy, direction]);
+    const sortedData = useMemo(() => applySorting(data, sortBy, direction), [
+        data,
+        sortBy,
+        direction,
+    ]);
 
     const resetSorting = () => {
         setSortBy(null);
         setDirection(null);
     };
 
-    const updateSortBy = (newSortBy: PropertyAccessor<T> | null, newDirection: SortDirection | null) => {
+    const updateSortBy = (
+        newSortBy: PropertyAccessor<T> | null,
+        newDirection: SortDirection | null
+    ) => {
         // Figure out the new direction
         newDirection =
             newDirection || sortBy === newSortBy || !newSortBy

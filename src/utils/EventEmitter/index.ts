@@ -1,11 +1,12 @@
 import { useState, useEffect, Dispatch, SetStateAction } from 'react';
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type Parameter<T extends (arg: any) => void> = T extends (arg: infer P) => void ? P : never;
 
 export type EventHandlerParameter<
     TEvent extends Events,
     TKey extends keyof TEvent,
     THandler extends TEvent[TKey] = TEvent[TKey]
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
 > = THandler extends (arg: infer P) => void ? P : never;
 
 type Handler<TEvents extends Events, TKey extends keyof TEvents = keyof TEvents> = {
@@ -48,9 +49,9 @@ export default abstract class EventEmitter<TEvents extends Events> {
         key: TKey,
         arg: TParameter
     ): this {
-        const handlers = this.handlers.filter(h => h.key === key);
+        const handlers = this.handlers.filter((h) => h.key === key);
 
-        handlers.forEach(handler => {
+        handlers.forEach((handler) => {
             const handlerFunction = handler.handler as TEvents[TKey];
             window.requestAnimationFrame(() => handlerFunction(arg));
         });
@@ -66,14 +67,14 @@ export const useEventEmitterValue = <
 >(
     emitter: EventEmitter<TEvents>,
     event: TKey,
-    transform: (value: TData) => TData | null = value => value,
+    transform: (value: TData) => TData | null = (value) => value,
     defaultData: TData | null = null
 ): [TData | null, Dispatch<SetStateAction<TData | null>>] => {
     const [value, setValue] = useState<TData | null>(defaultData);
     const [_, forceUpdate] = useState<null>(null);
 
     useEffect(() => {
-        return emitter.on(event, data => {
+        return emitter.on(event, (data) => {
             setValue(transform(data));
             forceUpdate(null);
         });
