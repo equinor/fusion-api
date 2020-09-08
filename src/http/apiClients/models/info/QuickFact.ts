@@ -1,16 +1,16 @@
 export type QuickFact = {
-    title: string;
     anchor: string;
-    bodyMarkdown: string | null;
-    created: string;
-    createdBy: CreatedBy;
-    collectionPath: string;
-    slug?: string;
-    contentUrl?: string;
+    title?: string | null;
+    bodyMarkdown?: string | null;
+    collectionPath?: string | null;
+    created: Date;
+    createdBy: Person;
+    updated?: Date | null;
+    updatedBy?: Person | null;
 };
 
-export type CreatedBy = {
+export type Person = {
     azureUniqueId: string;
-    mail: string;
-    name: string;
+    mail?: string | null;
+    name?: string | null;
 };
