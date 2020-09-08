@@ -139,7 +139,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         const buildUrl = this.appContainer.currentApp?.context?.buildUrl;
         const currentContext = await this.getAsync('current');
 
-        if(currentContext?.id === context?.id) {
+        if (currentContext?.id === context?.id) {
             return this.ensureCurrentContextExistsInUrl();
         }
 
@@ -380,7 +380,7 @@ const useContextQuery = (): {
             if (canQueryWithText(query)) {
                 setContexts([]);
                 try {
-                    var response = await apiClients.context.queryContextsAsync(
+                    const response = await apiClients.context.queryContextsAsync(
                         query,
                         ...currentTypes
                     );

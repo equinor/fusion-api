@@ -1,13 +1,12 @@
 import useApiClient, { ApiClientHookResult } from '../useApiClient';
 import { AccumulatedActions } from '../../apiClients/DataProxyClient';
 
-export function useAccumulatedItem<TKey extends keyof AccumulatedActions, T = AccumulatedActions[TKey]>(
-    siteCode: string,
-    projectIdentifier: string,
-    action: TKey
-): ApiClientHookResult<T[]> {
+export function useAccumulatedItem<
+    TKey extends keyof AccumulatedActions,
+    T = AccumulatedActions[TKey]
+>(siteCode: string, projectIdentifier: string, action: TKey): ApiClientHookResult<T[]> {
     return useApiClient<T[]>(
-        async apiClients => {
+        async (apiClients) => {
             const response = await apiClients.dataProxy.getAccumulatedItemAsync<TKey, T>(
                 siteCode,
                 projectIdentifier,

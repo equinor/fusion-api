@@ -1,6 +1,6 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { History } from "history";
-import { useFusionContext } from "../core/FusionContext";
+import { createContext, useContext, useEffect, useState } from 'react';
+import { History } from 'history';
+import { useFusionContext } from '../core/FusionContext';
 
 export interface IHistoryContext {
     history: History | null;

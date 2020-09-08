@@ -1,22 +1,22 @@
-import BaseResourceCollection from "./BaseResourceCollection";
-import { combineUrls } from "../../utils/url";
-import { TaskTypes } from "../apiClients/models/tasks/TaskType";
+import BaseResourceCollection from './BaseResourceCollection';
+import { combineUrls } from '../../utils/url';
+import { TaskTypes } from '../apiClients/models/tasks/TaskType';
 
 export default class TasksResourceCollection extends BaseResourceCollection {
     protected getBaseUrl() {
-        return combineUrls(this.serviceResolver.getTasksBaseUrl(), "tasks");
+        return combineUrls(this.serviceResolver.getTasksBaseUrl(), 'tasks');
     }
 
     taskTypes() {
-        return combineUrls(this.getBaseUrl(), "types");
+        return combineUrls(this.getBaseUrl(), 'types');
     }
 
     sourceSystems() {
-        return combineUrls(this.getBaseUrl(), "source-systems");
+        return combineUrls(this.getBaseUrl(), 'source-systems');
     }
 
     tasks(type: TaskTypes) {
-        return combineUrls(this.taskTypes(), type, "all");
+        return combineUrls(this.taskTypes(), type, 'all');
     }
 
     task(id: string) {
@@ -24,7 +24,7 @@ export default class TasksResourceCollection extends BaseResourceCollection {
     }
 
     count(type: TaskTypes) {
-        return combineUrls(this.taskTypes(), type, "count");
+        return combineUrls(this.taskTypes(), type, 'count');
     }
 
     query(queryText: string) {
@@ -32,6 +32,6 @@ export default class TasksResourceCollection extends BaseResourceCollection {
     }
 
     priority(id: string) {
-        return combineUrls(this.task(id), "priority");
+        return combineUrls(this.task(id), 'priority');
     }
 }

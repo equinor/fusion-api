@@ -1,4 +1,4 @@
-import { trimTrailingSlash } from "../utils/url";
+import { trimTrailingSlash } from '../utils/url';
 
 export default class AuthApp {
     clientId: string;
@@ -11,8 +11,8 @@ export default class AuthApp {
 
     updateResources(resources: string[]): void {
         resources
-            .map(resource => trimTrailingSlash(resource.toLowerCase()))
-            .forEach(resource => {
+            .map((resource) => trimTrailingSlash(resource.toLowerCase()))
+            .forEach((resource) => {
                 if (this.resources.indexOf(resource) === -1) {
                     this.resources.push(resource);
                 }

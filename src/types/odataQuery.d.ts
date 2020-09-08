@@ -1,1 +1,1 @@
-declare module "odata-query";
+declare module 'odata-query';

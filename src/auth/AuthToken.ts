@@ -3,8 +3,8 @@ import JSON from '../utils/JSON';
 const b64DecodeUnicode = (str: string) =>
     decodeURIComponent(
         Array.prototype.map
-            .call(atob(str), (c: any) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-            .join("")
+            .call(atob(str), (c: any) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+            .join('')
     );
 
 export class FusionAuthTokenParseError extends Error {
@@ -15,7 +15,7 @@ export class FusionAuthTokenParseError extends Error {
 
 export default class AuthToken {
     static parse(token: string): AuthToken {
-        const userPart = token.split(".")[1];
+        const userPart = token.split('.')[1];
         const parsedToken = JSON.parse<ParsedBearerToken>(b64DecodeUnicode(userPart));
 
         if (!parsedToken) {

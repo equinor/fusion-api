@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
 export type AsyncEffectCallback<T> = (signal: AbortSignal) => Promise<T>;
 

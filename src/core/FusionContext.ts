@@ -145,7 +145,7 @@ export const createFusionContext = (
         resourceCache,
         abortControllerManager,
         telemetryLogger,
-        new EventHub(),
+        new EventHub()
     );
     const apiClients = createApiClients(httpClient, resourceCollections, serviceResolver);
 

@@ -39,7 +39,7 @@ export const createResourceCollections = (
     report: new ReportResourceCollection(serviceResolver),
     powerBI: new PowerBIResourceCollection(serviceResolver),
     notification: new NotificationResourceCollection(serviceResolver),
-    info: new InfoResourceCollection(serviceResolver)
+    info: new InfoResourceCollection(serviceResolver),
 });
 
 export default ResourceCollections;

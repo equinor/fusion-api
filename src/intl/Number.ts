@@ -16,7 +16,11 @@ export const formatPercentage = (number: string | number, fractionDigits: number
     }).format(parsedNumber);
 };
 
-export const formatCurrency = (number: string | number, currency: string = 'NOK', fractionDigits: number = 2) => {
+export const formatCurrency = (
+    number: string | number,
+    currency: string = 'NOK',
+    fractionDigits: number = 2
+) => {
     const parsedNumber = typeof number === 'number' ? number : parseFloat(number);
     return new Intl.NumberFormat('en-GB', {
         style: 'currency',

@@ -1,4 +1,4 @@
-import { useFusionContext } from "../../core/FusionContext";
+import { useFusionContext } from '../../core/FusionContext';
 
 export default () => {
     const { http } = useFusionContext();

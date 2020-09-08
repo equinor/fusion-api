@@ -35,7 +35,8 @@ export interface IResourceCache {
     getAsync<T>(resource: string): Promise<ReadonlyCachedResource<T>>;
 }
 
-export default class ResourceCache extends EventEmitter<ResourceCacheEvents>
+export default class ResourceCache
+    extends EventEmitter<ResourceCacheEvents>
     implements IResourceCache {
     private cachedResources: IDistributedState<CachedResources>;
 

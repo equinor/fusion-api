@@ -1,5 +1,5 @@
-import ServiceResolver from "./ServiceResolver";
-import { combineUrls } from "../../utils/url";
+import ServiceResolver from './ServiceResolver';
+import { combineUrls } from '../../utils/url';
 
 export default abstract class BaseResourceCollection {
     protected serviceResolver: ServiceResolver;
@@ -17,9 +17,9 @@ export default abstract class BaseResourceCollection {
     ): string {
         return combineUrls(
             this.getBaseUrl(),
-            "/api/sites",
+            '/api/sites',
             siteCode,
-            "projects",
+            'projects',
             projectIdentifier,
             action
         );

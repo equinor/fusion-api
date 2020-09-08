@@ -1,4 +1,4 @@
-import TaskType from "./TaskType";
+import TaskType from './TaskType';
 
 export enum TaskSourceSystems {
     PimsDC,
@@ -12,6 +12,6 @@ type TaskSourceSystem = {
     displayName: string;
     sourceControlsPriority: boolean;
     handlesPortalTaskTypes: TaskType[];
-}
+};
 
 export default TaskSourceSystem;

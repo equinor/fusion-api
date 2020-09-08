@@ -21,19 +21,21 @@ type ReliableDictionaryEvents<TCacheType> = {
     change: (dictionary: TCacheType) => void;
 };
 
-type AdditionalEvents = {};
+type AdditionalEvents = Record<string, any>;
 
 export default abstract class ReliableDictionary<
-    TCacheType = ReadonlyDictionary,
-    TAdditionalEvents extends Events = AdditionalEvents,
-    TEvents extends Events = ReliableDictionaryEvents<TCacheType> & TAdditionalEvents
-> extends EventEmitter<TEvents> implements IReliableDictionary<TCacheType> {
+        TCacheType = ReadonlyDictionary,
+        TAdditionalEvents extends Events = AdditionalEvents,
+        TEvents extends Events = ReliableDictionaryEvents<TCacheType> & TAdditionalEvents
+    >
+    extends EventEmitter<TEvents>
+    implements IReliableDictionary<TCacheType> {
     protected provider: IReliableDictionaryStorageProvider;
 
     constructor(provider: IReliableDictionaryStorageProvider) {
         super();
         this.provider = provider;
-        this.provider.on('change', value => {
+        this.provider.on('change', (value) => {
             this.emit('change', value);
         });
     }
@@ -63,7 +65,7 @@ export default abstract class ReliableDictionary<
     }
 
     async toObjectAsync(): Promise<TCacheType> {
-        var value = await this.provider.toObjectAsync();
+        const value = await this.provider.toObjectAsync();
         return value as TCacheType;
     }
 
