@@ -50,7 +50,7 @@ const getPaginationTail = (pages: Page[], currentPage: Page, padding: number) =>
  */
 const getPaginationCenter = (pages: Page[], currentPage: Page, padding: number) => {
     // Does this need explaining? Really?
-    if(pages.length <= padding) {
+    if (pages.length <= padding) {
         return pages;
     }
 
@@ -271,7 +271,7 @@ export const useAsyncPagination = <T>(
 
         // Wrap the applyAsync function in abortable to allow the pagination to be changed
         // while the fetch is in progress
-        return abortable(async signal => {
+        return abortable(async (signal) => {
             try {
                 const result = await applyAsync(pagination);
 

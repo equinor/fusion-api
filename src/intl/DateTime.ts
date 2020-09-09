@@ -52,7 +52,7 @@ export const formatDay = (date: Date | number) => {
  * @param dateString Expected format: dd/mm/yyyy
  */
 export const parseDate = (dateString: string) => {
-    const parts = dateString.split('/').map(part => parseInt(part, 10));
+    const parts = dateString.split('/').map((part) => parseInt(part, 10));
     return new Date(parts[2], parts[1] - 1, parts[0]);
 };
 
@@ -62,8 +62,8 @@ export const parseDate = (dateString: string) => {
  */
 export const parseDateTime = (dateTimeString: string) => {
     const parts = dateTimeString.split(', ');
-    const dateParts = parts[0].split('/').map(part => parseInt(part, 10));
-    const timeParts = parts[1].split(':').map(part => parseInt(part, 10));
+    const dateParts = parts[0].split('/').map((part) => parseInt(part, 10));
+    const timeParts = parts[1].split(':').map((part) => parseInt(part, 10));
     return new Date(dateParts[2], dateParts[1] - 1, dateParts[0], timeParts[0], timeParts[1]);
 };
 

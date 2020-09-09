@@ -1,6 +1,6 @@
 type BlobContainer = {
-    blob: Blob,
-    fileName: string
+    blob: Blob;
+    fileName: string;
 };
 
 export default BlobContainer;

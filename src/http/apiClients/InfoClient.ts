@@ -19,7 +19,10 @@ export class InfoClient extends BaseApiClient {
 
     public async updateQuickFact(scope: string, value: QuickFact) {
         const url = this.resourceCollections.info.quickFact(scope, value.anchor);
-        return this.httpClient.putAsync<QuickFact, QuickFact, FusionApiHttpErrorResponse>(url, value);
+        return this.httpClient.putAsync<QuickFact, QuickFact, FusionApiHttpErrorResponse>(
+            url,
+            value
+        );
     }
 }
 

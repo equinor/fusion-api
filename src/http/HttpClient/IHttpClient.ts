@@ -69,6 +69,7 @@ export default interface IHttpClient {
 
     /**
      * Perform a OPTIONS request
+     *
      * @param url Request url
      * @param init Optional request init object
      */
@@ -99,8 +100,8 @@ export default interface IHttpClient {
     getBlobAsync<TExpectedErrorResponse>(url: string): Promise<BlobContainer>;
 
     /**
-    *  Performs a GET request and converts the response to a File
-    * @param url Request url
-    */
+     *  Performs a GET request and converts the response to a File
+     * @param url Request url
+     */
     getFileAsync<TExpectedErrorResponse>(url: string): Promise<File>;
 }

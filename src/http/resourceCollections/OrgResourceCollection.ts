@@ -39,29 +39,29 @@ export default class OrgResourceCollection extends BaseResourceCollection {
         return `${url}${query}`;
     }
 
-    instances(projectId: string, positionId :string, expandProperties?: string[]) {
+    instances(projectId: string, positionId: string, expandProperties?: string[]) {
         const url = combineUrls(this.position(projectId, positionId, false), 'instances');
-        if(!expandProperties || !expandProperties.length){
+        if (!expandProperties || !expandProperties.length) {
             return url;
         }
         const query = `?$expand=${expandProperties.join(',')}`;
         return `${url}${query}`;
     }
 
-    instance(projectId: string,positionId: string, instanceId: string) {
+    instance(projectId: string, positionId: string, instanceId: string) {
         return combineUrls(this.instances(projectId, positionId), instanceId);
     }
 
     publish(projectId: string, draftId: string) {
-        return combineUrls(this.project(projectId), 'drafts', draftId, 'publish')
+        return combineUrls(this.project(projectId), 'drafts', draftId, 'publish');
     }
 
     publishStatus(draftId: string) {
-        return combineUrls(this.getBaseUrl(), 'drafts', draftId, 'publish')
+        return combineUrls(this.getBaseUrl(), 'drafts', draftId, 'publish');
     }
 
     deleteDraft(projectId: string, draftId: string) {
-        return combineUrls(this.project(projectId),'drafts', draftId )
+        return combineUrls(this.project(projectId), 'drafts', draftId);
     }
 
     roleDescriptionV2(projectId: string, positionId: string) {
@@ -69,7 +69,15 @@ export default class OrgResourceCollection extends BaseResourceCollection {
     }
 
     personalTaskDescription(projectId: string, azureUniqueId: string) {
-        return combineUrls(this.getBaseUrl(), 'persons', azureUniqueId,'role-descriptions', 'projects', projectId, 'content')
+        return combineUrls(
+            this.getBaseUrl(),
+            'persons',
+            azureUniqueId,
+            'role-descriptions',
+            'projects',
+            projectId,
+            'content'
+        );
     }
 
     roleDescription(projectId: string, positionId: string) {
@@ -114,12 +122,12 @@ export default class OrgResourceCollection extends BaseResourceCollection {
     }
 
     snapshots(projectId: string) {
-        return combineUrls(this.project(projectId), 'snapshots')
+        return combineUrls(this.project(projectId), 'snapshots');
     }
     snapshot(projectId: string, snapshotId: string) {
-        return combineUrls(this.snapshots(projectId), snapshotId)
+        return combineUrls(this.snapshots(projectId), snapshotId);
     }
     approveSnapshot(projectId: string, snapshotId: string) {
-        return combineUrls(this.snapshot(projectId, snapshotId), 'approve')
+        return combineUrls(this.snapshot(projectId, snapshotId), 'approve');
     }
 }

@@ -32,12 +32,12 @@ export default class TelemetryLogger {
     registerInitializer(initializer: TelemetryInitializer) {
         this.initializers = [...this.initializers, initializer];
         return () => {
-            this.initializers = this.initializers.filter(i => i !== initializer);
+            this.initializers = this.initializers.filter((i) => i !== initializer);
         };
     }
 
     trackEvent(event: IEventTelemetry) {
-        if(!this.isInitialized) {
+        if (!this.isInitialized) {
             return;
         }
 
@@ -45,47 +45,47 @@ export default class TelemetryLogger {
     }
 
     trackException(exception: IExceptionTelemetry) {
-        if(!this.isInitialized) {
+        if (!this.isInitialized) {
             return;
         }
-        
+
         this.internalAppInsights.trackException(exception);
     }
 
     trackPageView(pageView?: IPageViewTelemetry) {
-        if(!this.isInitialized) {
+        if (!this.isInitialized) {
             return;
         }
-        
+
         this.internalAppInsights.trackPageView(pageView);
     }
 
     trackTrace(trace: ITraceTelemetry) {
-        if(!this.isInitialized) {
+        if (!this.isInitialized) {
             return;
         }
-        
+
         this.internalAppInsights.trackTrace(trace);
     }
 
     trackMetric(metrics: IMetricTelemetry) {
-        if(!this.isInitialized) {
+        if (!this.isInitialized) {
             return;
         }
-        
+
         this.internalAppInsights.trackMetric(metrics);
     }
 
     trackDependency(dependency: IDependencyTelemetry) {
-        if(!this.isInitialized) {
+        if (!this.isInitialized) {
             return;
         }
-        
+
         this.internalAppInsights.trackDependencyData(dependency);
     }
 
     private initializeAppInsights(instrumentationKey: string, authContainer: IAuthContainer) {
-        if(!instrumentationKey) {
+        if (!instrumentationKey) {
             return;
         }
 

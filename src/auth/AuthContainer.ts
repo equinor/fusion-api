@@ -12,7 +12,7 @@ export class FusionAuthAppNotFoundError extends Error {
     }
 }
 
-export class FusionAuthLoginError extends Error { }
+export class FusionAuthLoginError extends Error {}
 
 export interface IAuthContainer {
     /**
@@ -79,6 +79,8 @@ export default class AuthContainer implements IAuthContainer {
     protected cachedUser: AuthUser | null = null;
     protected telemetryLogger?: TelemetryLogger;
 
+    private _tokenQueue: Record<string, Promise<string | null>> = {};
+
     constructor() {
         this.apps = [];
         this.cache = new AuthCache();
@@ -114,7 +116,7 @@ export default class AuthContainer implements IAuthContainer {
                 redirectUrl &&
                 AuthContainer.getResourceOrigin(redirectUrl) === window.location.origin
             ) {
-                window.history.replaceState(null, "", redirectUrl);
+                window.history.replaceState(null, '', redirectUrl);
                 window.location.reload(true);
             }
         } catch (e) {
@@ -123,28 +125,51 @@ export default class AuthContainer implements IAuthContainer {
         }
     }
 
-    async acquireTokenAsync(resource: string): Promise<string | null> {
-        const app = this.resolveApp(resource);
+    private async _acquireTokenAsync(app: AuthApp, resource: string): Promise<string | null> {
+        try {
+            // try to use previous token (if any and not expired)
+            const cachedToken = await this.cache.getTokenAsync(app);
+            if (cachedToken !== null && cachedToken.isValid()) {
+                return cachedToken.toString();
+            }
 
+            // clear previous token for app
+            await this.cache.clearTokenAsync(app);
+
+            const refreshedToken = await this.refreshTokenAsync(resource);
+            if (!refreshedToken) {
+                throw Error('invalid token');
+            }
+
+            // add new token to cache for app
+            await this.updateTokenForAppAsync(app, refreshedToken);
+
+            return refreshedToken;
+        } catch (err) {
+            console.log(err);
+            // failed to acquire new token
+            return null;
+        } finally {
+            // remove request from queue
+            delete this._tokenQueue[app.clientId];
+        }
+    }
+
+    acquireTokenAsync(resource: string): Promise<string | null> {
+        const app = this.resolveApp(resource);
         if (app === null) {
             throw new FusionAuthAppNotFoundError(resource);
         }
 
-        const cachedToken = await this.cache.getTokenAsync(app);
-
-        if (cachedToken !== null && cachedToken.isValid()) {
-            return cachedToken.toString();
+        /**
+         * since acquiring token is async we need to make sure that only
+         * one thread is clearing old token and acquires a new one
+         */
+        if (!this._tokenQueue[app.clientId]) {
+            this._tokenQueue[app.clientId] = this._acquireTokenAsync(app, resource);
         }
 
-        const refreshedToken = await this.refreshTokenAsync(resource);
-
-        if (!refreshedToken) {
-            return null;
-        }
-
-        await this.updateTokenForAppAsync(app, refreshedToken);
-
-        return refreshedToken;
+        return this._tokenQueue[app.clientId];
     }
 
     protected async refreshTokenAsync(resource: string): Promise<string | null> {
@@ -272,7 +297,7 @@ export default class AuthContainer implements IAuthContainer {
 
     protected static getPartFromHash(hash: string, key: string): string | null {
         const parts = hash.substr(1).split('&');
-        const tokenPart = parts.find(part => part.indexOf(`${key}=`) === 0);
+        const tokenPart = parts.find((part) => part.indexOf(`${key}=`) === 0);
 
         if (typeof tokenPart === 'undefined') {
             return null;
@@ -281,7 +306,7 @@ export default class AuthContainer implements IAuthContainer {
         return tokenPart.replace(`${key}=`, '');
     }
 
-    protected async buildLoginUrlAsync(app: AuthApp, nonce: AuthNonce, customParams: object = {}) {
+    protected async buildLoginUrlAsync(app: AuthApp, nonce: AuthNonce, customParams = {}) {
         const cachedUser = await this.getCachedUserAsync();
 
         const base =
@@ -296,7 +321,7 @@ export default class AuthContainer implements IAuthContainer {
         };
 
         const queryString = Object.keys(params)
-            .filter(key => params[key])
+            .filter((key) => params[key])
             .reduce(
                 (query, key) =>
                     query + `${query ? '&' : ''}${key}=${encodeURIComponent(params[key])}`,
@@ -309,7 +334,8 @@ export default class AuthContainer implements IAuthContainer {
     protected resolveApp(resource: string): AuthApp | null {
         const resourceOrigin = AuthContainer.getResourceOrigin(resource);
         const app = this.apps.find(
-            app =>
+            (app) =>
+                app.resources.some((r) => r === resource) ||
                 app.resources.indexOf(resourceOrigin) !== -1 ||
                 app.clientId === resourceOrigin ||
                 app.clientId === resource

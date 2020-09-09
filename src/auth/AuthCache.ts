@@ -5,11 +5,11 @@ import ReliableDictionary, { LocalStorageProvider } from '../utils/ReliableDicti
 import EventHub from '../utils/EventHub';
 
 enum CacheKey {
-    TOKEN = "TOKEN",
-    USER = "USER",
-    REDIRECT_URL = "REDIRECT_URL",
-    APP_LOGIN_LOCK = "APP_LOGIN_LOCK",
-};
+    TOKEN = 'TOKEN',
+    USER = 'USER',
+    REDIRECT_URL = 'REDIRECT_URL',
+    APP_LOGIN_LOCK = 'APP_LOGIN_LOCK',
+}
 
 export default class AuthCache extends ReliableDictionary {
     constructor() {
@@ -21,10 +21,7 @@ export default class AuthCache extends ReliableDictionary {
     }
 
     async storeTokenAsync(app: AuthApp, token: AuthToken) {
-        await this.setAsync(
-            AuthCache.createAppCacheKey(app, CacheKey.TOKEN),
-            token.toString()
-        );
+        await this.setAsync(AuthCache.createAppCacheKey(app, CacheKey.TOKEN), token.toString());
     }
 
     async getTokenAsync(app: AuthApp) {
@@ -68,19 +65,46 @@ export default class AuthCache extends ReliableDictionary {
     }
 
     async setAppLoginLock(clientId: string) {
-        await this.setAsync(CacheKey.APP_LOGIN_LOCK, clientId);
-    }
-
-    async clearAppLoginLock(clientId: string) {
-        const currentAppIdLock = await this.getAsync<string, string>(CacheKey.APP_LOGIN_LOCK);
-        if (currentAppIdLock === clientId) {
-            await this.removeAsync(CacheKey.APP_LOGIN_LOCK);
+        const payload = {
+            clientId,
+            created: Date.now(),
         };
+        await this.setAsync(CacheKey.APP_LOGIN_LOCK, JSON.stringify(payload));
     }
 
-    async isAppLoginLocked() {
-        const lockingAppId = await this.getAsync<string, string>(CacheKey.APP_LOGIN_LOCK);
-        const isUnlocked = lockingAppId === null || lockingAppId === "";
-        return !isUnlocked;
+    /**
+     * Clears app lock from auth cache
+     *
+     * @TODO remove parameter since never been used
+     *
+     * @param _clientId [string] @deprecated
+     */
+    async clearAppLoginLock(_clientId?: string) {
+        return this.removeAsync(CacheKey.APP_LOGIN_LOCK);
+    }
+
+    async getAppLoginLock(): Promise<{ clientId?: string; created?: string }> {
+        const payload = await this.getAsync<string, string>(CacheKey.APP_LOGIN_LOCK);
+        return payload ? JSON.parse(payload) : {};
+    }
+
+    /**
+     *  Check if an app has set a lock for authentication.
+     *  If lock exceeds the provided lifetime, lock is removed
+     *
+     * @param lifetime [number] max lifetime of a lock in seconds
+     */
+    async isAppLoginLocked(lifetime: number = 300) {
+        try {
+            const { created, clientId } = await this.getAppLoginLock();
+            const isLocked = Date.now() - Number(created || 0) < lifetime * 1000;
+            const clearLock = !!clientId && !isLocked;
+            clearLock && (await this.clearAppLoginLock());
+            return isLocked;
+        } catch {
+            // invalid lock data, most likely legacy
+            await this.clearAppLoginLock();
+        }
+        return false;
     }
 }

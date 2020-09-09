@@ -1,5 +1,5 @@
-import * as uuid from "uuid/v1";
-import AuthApp from "./AuthApp";
+import * as uuid from 'uuid/v1';
+import AuthApp from './AuthApp';
 
 export class FusionNonceNotFoundError extends Error {
     constructor(key: string) {

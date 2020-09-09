@@ -5,5 +5,5 @@ export type PersonNotification = {
     name: string;
     jobTitle: string;
     mail: string;
-    accountType: PersonAccountType
-}
+    accountType: PersonAccountType;
+};

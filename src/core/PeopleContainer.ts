@@ -66,7 +66,7 @@ export default class PeopleContainer extends EventEmitter<PersonContainerEvents>
             response.data,
             this.eventHub
         );
-        this.persons[personId].on('change', personDetails => {
+        this.persons[personId].on('change', (personDetails) => {
             this.emit('updated', personDetails);
         });
         return this.persons[personId].state;
@@ -84,7 +84,7 @@ export default class PeopleContainer extends EventEmitter<PersonContainerEvents>
 
         const roles = person.roles;
         if (roles) {
-            const newRoles = roles.map(role => (role.name === roleName ? response.data : role));
+            const newRoles = roles.map((role) => (role.name === roleName ? response.data : role));
             this.persons[personId].state = { ...person, roles: newRoles };
         }
 
@@ -139,7 +139,7 @@ const usePersonDetails = (personId: string) => {
     );
 
     const getPersonAsync = async (personId: string) => {
-        if(!personId) {
+        if (!personId) {
             return;
         }
 
@@ -193,10 +193,10 @@ const usePersonImageUrl = (personId: string) => {
     const [imageUrl, setImageUrl] = React.useState<string>(getCachedPersonImageUrl(personId));
 
     const getImageAsync = async (personId: string) => {
-        if(!personId) {
+        if (!personId) {
             return;
         }
-        
+
         const cachedImageUrl = getCachedPersonImageUrl(personId);
 
         if (cachedImageUrl !== '') {
@@ -227,7 +227,7 @@ const usePersonImageUrl = (personId: string) => {
 
 const useCurrentPersonDetails = () => {
     const currentUser = useCurrentUser();
-    return usePersonDetails(currentUser?.id || "");
+    return usePersonDetails(currentUser?.id || '');
 };
 
 export { usePeopleContainer, usePersonDetails, usePersonImageUrl, useCurrentPersonDetails };

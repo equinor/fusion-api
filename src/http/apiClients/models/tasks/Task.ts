@@ -1,5 +1,5 @@
-import TaskType, { TaskTypes } from "./TaskType";
-import TaskSourceSystem, { TaskSourceSystems } from "./SourceSystem";
+import TaskType, { TaskTypes } from './TaskType';
+import TaskSourceSystem, { TaskSourceSystems } from './SourceSystem';
 
 type Person = {
     aadUniqueId: string;

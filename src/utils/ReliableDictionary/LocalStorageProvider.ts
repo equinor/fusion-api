@@ -30,7 +30,7 @@ export default class LocalStorageProvider
             this.localCache.state = defaultValue;
         }
 
-        this.localCache.on('change', value => {
+        this.localCache.on('change', (value) => {
             this.emit('change', value);
         });
     }

@@ -9,7 +9,8 @@ export type DistributedStateEvents<T> = {
     change: (state: T) => void;
 };
 
-class DistributedState<T> extends EventEmitter<DistributedStateEvents<T>>
+class DistributedState<T>
+    extends EventEmitter<DistributedStateEvents<T>>
     implements IDistributedState<T> {
     private _state: T;
     private readonly _key: string;

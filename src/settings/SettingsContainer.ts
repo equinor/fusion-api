@@ -20,7 +20,8 @@ export interface ISettingsContainer<T = ReadonlySettings>
     extends IReadonlySettingsContainer<T>,
         IReliableDictionary<T> {}
 
-export default class SettingsContainer<T = ReadonlySettings> extends ReliableDictionary<T>
+export default class SettingsContainer<T = ReadonlySettings>
+    extends ReliableDictionary<T>
     implements ISettingsContainer<T> {
     constructor(
         baseKey: string,
