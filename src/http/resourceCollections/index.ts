@@ -10,6 +10,7 @@ import ReportResourceCollection from './ReportResourceCollection';
 import PowerBIResourceCollection from './PowerBIResourceCollection';
 import NotificationResourceCollection from './NotificationResourceCollection';
 import InfoResourceCollection from './InfoResourceCollection';
+import UserSettingsResourceCollection from './UserSettingsResoureCollections';
 
 type ResourceCollections = {
     dataProxy: DataProxyResourceCollection;
@@ -22,6 +23,7 @@ type ResourceCollections = {
     powerBI: PowerBIResourceCollection;
     notification: NotificationResourceCollection;
     info: InfoResourceCollection;
+    userSettings: UserSettingsResourceCollection;
 };
 
 export { DataProxyResourceCollection };
@@ -39,7 +41,8 @@ export const createResourceCollections = (
     report: new ReportResourceCollection(serviceResolver),
     powerBI: new PowerBIResourceCollection(serviceResolver),
     notification: new NotificationResourceCollection(serviceResolver),
-    info: new InfoResourceCollection(serviceResolver)
+    info: new InfoResourceCollection(serviceResolver),
+    userSettings: new UserSettingsResourceCollection(serviceResolver),
 });
 
 export default ResourceCollections;
