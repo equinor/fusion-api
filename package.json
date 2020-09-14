@@ -33,7 +33,7 @@
         }
     },
     "lint-staged": {
-        "./src/**/*.{js,ts,tsx}":  ["prettier --write ","eslint --fix"]
+        "./src/**/*.{js,ts,tsx}":  ["prettier --write ","eslint --quiet --fix"]
     },
     "dependencies": {
         "@microsoft/applicationinsights-web": "^2.4.3",
