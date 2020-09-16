@@ -16,12 +16,15 @@ import Position from './models/org/Position';
 import { HttpResponse } from '../HttpClient';
 
 export default class OrgClient extends BaseApiClient {
-    public async getProjectsAsync() {
+    public async getProjectsAsync(): Promise<HttpResponse<OrgProject[]>> {
         const url = this.resourceCollections.org.projects();
         return this.httpClient.getAsync<OrgProject[], FusionApiHttpErrorResponse>(url);
     }
 
-    public async getProjectAsync(projectId: string, snapshotId?: string) {
+    public async getProjectAsync(
+        projectId: string,
+        snapshotId?: string
+    ): Promise<HttpResponse<OrgProject>> {
         const { project, snapshotProject } = this.resourceCollections.org;
         const url = snapshotId ? snapshotProject(snapshotId) : project(projectId);
         return this.httpClient.getAsync<OrgProject, FusionApiHttpErrorResponse>(url, {
@@ -31,7 +34,10 @@ export default class OrgClient extends BaseApiClient {
         });
     }
 
-    public async searchProjectsAsync(query: string, apiVersion?: string) {
+    public async searchProjectsAsync(
+        query: string,
+        apiVersion?: string
+    ): Promise<HttpResponse<OrgProject[]>> {
         const requestHeader: RequestInit = {
             headers: {
                 'api-version': apiVersion ? apiVersion : '1.0',
@@ -44,7 +50,7 @@ export default class OrgClient extends BaseApiClient {
         );
     }
 
-    public async newProjectAsync(newProject: CreateOrgProject) {
+    public async newProjectAsync(newProject: CreateOrgProject): Promise<HttpResponse<OrgProject>> {
         const baseUrl = this.resourceCollections.org.projects();
         const url = `${baseUrl}?api-version=2.0`;
 
@@ -58,7 +64,7 @@ export default class OrgClient extends BaseApiClient {
         projectId: string,
         expandProperties?: string[],
         snapshotId?: string
-    ) {
+    ): Promise<HttpResponse<Position[]>> {
         const { positions, snapshotPositions } = this.resourceCollections.org;
 
         const url = snapshotId
@@ -71,7 +77,11 @@ export default class OrgClient extends BaseApiClient {
         });
     }
 
-    public async getPositionAsync(projectId: string, positionId: string, snapshotId?: string) {
+    public async getPositionAsync(
+        projectId: string,
+        positionId: string,
+        snapshotId?: string
+    ): Promise<HttpResponse<Position>> {
         const { position, snapshotPosition } = this.resourceCollections.org;
 
         const url = snapshotId
@@ -84,7 +94,11 @@ export default class OrgClient extends BaseApiClient {
         });
     }
 
-    public async updatePositionAsync(projectId: string, position: Position, edit?: boolean) {
+    public async updatePositionAsync(
+        projectId: string,
+        position: Position,
+        edit?: boolean
+    ): Promise<HttpResponse<Position>> {
         const url = this.resourceCollections.org.position(projectId, position.id, false);
         return this.httpClient.putAsync<Position, Position, FusionApiHttpErrorResponse>(
             url,
@@ -104,7 +118,7 @@ export default class OrgClient extends BaseApiClient {
         positionId: string,
         positionProperties: Partial<Position>,
         edit?: boolean
-    ) {
+    ): Promise<HttpResponse<Position>> {
         const url = this.resourceCollections.org.position(projectId, positionId, false);
         return this.httpClient.patchAsync<Partial<Position>, Position, FusionApiHttpErrorResponse>(
             url,
@@ -125,7 +139,7 @@ export default class OrgClient extends BaseApiClient {
         instanceId: string,
         instanceProperties: Partial<PositionInstance> & { id: string },
         edit?: boolean
-    ) {
+    ): Promise<HttpResponse<PositionInstance>> {
         const url = this.resourceCollections.org.instance(projectId, positionId, instanceId);
         return this.httpClient.patchAsync<
             Partial<PositionInstance> & { id: string },
@@ -140,7 +154,11 @@ export default class OrgClient extends BaseApiClient {
         });
     }
 
-    public async publishAsync(projectId: string, draftId: string, apiVersion?: string) {
+    public async publishAsync(
+        projectId: string,
+        draftId: string,
+        apiVersion?: string
+    ): Promise<HttpResponse<PublishDetails>> {
         const url = this.resourceCollections.org.publish(projectId, draftId);
         const requestHeader: RequestInit = {
             headers: {
@@ -154,7 +172,11 @@ export default class OrgClient extends BaseApiClient {
         );
     }
 
-    public async deleteDraftAsync(projectId: string, draftId: string, apiVersion?: string) {
+    public async deleteDraftAsync(
+        projectId: string,
+        draftId: string,
+        apiVersion?: string
+    ): Promise<HttpResponse<void>> {
         const url = this.resourceCollections.org.deleteDraft(projectId, draftId);
         const requestHeader: RequestInit = {
             headers: {
@@ -168,7 +190,10 @@ export default class OrgClient extends BaseApiClient {
         );
     }
 
-    public async getPublishStatusAsync(draftId: string, apiVersion?: string) {
+    public async getPublishStatusAsync(
+        draftId: string,
+        apiVersion?: string
+    ): Promise<HttpResponse<PublishDetails>> {
         const url = this.resourceCollections.org.publishStatus(draftId);
         const requestHeader: RequestInit = {
             headers: {
@@ -186,7 +211,7 @@ export default class OrgClient extends BaseApiClient {
         positionId: string,
         date: string,
         snapshotId?: string
-    ) {
+    ): Promise<HttpResponse<PositionReportPath>> {
         const { reportsTo, snapshotReportsTo } = this.resourceCollections.org;
 
         const url = snapshotId
@@ -199,7 +224,10 @@ export default class OrgClient extends BaseApiClient {
         });
     }
 
-    public async getRoleDescriptionAsync(projectId: string, positionId: string) {
+    public async getRoleDescriptionAsync(
+        projectId: string,
+        positionId: string
+    ): Promise<HttpResponse<string>> {
         const url = this.resourceCollections.org.roleDescription(projectId, positionId);
         return this.httpClient.getAsync<string, FusionApiHttpErrorResponse>(
             url,
@@ -210,7 +238,9 @@ export default class OrgClient extends BaseApiClient {
         );
     }
 
-    public async getBasePositionRoleDescriptionAsync(basePositionId: string) {
+    public async getBasePositionRoleDescriptionAsync(
+        basePositionId: string
+    ): Promise<HttpResponse<string>> {
         const url = this.resourceCollections.org.basePositionRoleDescription(basePositionId);
         return this.httpClient.getAsync<string, FusionApiHttpErrorResponse>(
             url,
@@ -225,7 +255,7 @@ export default class OrgClient extends BaseApiClient {
         projectId: string,
         positionId: string,
         snapshotId?: string
-    ) {
+    ): Promise<HttpResponse<RoleDescription>> {
         const { roleDescriptionV2, snapshotRoleDescription } = this.resourceCollections.org;
         const url = snapshotId
             ? snapshotRoleDescription(snapshotId, positionId)
@@ -241,7 +271,7 @@ export default class OrgClient extends BaseApiClient {
         projectId: string,
         azureUniqueId: string,
         description: string
-    ) {
+    ): Promise<HttpResponse<string>> {
         const url = this.resourceCollections.org.personalTaskDescription(projectId, azureUniqueId);
         return this.httpClient.putAsync<() => string, string, FusionApiHttpErrorResponse>(
             url,
@@ -258,7 +288,10 @@ export default class OrgClient extends BaseApiClient {
         );
     }
 
-    public async canEditPersonalTaskDescriptionAsync(projectId: string, azureUniqueId: string) {
+    public async canEditPersonalTaskDescriptionAsync(
+        projectId: string,
+        azureUniqueId: string
+    ): Promise<boolean> {
         const url = this.resourceCollections.org.personalTaskDescription(projectId, azureUniqueId);
         try {
             const response = await this.httpClient.optionsAsync<void, FusionApiHttpErrorResponse>(
@@ -282,12 +315,15 @@ export default class OrgClient extends BaseApiClient {
         }
     }
 
-    public async getDisciplineNetworkAsync(projectId: string, discipline: string) {
+    public async getDisciplineNetworkAsync(
+        projectId: string,
+        discipline: string
+    ): Promise<HttpResponse<Position[]>> {
         const url = this.resourceCollections.org.disciplineNetwork(projectId, discipline);
         return this.httpClient.getAsync<Position[], FusionApiHttpErrorResponse>(url);
     }
 
-    public async canEditPosition(projectId: string, positionId: string) {
+    public async canEditPosition(projectId: string, positionId: string): Promise<boolean> {
         const url = this.resourceCollections.org.position(projectId, positionId, false);
 
         try {
@@ -312,7 +348,7 @@ export default class OrgClient extends BaseApiClient {
         }
     }
 
-    public async getDisciplines() {
+    public async getDisciplines(): Promise<false | string[]> {
         const url = this.resourceCollections.org.basePositions();
 
         try {
@@ -335,7 +371,7 @@ export default class OrgClient extends BaseApiClient {
         }
     }
 
-    public async getContractsAsync(projectId: string) {
+    public async getContractsAsync(projectId: string): Promise<HttpResponse<Contract[]>> {
         const url = this.resourceCollections.org.getContractsUrl(projectId);
         return this.httpClient.getAsync<Contract[], FusionApiHttpErrorResponse>(url, {
             headers: {
@@ -344,17 +380,16 @@ export default class OrgClient extends BaseApiClient {
         });
     }
 
-    public async getContractPositionsAsync(projectId: string, contractId: string) {
+    public async getContractPositionsAsync(
+        projectId: string,
+        contractId: string
+    ): Promise<HttpResponse<Position[]>> {
         const url = this.resourceCollections.org.getContractPositionsUrl(projectId, contractId);
         return this.httpClient.getAsync<Position[], FusionApiHttpErrorResponse>(url, {
             headers: {
                 'api-version': '2.0',
             },
         });
-    }
-
-    protected getBaseUrl() {
-        return this.serviceResolver.getOrgBaseUrl();
     }
 
     public async canReadSnapshotsAsync(projectId: string): Promise<boolean> {
@@ -380,17 +415,23 @@ export default class OrgClient extends BaseApiClient {
             return false;
         }
     }
-    public async getSnapshotsAsync(projectId: string) {
+    public async getSnapshotsAsync(projectId: string): Promise<HttpResponse<OrgSnapshot[]>> {
         const url = this.resourceCollections.org.snapshots(projectId);
         return await this.httpClient.getAsync<OrgSnapshot[], FusionApiHttpErrorResponse>(url);
     }
 
-    public async getSnapshotAsync(projectId: string, snapshotId: string) {
+    public async getSnapshotAsync(
+        projectId: string,
+        snapshotId: string
+    ): Promise<HttpResponse<OrgSnapshot>> {
         const url = this.resourceCollections.org.snapshot(projectId, snapshotId);
         return await this.httpClient.getAsync<OrgSnapshot, FusionApiHttpErrorResponse>(url);
     }
 
-    public async createSnapshotAsync(projectId: string, snapshotRequest: CreateSnapshotRequest) {
+    public async createSnapshotAsync(
+        projectId: string,
+        snapshotRequest: CreateSnapshotRequest
+    ): Promise<HttpResponse<OrgSnapshot>> {
         const url = this.resourceCollections.org.snapshots(projectId);
         return await this.httpClient.postAsync<
             CreateSnapshotRequest,
@@ -433,5 +474,9 @@ export default class OrgClient extends BaseApiClient {
             OrgSnapshot,
             FusionApiHttpErrorResponse
         >(url, approvePayload);
+    }
+
+    protected getBaseUrl(): string {
+        return this.serviceResolver.getOrgBaseUrl();
     }
 }
