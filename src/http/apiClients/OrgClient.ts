@@ -13,6 +13,7 @@ import OrgProject, {
     CreateSnapshotRequest,
 } from './models/org/OrgProject';
 import Position from './models/org/Position';
+import { HttpResponse } from '../HttpClient';
 
 export default class OrgClient extends BaseApiClient {
     public async getProjectsAsync() {
@@ -20,8 +21,9 @@ export default class OrgClient extends BaseApiClient {
         return this.httpClient.getAsync<OrgProject[], FusionApiHttpErrorResponse>(url);
     }
 
-    public async getProjectAsync(projectId: string) {
-        const url = this.resourceCollections.org.project(projectId);
+    public async getProjectAsync(projectId: string, snapshotId?: string) {
+        const { project, snapshotProject } = this.resourceCollections.org;
+        const url = snapshotId ? snapshotProject(snapshotId) : project(projectId);
         return this.httpClient.getAsync<OrgProject, FusionApiHttpErrorResponse>(url, {
             headers: {
                 'api-version': '2.0',
@@ -52,8 +54,16 @@ export default class OrgClient extends BaseApiClient {
         );
     }
 
-    public async getPositionsAsync(projectId: string, expandProperties?: string[]) {
-        const url = this.resourceCollections.org.positions(projectId, expandProperties);
+    public async getPositionsAsync(
+        projectId: string,
+        expandProperties?: string[],
+        snapshotId?: string
+    ) {
+        const { positions, snapshotPositions } = this.resourceCollections.org;
+
+        const url = snapshotId
+            ? snapshotPositions(snapshotId, expandProperties)
+            : positions(projectId, expandProperties);
         return this.httpClient.getAsync<Position[], FusionApiHttpErrorResponse>(url, {
             headers: {
                 'api-version': '2.0',
@@ -61,8 +71,12 @@ export default class OrgClient extends BaseApiClient {
         });
     }
 
-    public async getPositionAsync(projectId: string, positionId: string) {
-        const url = this.resourceCollections.org.position(projectId, positionId);
+    public async getPositionAsync(projectId: string, positionId: string, snapshotId?: string) {
+        const { position, snapshotPosition } = this.resourceCollections.org;
+
+        const url = snapshotId
+            ? snapshotPosition(snapshotId, positionId)
+            : position(projectId, positionId);
         return this.httpClient.getAsync<Position, FusionApiHttpErrorResponse>(url, {
             headers: {
                 'api-version': '2.0',
@@ -167,8 +181,17 @@ export default class OrgClient extends BaseApiClient {
         );
     }
 
-    public async getPositionReportPathAsync(projectId: string, positionId: string, date: string) {
-        const url = this.resourceCollections.org.reportsTo(projectId, positionId, date);
+    public async getPositionReportPathAsync(
+        projectId: string,
+        positionId: string,
+        date: string,
+        snapshotId?: string
+    ) {
+        const { reportsTo, snapshotReportsTo } = this.resourceCollections.org;
+
+        const url = snapshotId
+            ? snapshotReportsTo(projectId, positionId, date)
+            : reportsTo(projectId, positionId, date);
         return this.httpClient.getAsync<PositionReportPath, FusionApiHttpErrorResponse>(url, {
             headers: {
                 'api-version': '2.0',
@@ -198,8 +221,15 @@ export default class OrgClient extends BaseApiClient {
         );
     }
 
-    public async getRoleDescriptionV2Async(projectId: string, positionId: string) {
-        const url = this.resourceCollections.org.roleDescriptionV2(projectId, positionId);
+    public async getRoleDescriptionV2Async(
+        projectId: string,
+        positionId: string,
+        snapshotId?: string
+    ) {
+        const { roleDescriptionV2, snapshotRoleDescription } = this.resourceCollections.org;
+        const url = snapshotId
+            ? snapshotRoleDescription(snapshotId, positionId)
+            : roleDescriptionV2(projectId, positionId);
         return this.httpClient.getAsync<RoleDescription, FusionApiHttpErrorResponse>(url, {
             headers: {
                 'api-version': '2.0',
@@ -323,6 +353,33 @@ export default class OrgClient extends BaseApiClient {
         });
     }
 
+    protected getBaseUrl() {
+        return this.serviceResolver.getOrgBaseUrl();
+    }
+
+    public async canReadSnapshotsAsync(projectId: string): Promise<boolean> {
+        const url = this.resourceCollections.org.snapshots(projectId);
+        try {
+            const response = await this.httpClient.optionsAsync<void, FusionApiHttpErrorResponse>(
+                url,
+                {
+                    headers: {
+                        'api-version': '2.0',
+                    },
+                },
+                () => Promise.resolve()
+            );
+
+            const allowHeader = response.headers.get('Allow');
+            if (allowHeader !== null && allowHeader.indexOf('GET') !== -1) {
+                return true;
+            }
+
+            return false;
+        } catch (e) {
+            return false;
+        }
+    }
     public async getSnapshotsAsync(projectId: string) {
         const url = this.resourceCollections.org.snapshots(projectId);
         return await this.httpClient.getAsync<OrgSnapshot[], FusionApiHttpErrorResponse>(url);
@@ -342,20 +399,39 @@ export default class OrgClient extends BaseApiClient {
         >(url, snapshotRequest);
     }
 
+    public async canApproveSnapshotAsync(projectId: string, snapshotId: string): Promise<boolean> {
+        const url = this.resourceCollections.org.approveSnapshot(projectId, snapshotId);
+        try {
+            const response = await this.httpClient.optionsAsync<void, FusionApiHttpErrorResponse>(
+                url,
+                {
+                    headers: {
+                        'api-version': '2.0',
+                    },
+                },
+                () => Promise.resolve()
+            );
+
+            const allowHeader = response.headers.get('Allow');
+            if (allowHeader !== null && allowHeader.indexOf('PUT') !== -1) {
+                return true;
+            }
+
+            return false;
+        } catch (e) {
+            return false;
+        }
+    }
     public async approveSnapshotAsync(
         projectId: string,
         snapshotId: string,
         approvePayload: ApproveSnapshotRequest
-    ) {
+    ): Promise<HttpResponse<OrgSnapshot>> {
         const url = this.resourceCollections.org.approveSnapshot(projectId, snapshotId);
         return await this.httpClient.postAsync<
             ApproveSnapshotRequest,
             OrgSnapshot,
             FusionApiHttpErrorResponse
         >(url, approvePayload);
-    }
-
-    protected getBaseUrl() {
-        return this.serviceResolver.getOrgBaseUrl();
     }
 }
