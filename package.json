@@ -1,6 +1,6 @@
 {
     "name": "@equinor/fusion",
-    "version": "2.3.1",
+    "version": "2.3.2",
     "description": "Everything a Fusion app needs to communicate with the core",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -29,11 +29,14 @@
     "homepage": "https://github.com/equinor/fusion-api#readme",
     "husky": {
         "hooks": {
-          "pre-commit": "lint-staged"
+            "pre-commit": "lint-staged"
         }
     },
     "lint-staged": {
-        "./src/**/*.{js,ts,tsx}":  ["prettier --write ","eslint --quiet --fix"]
+        "./src/**/*.{js,ts,tsx}": [
+            "prettier --write ",
+            "eslint --quiet --fix"
+        ]
     },
     "dependencies": {
         "@microsoft/applicationinsights-web": "^2.4.3",
