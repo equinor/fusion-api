@@ -130,4 +130,29 @@ export default class OrgResourceCollection extends BaseResourceCollection {
     approveSnapshot(projectId: string, snapshotId: string) {
         return combineUrls(this.snapshot(projectId, snapshotId), 'approve');
     }
+    snapshotBase(snapshotId: string) {
+        return combineUrls(this.getBaseUrl(), 'snapshots', snapshotId);
+    }
+    snapshotProject(snapshotId: string) {
+        return combineUrls(this.snapshotBase(snapshotId), 'project');
+    }
+    snapshotPositions(snapshotId: string, expandProperties?: string[]) {
+        const url = combineUrls(this.snapshotBase(snapshotId), 'positions');
+
+        if (!expandProperties || !expandProperties.length) {
+            return url;
+        }
+        const expand = `?$expand=${expandProperties.join(',')}`;
+        return `${url}${expand}`;
+    }
+    snapshotPosition(snapshotId: string, positionId: string) {
+        return combineUrls(this.snapshotPositions(snapshotId), positionId);
+    }
+    snapshotRoleDescription(snapshotId: string, positionId: string) {
+        return combineUrls(this.snapshotPosition(snapshotId, positionId), 'role-description');
+    }
+    snapshotReportsTo(snapshotId: string, positionId: string, date: string) {
+        const url = combineUrls(this.snapshotPosition(snapshotId, positionId), 'reports-to');
+        return `${url}?date=${date}`;
+    }
 }
