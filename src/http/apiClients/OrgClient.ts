@@ -25,8 +25,10 @@ export default class OrgClient extends BaseApiClient {
         projectId: string,
         snapshotId?: string
     ): Promise<HttpResponse<OrgProject>> {
-        const { project, snapshotProject } = this.resourceCollections.org;
-        const url = snapshotId ? snapshotProject(snapshotId) : project(projectId);
+        const orgResources = this.resourceCollections.org;
+        const url = snapshotId
+            ? orgResources.snapshotProject(snapshotId)
+            : orgResources.project(projectId);
         return this.httpClient.getAsync<OrgProject, FusionApiHttpErrorResponse>(url, {
             headers: {
                 'api-version': '2.0',
@@ -65,11 +67,11 @@ export default class OrgClient extends BaseApiClient {
         expandProperties?: string[],
         snapshotId?: string
     ): Promise<HttpResponse<Position[]>> {
-        const { positions, snapshotPositions } = this.resourceCollections.org;
+        const orgResources = this.resourceCollections.org;
 
         const url = snapshotId
-            ? snapshotPositions(snapshotId, expandProperties)
-            : positions(projectId, expandProperties);
+            ? orgResources.snapshotPositions(snapshotId, expandProperties)
+            : orgResources.positions(projectId, expandProperties);
         return this.httpClient.getAsync<Position[], FusionApiHttpErrorResponse>(url, {
             headers: {
                 'api-version': '2.0',
@@ -82,11 +84,11 @@ export default class OrgClient extends BaseApiClient {
         positionId: string,
         snapshotId?: string
     ): Promise<HttpResponse<Position>> {
-        const { position, snapshotPosition } = this.resourceCollections.org;
+        const orgResources = this.resourceCollections.org;
 
         const url = snapshotId
-            ? snapshotPosition(snapshotId, positionId)
-            : position(projectId, positionId);
+            ? orgResources.snapshotPosition(snapshotId, positionId)
+            : orgResources.position(projectId, positionId);
         return this.httpClient.getAsync<Position, FusionApiHttpErrorResponse>(url, {
             headers: {
                 'api-version': '2.0',
@@ -212,11 +214,11 @@ export default class OrgClient extends BaseApiClient {
         date: string,
         snapshotId?: string
     ): Promise<HttpResponse<PositionReportPath>> {
-        const { reportsTo, snapshotReportsTo } = this.resourceCollections.org;
+        const orgResources = this.resourceCollections.org;
 
         const url = snapshotId
-            ? snapshotReportsTo(projectId, positionId, date)
-            : reportsTo(projectId, positionId, date);
+            ? orgResources.snapshotReportsTo(projectId, positionId, date)
+            : orgResources.reportsTo(projectId, positionId, date);
         return this.httpClient.getAsync<PositionReportPath, FusionApiHttpErrorResponse>(url, {
             headers: {
                 'api-version': '2.0',
@@ -256,10 +258,10 @@ export default class OrgClient extends BaseApiClient {
         positionId: string,
         snapshotId?: string
     ): Promise<HttpResponse<RoleDescription>> {
-        const { roleDescriptionV2, snapshotRoleDescription } = this.resourceCollections.org;
+        const orgResources = this.resourceCollections.org;
         const url = snapshotId
-            ? snapshotRoleDescription(snapshotId, positionId)
-            : roleDescriptionV2(projectId, positionId);
+            ? orgResources.snapshotRoleDescription(snapshotId, positionId)
+            : orgResources.roleDescriptionV2(projectId, positionId);
         return this.httpClient.getAsync<RoleDescription, FusionApiHttpErrorResponse>(url, {
             headers: {
                 'api-version': '2.0',
