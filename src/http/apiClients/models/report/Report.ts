@@ -6,7 +6,7 @@ import ReportType from './ReportType';
 type Report = {
     id: string;
     title: string;
-    globalIdentifier: string | null;
+    globalIdentifier?: string | null;
     ownedBy: Person | null;
     publishedBy?: Person;
     userTargetGroup: string;
