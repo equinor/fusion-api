@@ -11,6 +11,7 @@ import OrgProject, {
     OrgSnapshot,
     ApproveSnapshotRequest,
     CreateSnapshotRequest,
+    CreateTransientSnapshotRequest,
 } from './models/org/OrgProject';
 import Position from './models/org/Position';
 import { HttpResponse } from '../HttpClient';
@@ -434,9 +435,21 @@ export default class OrgClient extends BaseApiClient {
         projectId: string,
         snapshotRequest: CreateSnapshotRequest
     ): Promise<HttpResponse<OrgSnapshot>> {
-        const url = this.resourceCollections.org.snapshots(projectId);
+        const url = this.resourceCollections.org.transientSnapshots(projectId);
         return await this.httpClient.postAsync<
             CreateSnapshotRequest,
+            OrgSnapshot,
+            FusionApiHttpErrorResponse
+        >(url, snapshotRequest);
+    }
+
+    public async createTransientSnapshotAsync(
+        projectId: string,
+        snapshotRequest: CreateTransientSnapshotRequest
+    ): Promise<HttpResponse<OrgSnapshot>> {
+        const url = this.resourceCollections.org.snapshots(projectId);
+        return await this.httpClient.postAsync<
+            CreateTransientSnapshotRequest,
             OrgSnapshot,
             FusionApiHttpErrorResponse
         >(url, snapshotRequest);
@@ -456,7 +469,7 @@ export default class OrgClient extends BaseApiClient {
             );
 
             const allowHeader = response.headers.get('Allow');
-            if (allowHeader !== null && allowHeader.indexOf('PUT') !== -1) {
+            if (allowHeader !== null && allowHeader.indexOf('POST') !== -1) {
                 return true;
             }
 

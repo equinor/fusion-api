@@ -124,6 +124,9 @@ export {
     OrgSnapshotApproval,
     ApproveSnapshotRequest,
     CreateSnapshotRequest,
+    CreateTransientSnapshotRequest,
+    OrgSnapshotStatus,
+    OrgSnapshotStatusProgress,
 } from './http/apiClients/models/org/OrgProject';
 export {
     default as PersonDetails,

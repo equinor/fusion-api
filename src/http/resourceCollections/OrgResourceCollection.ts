@@ -124,6 +124,9 @@ export default class OrgResourceCollection extends BaseResourceCollection {
     snapshots(projectId: string) {
         return combineUrls(this.project(projectId), 'snapshots');
     }
+    transientSnapshots(projectId: string) {
+        return combineUrls(this.snapshots(projectId), 'transient');
+    }
     snapshot(projectId: string, snapshotId: string) {
         return combineUrls(this.snapshots(projectId), snapshotId);
     }
