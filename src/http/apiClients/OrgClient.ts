@@ -435,7 +435,7 @@ export default class OrgClient extends BaseApiClient {
         projectId: string,
         snapshotRequest: CreateSnapshotRequest
     ): Promise<HttpResponse<OrgSnapshot>> {
-        const url = this.resourceCollections.org.transientSnapshots(projectId);
+        const url = this.resourceCollections.org.snapshots(projectId);
         return await this.httpClient.postAsync<
             CreateSnapshotRequest,
             OrgSnapshot,
@@ -447,7 +447,7 @@ export default class OrgClient extends BaseApiClient {
         projectId: string,
         snapshotRequest: CreateTransientSnapshotRequest
     ): Promise<HttpResponse<OrgSnapshot>> {
-        const url = this.resourceCollections.org.snapshots(projectId);
+        const url = this.resourceCollections.org.transientSnapshots(projectId);
         return await this.httpClient.postAsync<
             CreateTransientSnapshotRequest,
             OrgSnapshot,
