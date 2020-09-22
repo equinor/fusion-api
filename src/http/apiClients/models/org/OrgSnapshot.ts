@@ -10,6 +10,21 @@ export type OrgSnapshotApproval = {
         positionIds: string[];
     };
 };
+export type OrgSnapshotStatusProgress = {
+    total: number;
+    proceeded: number;
+};
+
+export type OrgSnapshotStatus = {
+    hasInvalidEvents: boolean;
+    initializationCompletedAt: Date | null;
+    initializedAt: Date | null;
+    isInitialized: boolean;
+    message: string;
+    progress: OrgSnapshotStatusProgress | null;
+    failedAt?: Date;
+    errorMessage?: string;
+};
 
 type OrgSnapshot = {
     id: string;
