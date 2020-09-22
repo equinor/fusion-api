@@ -11,9 +11,14 @@ import Contract from './Contract';
 import PublishDetails from './PublishDetails';
 import PositionReportPath from './PositionReportPath';
 import RoleDescription from './RoleDescription';
-import OrgSnapshot, { OrgSnapshotApproval } from './OrgSnapshot';
+import OrgSnapshot, {
+    OrgSnapshotApproval,
+    OrgSnapshotStatus,
+    OrgSnapshotStatusProgress,
+} from './OrgSnapshot';
 import ApproveSnapshotRequest from './ApproveSnapshotRequest';
 import CreateSnapshotRequest from './CreateSnapshotRequest';
+import CreateTransientSnapshotRequest from './CreateTransientSnapshotRequest';
 
 type OrgProject = {
     dates: OrgProjectDates;
@@ -43,6 +48,9 @@ export {
     OrgSnapshotApproval,
     ApproveSnapshotRequest,
     CreateSnapshotRequest,
+    CreateTransientSnapshotRequest,
+    OrgSnapshotStatus,
+    OrgSnapshotStatusProgress,
 };
 
 export default OrgProject;
