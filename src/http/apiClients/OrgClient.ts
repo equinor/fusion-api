@@ -409,7 +409,7 @@ export default class OrgClient extends BaseApiClient {
             );
 
             const allowHeader = response.headers.get('Allow');
-            if (allowHeader !== null && allowHeader.indexOf('GET') !== -1) {
+            if (allowHeader !== null && allowHeader.toLowerCase().indexOf('get') !== -1) {
                 return true;
             }
 
