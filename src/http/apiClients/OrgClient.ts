@@ -395,7 +395,7 @@ export default class OrgClient extends BaseApiClient {
         });
     }
 
-    public async getContractPositionHeaderAsync(
+    public async getContractPositionAllowHeaderAsync(
         projectId: string,
         contractId: string,
         positionId: string
