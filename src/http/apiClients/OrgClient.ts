@@ -480,6 +480,36 @@ export default class OrgClient extends BaseApiClient {
         return await this.httpClient.getAsync<OrgSnapshot, FusionApiHttpErrorResponse>(url);
     }
 
+    public async canDeleteSnapshotsAsync(projectId: string, snapshotId: string): Promise<boolean> {
+        const url = this.resourceCollections.org.snapshot(projectId, snapshotId);
+        try {
+            const response = await this.httpClient.optionsAsync<void, FusionApiHttpErrorResponse>(
+                url,
+                {},
+                () => Promise.resolve()
+            );
+
+            const allowHeader = response.headers.get('Allow');
+            if (allowHeader !== null && allowHeader.toLowerCase().indexOf('delete') !== -1) {
+                return true;
+            }
+
+            return false;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    public async deleteSnapShotAsync(
+        projectId: string,
+        snapshotId: string
+    ): Promise<HttpResponse<void>> {
+        const url = this.resourceCollections.org.snapshot(projectId, snapshotId);
+        return await this.httpClient.deleteAsync<void, FusionApiHttpErrorResponse>(url, {}, () =>
+            Promise.resolve()
+        );
+    }
+
     public async createSnapshotAsync(
         projectId: string,
         snapshotRequest: CreateSnapshotRequest
