@@ -120,6 +120,9 @@ export default class OrgResourceCollection extends BaseResourceCollection {
     getContractPositionsUrl(projectId: string, contractId: string) {
         return combineUrls(this.getContractsUrl(projectId), contractId, 'positions');
     }
+    contractPosition(projectId: string, contractId: string, positionId: string) {
+        return combineUrls(this.getContractPositionsUrl(projectId, contractId), positionId);
+    }
 
     snapshots(projectId: string) {
         return combineUrls(this.project(projectId), 'snapshots');
