@@ -395,6 +395,55 @@ export default class OrgClient extends BaseApiClient {
         });
     }
 
+    public async getContractPositionHeaderAsync(
+        projectId: string,
+        contractId: string,
+        positionId: string
+    ): Promise<string> {
+        const url = this.resourceCollections.org.contractPosition(
+            projectId,
+            contractId,
+            positionId
+        );
+
+        try {
+            const response = await this.httpClient.optionsAsync<void, FusionApiHttpErrorResponse>(
+                url,
+                {
+                    headers: {
+                        'api-version': '2.0',
+                    },
+                },
+                () => Promise.resolve()
+            );
+            const allowHeader = response.headers.get('Allow');
+            return allowHeader || '';
+        } catch (e) {
+            return '';
+        }
+    }
+
+    public async deleteContractPositionAsync(
+        projectId: string,
+        contractId: string,
+        positionId: string
+    ): Promise<HttpResponse<void>> {
+        const url = this.resourceCollections.org.contractPosition(
+            projectId,
+            contractId,
+            positionId
+        );
+        return await this.httpClient.deleteAsync<void, FusionApiHttpErrorResponse>(
+            url,
+            {
+                headers: {
+                    'api-version': '2.0',
+                },
+            },
+            () => Promise.resolve()
+        );
+    }
+
     public async canReadSnapshotsAsync(projectId: string): Promise<boolean> {
         const url = this.resourceCollections.org.snapshots(projectId);
         try {
