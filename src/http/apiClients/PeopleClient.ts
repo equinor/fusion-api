@@ -32,26 +32,11 @@ export {
 };
 
 export default class PeopleClient extends BaseApiClient {
-    constructor(
-        protected httpClient: IHttpClient,
-        protected resourceCollection: ResourceCollections,
-        serviceResolver: ServiceResolver
-    ) {
-        super(httpClient, resourceCollection, serviceResolver);
-        this.apiSigninAsync();
-    }
-
-    private apiSigninAsync() {
-        try {
-            this.httpClient.postAsync<any, unknown, unknown>(
-                this.resourceCollection.people.apiSignin(),
-                { credentials: 'include' },
-                null,
-                async () => Promise.resolve()
-            );
-        } catch (e) {
-            fusionConsole.error(e);
-        }
+    public async apiSigninAsync(): Promise<void> {
+        await this.httpClient.postAsync<any, unknown, unknown>(
+            this.resourceCollections.people.apiSignin(),
+            { credentials: 'include' }
+        );
     }
 
     protected getBaseUrl() {

@@ -40,6 +40,10 @@ export default class DataProxyResourceCollection extends BaseResourceCollection 
         return this.serviceResolver.getDataProxyBaseUrl();
     }
 
+    apiSignin(): string {
+        return combineUrls(this.getBaseUrl(), 'api-signin');
+    }
+
     handover(siteCode: string, projectIdentifier: string): string {
         return this.getSiteAndProjectUrl(siteCode, projectIdentifier, 'handover');
     }
