@@ -14,8 +14,8 @@ export class UserSettingsClient extends BaseApiClient {
     public async updateAppUserSettings(appKey: string, userSettings: Record<string, Array<any>>) {
         const url = this.resourceCollections.userSettings.appUserSettings(appKey);
         return await this.httpClient.putAsync<
-            Record<string, Array<any>>,
-            Record<string, Array<any>>,
+            Record<string, unknown>,
+            Record<string, unknown>,
             FusionApiHttpErrorResponse
         >(url, userSettings);
     }
