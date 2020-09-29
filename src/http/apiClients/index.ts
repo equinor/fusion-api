@@ -11,6 +11,7 @@ import PowerBIClient from './PowerBIClient';
 import ServiceResolver from '../resourceCollections/ServiceResolver';
 import NotificationClient from './NotificationClient';
 import InfoClient from './InfoClient';
+import UserSettingsClient from './UserSettingsClient';
 
 export { FusionApiHttpErrorResponse } from './models/common/FusionApiHttpErrorResponse';
 
@@ -25,6 +26,7 @@ type ApiClients = {
     powerBI: PowerBIClient;
     notification: NotificationClient;
     info: InfoClient;
+    userSettings: UserSettingsClient;
 };
 
 export const createApiClients = (
@@ -42,6 +44,7 @@ export const createApiClients = (
     powerBI: new PowerBIClient(httpClient, resources, serviceResolver),
     notification: new NotificationClient(httpClient, resources, serviceResolver),
     info: new InfoClient(httpClient, resources, serviceResolver),
+    userSettings: new UserSettingsClient(httpClient, resources, serviceResolver),
 });
 
 export default ApiClients;
