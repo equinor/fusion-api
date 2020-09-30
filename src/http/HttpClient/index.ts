@@ -29,6 +29,8 @@ export {
 
 type RequestsInProgress = { [key: string]: Promise<HttpResponse<any>> };
 
+export const voidResponseParser = () => Promise.resolve();
+
 export default class HttpClient implements IHttpClient {
     private authContainer: IAuthContainer;
     private resourceCache: ResourceCache;

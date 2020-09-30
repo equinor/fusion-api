@@ -1,6 +1,6 @@
 import BaseApiClient from './BaseApiClient';
 import ResourceCollections from '../resourceCollections';
-import { IHttpClient } from '../HttpClient';
+import { IHttpClient, voidResponseParser } from '../HttpClient';
 import PersonDetails, {
     PersonAccountType,
     PersonRole,
@@ -32,10 +32,12 @@ export {
 };
 
 export default class PeopleClient extends BaseApiClient {
-    public async apiSigninAsync(): Promise<void> {
+    public async apiSignInAsync(): Promise<void> {
         await this.httpClient.postAsync<any, unknown, unknown>(
             this.resourceCollections.people.apiSignin(),
-            { credentials: 'include' }
+            { credentials: 'include' },
+            undefined,
+            voidResponseParser
         );
     }
 
