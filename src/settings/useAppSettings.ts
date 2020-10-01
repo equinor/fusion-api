@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useFusionContext, Settings } from '../core/FusionContext';
 import { useCurrentApp } from '../app/AppContainer';
-import SettingsContainer, { ReadonlySettings } from './SettingsContainer';
+import { AppSettingsContainer, ReadonlySettings } from './SettingsContainer';
 import useCurrentUser from '../auth/useCurrentUser';
 import EventHub from '../utils/EventHub';
+import useApiClients from '../http/hooks/useApiClients';
 
 type SetAppSetting = <T>(key: string, value: T) => void;
 type AppSettingsHook = [ReadonlySettings, SetAppSetting];
@@ -14,12 +15,14 @@ const ensureAppSettings = (
     defaultSettings?: ReadonlySettings
 ) => {
     const currentUser = useCurrentUser();
+    const { userSettings } = useApiClients();
 
     if (typeof settings.apps[appKey] === 'undefined') {
-        const appSettings = new SettingsContainer(
+        const appSettings = new AppSettingsContainer(
             appKey,
             currentUser,
             new EventHub(),
+            userSettings,
             defaultSettings
         );
         settings.apps[appKey] = appSettings;

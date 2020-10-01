@@ -7,7 +7,7 @@ import ApiClients, { createApiClients } from '../http/apiClients';
 import HttpClient, { IHttpClient } from '../http/HttpClient';
 import ResourceCache from '../http/ResourceCache';
 import ServiceResolver from '../http/resourceCollections/ServiceResolver';
-import SettingsContainer from '../settings/SettingsContainer';
+import SettingsContainer, { AppSettingsContainer } from '../settings/SettingsContainer';
 import AppContainer, { appContainerFactory } from '../app/AppContainer';
 import { ComponentDisplayType } from '../core/ComponentDisplayType';
 import ContextManager from './ContextManager';
@@ -42,7 +42,7 @@ export type Refs = ExternalRefs & {
 };
 
 export type AppSettings = {
-    [key: string]: SettingsContainer;
+    [key: string]: AppSettingsContainer;
 };
 
 export type Settings = {
