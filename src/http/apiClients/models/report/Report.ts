@@ -17,6 +17,8 @@ type Report = {
     dataSources: string;
     access: string;
     allowExternalUsers: boolean;
+    allowOnlyEmployees: boolean;
+    denyExtHire: boolean;
     isPublished: boolean;
     isEmbedOnly: boolean;
     securityRequirementCheck: SecurityRequirementsPolicy;
