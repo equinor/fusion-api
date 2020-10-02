@@ -21,7 +21,7 @@ import {
     HandoverActions,
     AccumulatedActions,
 } from '../resourceCollections/DataProxyResourceCollection';
-import { HttpResponse } from '../HttpClient';
+import { HttpResponse, voidResponseParser } from '../HttpClient';
 
 // Export models
 export {
@@ -43,6 +43,15 @@ export {
 export default class DataProxyClient extends BaseApiClient {
     protected getBaseUrl() {
         return this.serviceResolver.getDataProxyBaseUrl();
+    }
+
+    public async apiSignInAsync(): Promise<void> {
+        await this.httpClient.postAsync<any, unknown, unknown>(
+            this.resourceCollections.dataProxy.apiSignin(),
+            { credentials: 'include' },
+            undefined,
+            voidResponseParser
+        );
     }
 
     async getHandoverAsync(siteCode: string, projectIdentifier: string) {
