@@ -1,5 +1,5 @@
 import { useState, useEffect, useLayoutEffect, useCallback, useMemo } from 'react';
-import { useFusionContext, Settings } from '../core/FusionContext';
+import { useFusionContext } from '../core/FusionContext';
 import { useCurrentApp } from '../app/AppContainer';
 import { AppSettingsContainer, ReadonlySettings } from './SettingsContainer';
 import useCurrentUser from '../auth/useCurrentUser';
@@ -48,7 +48,22 @@ const ensureAppSettings = <T extends ReadonlySettings, K extends ReadonlySetting
 
     return settings.apps[appKey];
 };
-
+/**
+ * The useAppSettings will create and store app setting for different apps. The settings
+ * will also be stored backend for redundancy
+ * @param defaultSettings Provide default settings
+ * @returns A state and a state setter, use these to get and update app settings.
+ * @example
+ * type ExampleSetting = { isExample: boolean };
+ *
+ * const defaultExampleSetting: ExampleSetting = { isExample: false };
+ *
+ * const [appSettings, setAppSettings] = useAppSettings<ExampleSetting>(defaultExampleSetting);
+ *
+ * const setOrgFilterSettings = (exampleSettings: ExampleSetting) => {
+ *   setAppSettings('isExample', exampleSettings);
+ * };
+ */
 const useAppSettings = <T extends ReadonlySettings>(
     defaultSettings?: T
 ): AppSettingsHook<Readonly<T>> => {
@@ -77,6 +92,24 @@ const useAppSettings = <T extends ReadonlySettings>(
 
     return [localAppSettings, setAppSettingAsync];
 };
+
+/**
+ * The useContextSettingsSelector will create app settings for every context.
+ * @param context Use a custom context string, otherwise the fusion context id will be used
+ * @param defaultSettings Provide default settings
+ * @returns A state and a state setter, use these to get app settings for the context and update app settings.
+ * @example type ExampleSetting = { isExample: boolean }
+ *
+ *  const defaultExampleSetting: ExampleSetting = { isExample: false};
+ *
+ *  const contextId = useAppContextId();
+ *
+ *  const [exampleSettings, setExampleSettings] = useContextSettingSelector<ExampleSetting>(contextId, defaultExampleSetting);
+ *
+ *  const updateExampleSettings = () => setExampleSettings({ isExample: true })
+ *
+ *  updateExampleSettings();
+ */
 
 export const useContextSettingSelector = <T extends ReadonlySettings>(
     context?: string,
