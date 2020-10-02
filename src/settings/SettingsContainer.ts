@@ -61,4 +61,12 @@ export class AppSettingsContainer<T = ReadonlySettings>
             )
         );
     }
+    async setAsync<TKey extends keyof T, TValue = T[TKey]>(
+        key: TKey,
+        value: TValue
+    ): Promise<void> {
+        const currentValue = await this.getAsync(key);
+        const nextValue = { ...currentValue, ...value };
+        super.setAsync(key, nextValue);
+    }
 }

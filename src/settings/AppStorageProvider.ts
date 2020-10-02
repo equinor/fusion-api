@@ -7,10 +7,9 @@ import DistributedState, { IDistributedState } from '../utils/DistributedState';
 import IReliableDictionaryStorageProvider, {
     ReliableDictionaryStorageProviderEvents,
 } from '../utils/ReliableDictionary/IReliableDictionaryStorageProvider';
+import { Settings } from './SettingsContainer';
 
-type LocalCache = { [key: string]: any };
-
-export default class AppStorageProvider
+export default class AppStorageProvider<T extends Settings = any>
     extends EventEmitter<ReliableDictionaryStorageProviderEvents>
     implements IReliableDictionaryStorageProvider {
     private appKey: string;
@@ -18,20 +17,20 @@ export default class AppStorageProvider
     private userSettingsClient: UserSettingsClient;
     public isInitialized = false;
     public isInitializing = false;
-    private localCache: IDistributedState<LocalCache | null>;
+    private localCache: IDistributedState<T | null>;
 
     constructor(
         baseKey: string,
         eventHub: IEventHub,
         userSettingsClient: UserSettingsClient,
         appKey: string,
-        defaultSettings?: LocalCache
+        defaultSettings?: T
     ) {
         super();
         this.appKey = appKey;
         this.baseKey = baseKey;
         const cachedJson = localStorage.getItem(this.baseKey);
-        const cachedValue = cachedJson ? JSON.parse<LocalCache>(cachedJson) : null;
+        const cachedValue = cachedJson ? JSON.parse<T>(cachedJson) : null;
         this.localCache = new DistributedState(
             `LocalStorageProvider.${baseKey}`,
             cachedValue,
@@ -101,21 +100,21 @@ export default class AppStorageProvider
 
     async clearAsync(): Promise<void> {
         localStorage.removeItem(this.baseKey);
-        this.localCache.state = {};
+        this.localCache.state = {} as T;
         this.updateAppUserSettingsAsync();
     }
 
-    async toObjectAsync(): Promise<LocalCache> {
+    async toObjectAsync(): Promise<T> {
         if (this.localCache.state === null) {
             const cachedJson = localStorage.getItem(this.baseKey);
-            const cachedValue = cachedJson ? JSON.parse<LocalCache>(cachedJson) : {};
+            const cachedValue = cachedJson ? JSON.parse<T>(cachedJson) : ({} as T);
             this.localCache.state = cachedValue;
         }
 
-        return this.localCache.state as LocalCache;
+        return this.localCache.state as T;
     }
 
-    toObject(): LocalCache | null {
+    toObject(): T | null {
         return this.localCache.state;
     }
 
