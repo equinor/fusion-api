@@ -6,17 +6,11 @@ import { ResponseParser } from '../HttpClient/IHttpClient';
 import ServiceResolver from '../resourceCollections/ServiceResolver';
 
 export default abstract class BaseApiClient {
-    protected httpClient: IHttpClient;
-    protected resourceCollections: ResourceCollections;
-
     constructor(
-        httpClient: IHttpClient,
-        resourceCollection: ResourceCollections,
+        protected httpClient: IHttpClient,
+        protected resourceCollections: ResourceCollections,
         protected serviceResolver: ServiceResolver
-    ) {
-        this.httpClient = httpClient;
-        this.resourceCollections = resourceCollection;
-    }
+    ) {}
 
     protected abstract getBaseUrl(): string;
 
