@@ -127,9 +127,12 @@ export const useContextSettingSelector = <T extends ReadonlySettings>(
 
     const contextSettings = useSettingSelector(selector, appSettings);
 
-    const setContextSetting = useCallback((value: T) => {
-        setAppSettings('context', { ...appSettings.context, [contextId]: value });
-    }, []);
+    const setContextSetting = useCallback(
+        (value: T) => {
+            setAppSettings('context', { ...appSettings.context, [contextId]: value });
+        },
+        [contextId, appSettings]
+    );
 
     return [contextSettings, setContextSetting];
 };
