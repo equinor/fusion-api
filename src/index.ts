@@ -46,7 +46,7 @@ export { default as useCoreSettings } from './settings/useCoreSettings';
 export {
     default as useAppSettings,
     useSettingSelector,
-    useContextSettingSelector,
+    useAppContextSettings,
 } from './settings/useAppSettings';
 
 export {

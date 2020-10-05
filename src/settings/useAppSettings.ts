@@ -104,14 +104,14 @@ const useAppSettings = <T extends ReadonlySettings>(
  *
  *  const contextId = useAppContextId();
  *
- *  const [exampleSettings, setExampleSettings] = useContextSettingSelector<ExampleSetting>(contextId, defaultExampleSetting);
+ *  const [exampleSettings, setExampleSettings] = useAppContextSettings<ExampleSetting>(contextId, defaultExampleSetting);
  *
  *  const updateExampleSettings = () => setExampleSettings({ isExample: true })
  *
  *  updateExampleSettings();
  */
 
-export const useContextSettingSelector = <T extends ReadonlySettings>(
+export const useAppContextSettings = <T extends ReadonlySettings>(
     context?: string,
     defaultSettings?: T
 ): [T | null, (settings: T) => void] => {
