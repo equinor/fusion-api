@@ -10,11 +10,11 @@ import { useCurrentContext } from '../core/ContextManager';
 type SetAppSetting = <T>(key: string, value: T) => void;
 type AppSettingsHook<T> = [T, SetAppSetting];
 
-export const useSettingSelector = <T extends any>(
-    selector: (state: T) => any,
+export const useSettingSelector = <T extends ReadonlySettings, K extends any>(
+    selector: (state: T) => K,
     state: T
-): T | null => {
-    const [userSettings, setUserSettings] = useState<T | null>(null);
+): K | null => {
+    const [userSettings, setUserSettings] = useState<K | null>(null);
 
     useLayoutEffect(() => {
         const nextValue = selector(state);
