@@ -2,10 +2,10 @@ import { useState, useEffect, useLayoutEffect, useCallback, useMemo } from 'reac
 import { useFusionContext } from '../core/FusionContext';
 import { useCurrentApp } from '../app/AppContainer';
 import { AppSettingsContainer, ReadonlySettings } from './SettingsContainer';
-import useCurrentUser from '../auth/useCurrentUser';
 import EventHub from '../utils/EventHub';
 import useApiClients from '../http/hooks/useApiClients';
 import { useCurrentContext } from '../core/ContextManager';
+import UserSettingsClient from '../http/apiClients/UserSettingsClient';
 
 type SetAppSetting = <T>(key: string, value: T) => void;
 type AppSettingsHook<T> = [T, SetAppSetting];
@@ -29,17 +29,14 @@ export const useSettingSelector = <T extends ReadonlySettings, K extends any>(
 const ensureAppSettings = <T extends ReadonlySettings, K extends ReadonlySettings>(
     settings: T,
     appKey: string,
+    userSettingsClient: UserSettingsClient,
     defaultSettings?: K
 ) => {
-    const currentUser = useCurrentUser();
-    const { userSettings } = useApiClients();
-
     if (typeof settings.apps[appKey] === 'undefined') {
         const appSettings = new AppSettingsContainer(
             appKey,
-            currentUser,
             new EventHub(),
-            userSettings,
+            userSettingsClient,
             defaultSettings
         );
         settings.apps[appKey] = appSettings;
@@ -69,28 +66,34 @@ const useAppSettings = <T extends ReadonlySettings>(
 ): AppSettingsHook<Readonly<T>> => {
     const { settings } = useFusionContext();
     const currentApp = useCurrentApp();
+    const { userSettings } = useApiClients();
 
     const appSettings = ensureAppSettings(
         settings,
         currentApp ? currentApp.key : '',
+        userSettings,
         defaultSettings
     );
 
-    const [localAppSettings, setLocalAppsettings] = useState(appSettings.toObject() || {});
+    const [localAppSettings, setLocalAppSettings] = useState(appSettings.toObject() || {});
 
     useEffect(() => {
-        appSettings.toObjectAsync().then(setLocalAppsettings);
+        appSettings.toObjectAsync().then(setLocalAppSettings);
 
-        return appSettings.on('change', setLocalAppsettings);
+        return appSettings.on('change', setLocalAppSettings);
     }, []);
 
     const setAppSettingAsync: SetAppSetting = async <T>(key: string, value: T): Promise<void> => {
         await appSettings.setAsync(key, value);
         const obj = await appSettings.toObjectAsync();
-        setLocalAppsettings(obj);
+        setLocalAppSettings(obj);
     };
 
     return [localAppSettings, setAppSettingAsync];
+};
+
+type ContextSetting<T> = {
+    [contextId: string]: T | undefined;
 };
 
 /**
@@ -110,7 +113,6 @@ const useAppSettings = <T extends ReadonlySettings>(
  *
  *  updateExampleSettings();
  */
-
 export const useAppContextSettings = <T extends ReadonlySettings>(
     context?: string,
     defaultSettings?: T
@@ -121,11 +123,13 @@ export const useAppContextSettings = <T extends ReadonlySettings>(
         context,
     ]);
 
-    const [appSettings, setAppSettings] = useAppSettings<T>(defaultSettings);
+    const [appSettings, setAppSettings] = useAppSettings<ContextSetting<T>>({
+        [contextId]: defaultSettings,
+    });
 
-    const selector = (state: any) => state?.context?.[contextId] || '';
+    const selector = (state: ContextSetting<T>) => state?.context?.[contextId] || '';
 
-    const contextSettings = useSettingSelector(selector, appSettings);
+    const contextSettings = useSettingSelector<ContextSetting<T>, T>(selector, appSettings);
 
     const setContextSetting = useCallback(
         (value: T) => {

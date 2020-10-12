@@ -46,14 +46,13 @@ export class AppSettingsContainer<T = ReadonlySettings>
     implements ISettingsContainer<T> {
     constructor(
         appKey: string,
-        user: AuthUser | null,
         eventHub: IEventHub,
         userSettingsClient: UserSettingsClient,
         defaultSettings?: Settings
     ) {
         super(
             new AppStorageProvider(
-                `FUSION_SETTINGS_CACHE:${appKey}:${user ? user.id : 'global'}`,
+                `FUSION_APP_SETTINGS_CACHE:${appKey}`,
                 eventHub,
                 userSettingsClient,
                 appKey,
