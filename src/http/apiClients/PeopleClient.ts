@@ -1,6 +1,6 @@
 import BaseApiClient from './BaseApiClient';
 import ResourceCollections from '../resourceCollections';
-import { IHttpClient } from '../HttpClient';
+import { IHttpClient, voidResponseParser } from '../HttpClient';
 import PersonDetails, {
     PersonAccountType,
     PersonRole,
@@ -32,26 +32,13 @@ export {
 };
 
 export default class PeopleClient extends BaseApiClient {
-    constructor(
-        protected httpClient: IHttpClient,
-        protected resourceCollection: ResourceCollections,
-        serviceResolver: ServiceResolver
-    ) {
-        super(httpClient, resourceCollection, serviceResolver);
-        this.apiSigninAsync();
-    }
-
-    private apiSigninAsync() {
-        try {
-            this.httpClient.postAsync<any, unknown, unknown>(
-                this.resourceCollection.people.apiSignin(),
-                { credentials: 'include' },
-                null,
-                async () => Promise.resolve()
-            );
-        } catch (e) {
-            fusionConsole.error(e);
-        }
+    public async apiSignInAsync(): Promise<void> {
+        await this.httpClient.postAsync<any, unknown, unknown>(
+            this.resourceCollections.people.apiSignin(),
+            { credentials: 'include' },
+            undefined,
+            voidResponseParser
+        );
     }
 
     protected getBaseUrl() {

@@ -8,6 +8,10 @@ export default class ContextResourceCollection extends BaseResourceCollection {
         return this.serviceResolver.getContextBaseUrl();
     }
 
+    apiSignin(): string {
+        return combineUrls(this.getBaseUrl(), 'api-signin');
+    }
+
     contexts() {
         return combineUrls(this.getBaseUrl(), 'contexts');
     }
