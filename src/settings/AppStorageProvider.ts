@@ -45,7 +45,11 @@ export default class AppStorageProvider<T extends Settings = any>
             this.emit('change', value);
         });
         this.userSettingsClient = userSettingsClient;
-        this.initializing = new Promise((resolve) => this.initialize().then(() => resolve()));
+        this.initializing = new Promise((resolve, reject) =>
+            this.initialize()
+                .then(() => resolve())
+                .catch((e) => reject(e))
+        );
     }
     private async initialize() {
         try {
@@ -68,7 +72,11 @@ export default class AppStorageProvider<T extends Settings = any>
 
     async getItemAsync<T>(key: string): Promise<T | null> {
         if (!this.isInitialized) {
-            await this.initializing;
+            try {
+                await this.initializing;
+            } catch (e) {
+                return null;
+            }
         }
         const localCache = await this.toObjectAsync();
         const value = localCache[key];
