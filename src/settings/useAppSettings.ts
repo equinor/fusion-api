@@ -1,25 +1,42 @@
-import { useState, useEffect } from 'react';
-import { useFusionContext, Settings } from '../core/FusionContext';
+import { useState, useEffect, useLayoutEffect, useCallback, useMemo } from 'react';
+import { useFusionContext } from '../core/FusionContext';
 import { useCurrentApp } from '../app/AppContainer';
-import SettingsContainer, { ReadonlySettings } from './SettingsContainer';
-import useCurrentUser from '../auth/useCurrentUser';
+import { AppSettingsContainer, ReadonlySettings } from './SettingsContainer';
 import EventHub from '../utils/EventHub';
+import useApiClients from '../http/hooks/useApiClients';
+import { useCurrentContext } from '../core/ContextManager';
+import UserSettingsClient from '../http/apiClients/UserSettingsClient';
 
 type SetAppSetting = <T>(key: string, value: T) => void;
-type AppSettingsHook = [ReadonlySettings, SetAppSetting];
+type AppSettingsHook<T> = [T, SetAppSetting];
 
-const ensureAppSettings = (
-    settings: Settings,
+export const useSettingSelector = <T extends ReadonlySettings, K extends any>(
+    selector: (state: T) => K,
+    state: T
+): K | null => {
+    const [userSettings, setUserSettings] = useState<K | null>(null);
+
+    useLayoutEffect(() => {
+        const nextValue = selector(state);
+        if (nextValue !== userSettings) {
+            setUserSettings(nextValue);
+        }
+    }, [selector]);
+
+    return userSettings;
+};
+
+const ensureAppSettings = <T extends ReadonlySettings, K extends ReadonlySettings>(
+    settings: T,
     appKey: string,
-    defaultSettings?: ReadonlySettings
+    userSettingsClient: UserSettingsClient,
+    defaultSettings?: K
 ) => {
-    const currentUser = useCurrentUser();
-
     if (typeof settings.apps[appKey] === 'undefined') {
-        const appSettings = new SettingsContainer(
+        const appSettings = new AppSettingsContainer(
             appKey,
-            currentUser,
             new EventHub(),
+            userSettingsClient,
             defaultSettings
         );
         settings.apps[appKey] = appSettings;
@@ -28,28 +45,100 @@ const ensureAppSettings = (
 
     return settings.apps[appKey];
 };
-
-export default (defaultSettings?: ReadonlySettings): AppSettingsHook => {
+/**
+ * The useAppSettings will create and store app setting for different apps. The settings
+ * will also be stored backend for redundancy
+ * @param defaultSettings Provide default settings
+ * @returns A state and a state setter, use these to get and update app settings.
+ * @example
+ * type ExampleSetting = { isExample: boolean };
+ *
+ * const defaultExampleSetting: ExampleSetting = { isExample: false };
+ *
+ * const [appSettings, setAppSettings] = useAppSettings<ExampleSetting>(defaultExampleSetting);
+ *
+ * const setOrgFilterSettings = (exampleSettings: ExampleSetting) => {
+ *   setAppSettings('isExample', exampleSettings);
+ * };
+ */
+const useAppSettings = <T extends ReadonlySettings>(
+    defaultSettings?: T
+): AppSettingsHook<Readonly<T>> => {
     const { settings } = useFusionContext();
     const currentApp = useCurrentApp();
+    const { userSettings } = useApiClients();
 
-    const appSettings = ensureAppSettings(settings, currentApp ? currentApp.key : '');
-
-    const [localAppSettings, setLocalAppsettings] = useState<ReadonlySettings>(
-        appSettings.toObject() || {}
+    const appSettings = ensureAppSettings(
+        settings,
+        currentApp ? currentApp.key : '',
+        userSettings,
+        defaultSettings
     );
 
-    useEffect(() => {
-        appSettings.toObjectAsync().then(setLocalAppsettings);
+    const [localAppSettings, setLocalAppSettings] = useState(appSettings.toObject() || {});
 
-        return appSettings.on('change', setLocalAppsettings);
+    useEffect(() => {
+        appSettings.toObjectAsync().then(setLocalAppSettings);
+
+        return appSettings.on('change', setLocalAppSettings);
     }, []);
 
     const setAppSettingAsync: SetAppSetting = async <T>(key: string, value: T): Promise<void> => {
         await appSettings.setAsync(key, value);
         const obj = await appSettings.toObjectAsync();
-        setLocalAppsettings(obj);
+        setLocalAppSettings(obj);
     };
 
     return [localAppSettings, setAppSettingAsync];
 };
+
+type ContextSetting<T> = {
+    [contextId: string]: T | undefined;
+};
+
+/**
+ * The useContextSettingsSelector will create app settings for every context.
+ * @param context Use a custom context string, otherwise the fusion context id will be used
+ * @param defaultSettings Provide default settings
+ * @returns A state and a state setter, use these to get app settings for the context and update app settings.
+ * @example type ExampleSetting = { isExample: boolean }
+ *
+ *  const defaultExampleSetting: ExampleSetting = { isExample: false};
+ *
+ *  const contextId = useAppContextId();
+ *
+ *  const [exampleSettings, setExampleSettings] = useAppContextSettings<ExampleSetting>(contextId, defaultExampleSetting);
+ *
+ *  const updateExampleSettings = () => setExampleSettings({ isExample: true })
+ *
+ *  updateExampleSettings();
+ */
+export const useAppContextSettings = <T extends ReadonlySettings>(
+    context?: string,
+    defaultSettings?: T
+): [T | null, (settings: T) => void] => {
+    const currentContext = useCurrentContext();
+    const contextId = useMemo(() => context || currentContext?.id || 'global', [
+        currentContext,
+        context,
+    ]);
+
+    const [appSettings, setAppSettings] = useAppSettings<ContextSetting<T>>({
+        [contextId]: defaultSettings,
+    });
+
+    const selector = (state: ContextSetting<T>) => state?.context?.[contextId] || '';
+
+    const contextSettings = useSettingSelector<ContextSetting<T>, T>(selector, appSettings);
+
+    const setContextSetting = useCallback(
+        (value: T) => {
+            setAppSettings('context', { ...appSettings.context, [contextId]: value });
+        },
+        [contextId, appSettings]
+    );
+
+    return [contextSettings, setContextSetting];
+};
+
+export default useAppSettings;

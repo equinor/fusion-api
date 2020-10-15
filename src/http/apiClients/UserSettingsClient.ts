@@ -3,7 +3,7 @@ import { FusionApiHttpErrorResponse } from '.';
 
 export class UserSettingsClient extends BaseApiClient {
     protected getBaseUrl(): string {
-        return this.serviceResolver.getPeopleBaseUrl();
+        return this.serviceResolver.getFusionBaseUrl();
     }
 
     public async getAppUserSettings(appKey: string) {
@@ -11,13 +11,9 @@ export class UserSettingsClient extends BaseApiClient {
         return await this.httpClient.getAsync<any, FusionApiHttpErrorResponse>(url);
     }
 
-    public async updateAppUserSettings(appKey: string, userSettings: Record<string, unknown>) {
+    public async updateAppUserSettings<T>(appKey: string, userSettings: T) {
         const url = this.resourceCollections.userSettings.appUserSettings(appKey);
-        return await this.httpClient.putAsync<
-            Record<string, unknown>,
-            Record<string, unknown>,
-            FusionApiHttpErrorResponse
-        >(url, userSettings);
+        return await this.httpClient.putAsync<T, T, FusionApiHttpErrorResponse>(url, userSettings);
     }
 
     public async deleteAllAppUserSettings(appKey: string) {
@@ -30,13 +26,9 @@ export class UserSettingsClient extends BaseApiClient {
         return await this.httpClient.getAsync<any, FusionApiHttpErrorResponse>(url);
     }
 
-    public async updateFusionUserSettings(userSettings: Record<string, unknown>) {
+    public async updateFusionUserSettings<T>(userSettings: T) {
         const url = this.resourceCollections.userSettings.fusionUserSettings();
-        return await this.httpClient.putAsync<
-            Record<string, unknown>,
-            Record<string, unknown>,
-            FusionApiHttpErrorResponse
-        >(url, userSettings);
+        return await this.httpClient.putAsync<T, T, FusionApiHttpErrorResponse>(url, userSettings);
     }
 
     public async deleteAllFusionUserSettings() {
