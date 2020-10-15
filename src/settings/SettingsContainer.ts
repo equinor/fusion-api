@@ -5,8 +5,10 @@ import ReliableDictionary, {
 } from '../utils/ReliableDictionary';
 import AuthUser from '../auth/AuthUser';
 import { IEventHub } from '../utils/EventHub';
+import AppStorageProvider from './AppStorageProvider';
+import UserSettingsClient from '../http/apiClients/UserSettingsClient';
 
-type Settings = {
+export type Settings = {
     [key: string]: any;
 };
 
@@ -33,6 +35,27 @@ export default class SettingsContainer<T = ReadonlySettings>
             new LocalStorageProvider(
                 `FUSION_SETTINGS_CACHE:${baseKey}:${user ? user.id : 'global'}`,
                 eventHub,
+                defaultSettings
+            )
+        );
+    }
+}
+
+export class AppSettingsContainer<T = ReadonlySettings>
+    extends ReliableDictionary<T>
+    implements ISettingsContainer<T> {
+    constructor(
+        appKey: string,
+        eventHub: IEventHub,
+        userSettingsClient: UserSettingsClient,
+        defaultSettings?: Settings
+    ) {
+        super(
+            new AppStorageProvider(
+                `FUSION_APP_SETTINGS_CACHE:${appKey}`,
+                eventHub,
+                userSettingsClient,
+                appKey,
                 defaultSettings
             )
         );

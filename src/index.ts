@@ -43,7 +43,11 @@ export {
 export { default as ApiClients, createApiClients } from './http/apiClients';
 
 export { default as useCoreSettings } from './settings/useCoreSettings';
-export { default as useAppSettings } from './settings/useAppSettings';
+export {
+    default as useAppSettings,
+    useSettingSelector,
+    useAppContextSettings,
+} from './settings/useAppSettings';
 
 export {
     FusionApiHttpErrorResponse,

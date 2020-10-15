@@ -3,7 +3,7 @@ import { combineUrls } from '../../utils/url';
 
 export class UserSettingsResourceCollection extends BaseResourceCollection {
     protected getBaseUrl() {
-        return combineUrls(this.serviceResolver.getPeopleBaseUrl());
+        return combineUrls(this.serviceResolver.getFusionBaseUrl());
     }
 
     public appUserSettings(appKey: string): string {
