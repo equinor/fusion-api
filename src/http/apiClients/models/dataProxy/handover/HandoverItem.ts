@@ -1,9 +1,11 @@
+import { HandoverStatus } from './HandoverStatus';
+
 export type HandoverItem = {
     actualFinishDate: string | null;
     actualStartDate: string | null;
     area: string | null;
     commpkgNo: string | null;
-    commpkgStatus: string | null;
+    commpkgStatus: HandoverStatus | null;
     createdDate: string | null;
     demolitionActualFinishDate: string | null;
     demolitionActualStartDate: string | null;
@@ -32,7 +34,7 @@ export type HandoverItem = {
     mcPkgsRFCCSigned: number;
     mcPkgsRFOCShipped: number;
     mcPkgsRFOCSigned: number;
-    mcStatus: string | null;
+    mcStatus: HandoverStatus | null;
     phase: string | null;
     plannedFinishDate: string | null;
     plannedStartDate: string | null;
