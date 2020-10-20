@@ -19,6 +19,7 @@ export type HandoverItem = {
     hasOperationAgreement: boolean;
     hasUnsignedActions: boolean;
     hasYellowLineMarkup: boolean;
+    hasBlueLineMarkup: boolean;
     id: string | null;
     isDemolition: boolean;
     isInOperation: boolean;
@@ -39,8 +40,12 @@ export type HandoverItem = {
     priority1: string | null;
     priority2: string | null;
     priority3: string | null;
+    priority1Description: string | null;
+    priority2Description: string | null;
+    priority3Description: string | null;
     progress: string | null;
     projectIdentifier: string | null;
+    projectDescription: string | null;
     remark: string | null;
     responsible: string | null;
     rfccIsAccepted: boolean;
