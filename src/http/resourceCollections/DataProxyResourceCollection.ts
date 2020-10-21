@@ -44,21 +44,12 @@ export default class DataProxyResourceCollection extends BaseResourceCollection 
         return combineUrls(this.getBaseUrl(), 'api-signin');
     }
 
-    handover(siteCode: string, projectIdentifier: string): string {
-        return this.getSiteAndProjectUrl(siteCode, projectIdentifier, 'handover');
+    handover(context: string): string {
+        return combineUrls(this.getBaseUrl(), 'api', 'contexts', context, 'handover');
     }
 
-    handoverChildren(
-        siteCode: string,
-        projectIdentifier: string,
-        commpkgId: string,
-        action: keyof HandoverActions
-    ): string {
-        return this.getSiteAndProjectUrl(
-            siteCode,
-            projectIdentifier,
-            `handover/${commpkgId}/${action}/`
-        );
+    handoverChildren(context: string, commpkgId: string, action: keyof HandoverActions): string {
+        return combineUrls(this.handover(context), commpkgId, action);
     }
 
     accumulatedItem(

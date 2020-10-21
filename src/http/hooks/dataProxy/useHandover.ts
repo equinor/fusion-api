@@ -2,37 +2,32 @@ import useApiClient, { ApiClientHookResult } from '../useApiClient';
 import { HandoverItem, HandoverActions } from '../../apiClients/DataProxyClient';
 
 export const useHandover = (
-    siteCode: string,
-    projectIdentifier: string
+    context: string,
+    invalidateCache: boolean
 ): ApiClientHookResult<HandoverItem[]> => {
     return useApiClient<HandoverItem[]>(
         async (apiClients) => {
-            const response = await apiClients.dataProxy.getHandoverAsync(
-                siteCode,
-                projectIdentifier
-            );
+            const response = await apiClients.dataProxy.getHandoverAsync(context, invalidateCache);
             return response.data;
         },
-        [siteCode, projectIdentifier]
+        [context, invalidateCache]
     );
 };
 
-export function useHanoverChild<TKey extends keyof HandoverActions, T = HandoverActions[TKey]>(
-    siteCode: string,
-    projectIdentifier: string,
+export function useHandoverChild<TKey extends keyof HandoverActions, T = HandoverActions[TKey]>(
+    context: string,
     commpkgId: string,
     action: TKey
 ): ApiClientHookResult<T[]> {
     return useApiClient<T[]>(
         async (apiClients) => {
             const response = await apiClients.dataProxy.getHandoverChildrenAsync<TKey, T>(
-                siteCode,
-                projectIdentifier,
+                context,
                 commpkgId,
                 action
             );
             return response.data;
         },
-        [siteCode, projectIdentifier]
+        [context, commpkgId]
     );
 }
