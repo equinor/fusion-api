@@ -1,0 +1,17 @@
+export type HandoverStatus =
+    | 'PA'
+    | 'PB'
+    | 'RFOC Accepted'
+    | 'RFOC Sent'
+    | 'RFOC Rejected'
+    | 'TAC Accepted'
+    | 'TAC Sent'
+    | 'TAC Rejected'
+    | 'RFCC Rejected'
+    | 'RFCC Accepted'
+    | 'RFCC Sent'
+    | 'DCC'
+    | 'RFRC'
+    | 'OS'
+    | 'No status'
+    | 'OK';

@@ -54,23 +54,21 @@ export default class DataProxyClient extends BaseApiClient {
         );
     }
 
-    async getHandoverAsync(siteCode: string, projectIdentifier: string) {
-        const url = this.resourceCollections.dataProxy.handover(siteCode, projectIdentifier);
-        return await this.httpClient.getAsync<HandoverItem[], FusionApiHttpErrorResponse>(url);
+    async getHandoverAsync(context: string, invalidateCache: boolean) {
+        const url = this.resourceCollections.dataProxy.handover(context);
+        const options = invalidateCache ? { headers: { 'x-pp-cache-policy': 'no-cache' } } : {};
+        return await this.httpClient.getAsync<HandoverItem[], FusionApiHttpErrorResponse>(
+            url,
+            options
+        );
     }
 
     async getHandoverChildrenAsync<TKey extends keyof HandoverActions, T = HandoverActions[TKey]>(
-        siteCode: string,
-        projectIdentifier: string,
+        context: string,
         commpkgId: string,
         action: TKey
     ): Promise<HttpResponse<T[]>> {
-        const url = this.resourceCollections.dataProxy.handoverChildren(
-            siteCode,
-            projectIdentifier,
-            commpkgId,
-            action
-        );
+        const url = this.resourceCollections.dataProxy.handoverChildren(context, commpkgId, action);
         return await this.httpClient.getAsync<T[], FusionApiHttpErrorResponse>(url);
     }
 

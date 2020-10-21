@@ -1,9 +1,11 @@
+import { HandoverStatus } from './HandoverStatus';
+
 export type HandoverItem = {
     actualFinishDate: string | null;
     actualStartDate: string | null;
     area: string | null;
     commpkgNo: string | null;
-    commpkgStatus: string | null;
+    commpkgStatus: HandoverStatus | null;
     createdDate: string | null;
     demolitionActualFinishDate: string | null;
     demolitionActualStartDate: string | null;
@@ -19,6 +21,7 @@ export type HandoverItem = {
     hasOperationAgreement: boolean;
     hasUnsignedActions: boolean;
     hasYellowLineMarkup: boolean;
+    hasBlueLineMarkup: boolean;
     id: string | null;
     isDemolition: boolean;
     isInOperation: boolean;
@@ -31,7 +34,7 @@ export type HandoverItem = {
     mcPkgsRFCCSigned: number;
     mcPkgsRFOCShipped: number;
     mcPkgsRFOCSigned: number;
-    mcStatus: string | null;
+    mcStatus: HandoverStatus | null;
     phase: string | null;
     plannedFinishDate: string | null;
     plannedStartDate: string | null;
@@ -39,8 +42,12 @@ export type HandoverItem = {
     priority1: string | null;
     priority2: string | null;
     priority3: string | null;
+    priority1Description: string | null;
+    priority2Description: string | null;
+    priority3Description: string | null;
     progress: string | null;
     projectIdentifier: string | null;
+    projectDescription: string | null;
     remark: string | null;
     responsible: string | null;
     rfccIsAccepted: boolean;
