@@ -107,7 +107,7 @@ export default class PeopleContainer extends EventEmitter<PersonContainerEvents>
         }
 
         return new Promise((resolve, reject) => {
-            const urlToImage = this.resourceCollection.getPersonPhoto(personId);
+            const urlToImage = `/images/profiles/${personId}`;
             const image = new Image();
             image.src = urlToImage;
 
