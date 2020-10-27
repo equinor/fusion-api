@@ -11,7 +11,7 @@ type SetAppSetting = <T>(key: string, value: T) => void;
 type AppSettingsHook<T> = [T, SetAppSetting];
 
 export const useSettingSelector = <T extends ReadonlySettings, K extends any>(
-    selector: (state: T) => K,
+    selector: (state: T) => K | null,
     state: T
 ): K | null => {
     const [userSettings, setUserSettings] = useState<K | null>(null);
@@ -96,6 +96,9 @@ type ContextSetting<T> = {
     [contextId: string]: T | undefined;
 };
 
+type AppContextSetting<T> = {
+    context: ContextSetting<T>;
+};
 /**
  * The useContextSettingsSelector will create app settings for every context.
  * @param context Use a custom context string, otherwise the fusion context id will be used
@@ -123,13 +126,15 @@ export const useAppContextSettings = <T extends ReadonlySettings>(
         context,
     ]);
 
-    const [appSettings, setAppSettings] = useAppSettings<ContextSetting<T>>({
-        [contextId]: defaultSettings,
+    const [appSettings, setAppSettings] = useAppSettings<AppContextSetting<T>>({
+        context: {
+            [contextId]: defaultSettings,
+        },
     });
 
-    const selector = (state: ContextSetting<T>) => state?.context?.[contextId] || '';
+    const selector = (state: AppContextSetting<T>) => state?.context?.[contextId] || null;
 
-    const contextSettings = useSettingSelector<ContextSetting<T>, T>(selector, appSettings);
+    const contextSettings = useSettingSelector<AppContextSetting<T>, T>(selector, appSettings);
 
     const setContextSetting = useCallback(
         (value: T) => {

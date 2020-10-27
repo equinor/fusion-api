@@ -52,6 +52,10 @@ export default class AppStorageProvider<T extends Settings = any>
         );
     }
     private async initialize() {
+        if (this.appKey === '') {
+            this.isInitialized = true;
+            return;
+        }
         try {
             const response = await this.userSettingsClient.getAppUserSettings(this.appKey);
             this.localCache.state = response.data;

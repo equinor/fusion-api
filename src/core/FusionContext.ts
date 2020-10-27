@@ -39,6 +39,7 @@ export type ExternalRefs = {
 
 export type Refs = ExternalRefs & {
     headerContent: MutableRefObject<HTMLElement | null>;
+    headerAppAside?: MutableRefObject<HTMLElement | null>;
 };
 
 export type AppSettings = {
