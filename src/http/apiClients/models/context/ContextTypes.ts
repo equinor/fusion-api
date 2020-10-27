@@ -7,6 +7,7 @@ export enum ContextTypes {
     Project = 'Project',
     ProjectMaster = 'ProjectMaster',
     Facility = 'Facility',
+    TpdPortfolio = 'TpdPortfolio',
 }
 
 export class ContextType {
