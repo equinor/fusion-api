@@ -6,6 +6,10 @@ import AccessToken from './models/report/AccessToken';
 import ConfigValidation from './models/report/ConfigValidation';
 import BaseApiClient from './BaseApiClient';
 import UpdateMarkdown from './models/report/UpdateMarkdown';
+import ContextResourceCollection from '../resourceCollections/ContextResourceCollection';
+import { ContextType } from 'react';
+import { ContextTypes } from './models/context';
+import { report } from 'process';
 
 export default class ReportClient extends BaseApiClient {
     protected getBaseUrl() {
@@ -136,5 +140,19 @@ export default class ReportClient extends BaseApiClient {
         return await this.httpClient.deleteAsync<void, FusionApiHttpErrorResponse>(url, null, () =>
             Promise.resolve()
         );
+    }
+
+    async checkContextAccess(
+        reportId: string,
+        contextExternalId: string,
+        contextType: ContextTypes
+    ) {
+        const url = this.resourceCollections.report.checkAccess(
+            reportId,
+            contextExternalId,
+            contextType
+        );
+
+        return await this.httpClient.optionsAsync<void, FusionApiHttpErrorResponse>(url);
     }
 }
