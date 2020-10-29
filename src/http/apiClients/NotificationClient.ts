@@ -51,19 +51,16 @@ export default class NotificationClient extends BaseApiClient {
         >(url, payload);
     }
 
-    async getPersonNotificationSettingsAsync() {
+    getPersonNotificationSettingsAsync() {
         const url = this.resourceCollections.notification.personNotificationSettings();
-        return await this.httpClient.getAsync<
-            PersonNotificationSettings,
-            FusionApiHttpErrorResponse
-        >(url);
+        return this.httpClient.getAsync<PersonNotificationSettings, FusionApiHttpErrorResponse>(
+            url
+        );
     }
 
-    async updatePersonNotificationSettings<PersonNotificationSettings>(
-        notificationSettings: PersonNotificationSettings
-    ) {
+    updatePersonNotificationSettings(notificationSettings: PersonNotificationSettings) {
         const url = this.resourceCollections.notification.personNotificationSettings();
-        return await this.httpClient.putAsync<
+        return this.httpClient.putAsync<
             PersonNotificationSettings,
             PersonNotificationSettings,
             FusionApiHttpErrorResponse
