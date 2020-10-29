@@ -3,6 +3,7 @@ import { FusionApiHttpErrorResponse } from '.';
 import NotificationCard from './models/NotificationCard/NotificationCard';
 import { CreateNotification } from './models/NotificationCard/CreateNotification';
 import PagedCollection from '../models/PagedCollection';
+import { PersonNotificationSettings } from './models/people/PersonDetails';
 
 export default class NotificationClient extends BaseApiClient {
     protected getBaseUrl() {
@@ -48,5 +49,21 @@ export default class NotificationClient extends BaseApiClient {
             NotificationCard,
             FusionApiHttpErrorResponse
         >(url, payload);
+    }
+
+    getPersonNotificationSettingsAsync() {
+        const url = this.resourceCollections.notification.personNotificationSettings();
+        return this.httpClient.getAsync<PersonNotificationSettings, FusionApiHttpErrorResponse>(
+            url
+        );
+    }
+
+    updatePersonNotificationSettings(notificationSettings: PersonNotificationSettings) {
+        const url = this.resourceCollections.notification.personNotificationSettings();
+        return this.httpClient.putAsync<
+            PersonNotificationSettings,
+            PersonNotificationSettings,
+            FusionApiHttpErrorResponse
+        >(url, notificationSettings);
     }
 }
