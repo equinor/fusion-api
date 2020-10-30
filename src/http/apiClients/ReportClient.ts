@@ -150,6 +150,8 @@ export default class ReportClient extends BaseApiClient {
             contextType
         );
 
-        return await this.httpClient.optionsAsync<void, FusionApiHttpErrorResponse>(url);
+        return await this.httpClient.optionsAsync<void, FusionApiHttpErrorResponse>(url, null, () =>
+            Promise.resolve()
+        );
     }
 }
