@@ -20,6 +20,6 @@ export default class NotificationResourceCollection extends BaseResourceCollecti
     }
 
     personNotificationSettings(identifier = 'me') {
-        return combineUrls(this.getBaseUrl(), 'persons', identifier, 'settings', 'notifications');
+        return combineUrls(this.getBaseUrl(), 'persons', identifier, 'notifications', 'settings');
     }
 }
