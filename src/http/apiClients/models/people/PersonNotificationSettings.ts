@@ -7,6 +7,4 @@ export type PersonNotificationSettings = {
     }>;
 };
 
-type test = Pick<PersonNotificationSettings, 'appConfig'>;
-
 export default PersonNotificationSettings;
