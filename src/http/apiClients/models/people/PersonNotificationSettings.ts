@@ -1,6 +1,6 @@
 export type PersonNotificationSettings = {
-    mail: boolean;
-    delay: number;
+    email: boolean;
+    delayInMinutes: number;
     appConfig: Array<{
         appKey: string;
         enabled: boolean;
