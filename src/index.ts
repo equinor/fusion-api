@@ -142,6 +142,7 @@ export {
     PersonRoleScope,
     PersonAccountType,
     PersonCompany,
+    PersonNotificationSettings,
     PersonPresence,
     PersonPresenceAvailability,
 } from './http/apiClients/models/people/PersonDetails';
