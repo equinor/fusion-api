@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "allowSyntheticDefaultImports": true,
+        "declaration": true,
+        "importHelpers": true,
+        "module": "ESNext",
+        "strict": true,
+        "target": "ESNext",
+        "composite": true,
+        "moduleResolution": "node",
+        "skipLibCheck": true,
+        "baseUrl": "./packages",
+    },
+    "include": [
+        "packages/**/src/**/*",
+    ],
+    "exclude": [
+        "node_modules",
+        "dist",
+        "*.spec.ts"
+    ]
+}

@@ -1,0 +1,15 @@
+{
+  "version": "independent",
+  "command": {
+    "bootstrap": {
+      "hoist": true
+    },
+    "publish": {
+      "ignoreChanges": ["*.spec.ts", "*.md"],
+      "message": "chore(release): publish"
+    }
+  },
+  "packages": [
+    "packages/**"
+  ]
+}

@@ -1,29 +1,26 @@
 {
-    "compilerOptions": {
-        "baseUrl": ".",
-        "paths": { "*": ["src/types/*"] },
-        "allowSyntheticDefaultImports": true,
-        "declaration": true,
-        "importHelpers": true,
-        "module": "esnext",
-        "outDir": "lib",
-        "rootDir": "src",
-        "strict": true,
-        "target": "es2017",
-        "composite": false,
-        "moduleResolution": "node",
-        "jsx": "react",
-        "skipLibCheck": true,
-        "typeRoots": [
-            "./src/typings/@equinor",
-            "./node_modules/@types"
-        ]
-    },
-    "include": [
-        "src/**/*",
-    ],
-    "exclude": [
-        // "src/typings/@equinor",
-        "./node_modules/@types"
-    ]
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "lib",
+    "baseUrl": "./packages",
+    "noEmit": true,
+    "paths": {
+      "@equinor/fusion-*-config": [
+        "*/src"
+      ],
+      "@equinor/fusion-web-*": [
+        "web/*/src"
+      ]
+    }
+  },
+  "include": [
+    "packages/**/src/**/*",
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "lib",
+    "*.spec.ts",
+    "api"
+  ]
 }
