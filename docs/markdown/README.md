@@ -1,3 +1,7 @@
+**[Fusion Core](README.md)**
+
+> [Globals](globals.md)
+
 Fusion
 ===================
 
@@ -7,7 +11,6 @@ Everything a Fusion app needs to communicate with the core.
 [![Downloads/week](https://img.shields.io/npm/dw/@equinor/fusion.svg)](https://npmjs.org/package/@equinor/fusion)
 [![License](https://img.shields.io/npm/l/@equinor/fusion.svg)](https://github.com/equinor/fusion/blob/master/package.json)
 [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
-
 
 * [Install](#install)
 * [Usage as App developer](#usage-as-app-developer)
@@ -29,7 +32,6 @@ $ yarn add @equinor/fusion
 ```sh-session
 $ npm install @equinor/fusion --save
 ```
-
 
 # Usage as App developer
 

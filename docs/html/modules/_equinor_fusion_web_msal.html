@@ -1,0 +1,642 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>@equinor/fusion-web-msal | Fusion Core</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<ul class="results-priority" style="display:none">
+					</ul>
+					<a href="../index.html" class="title">Fusion Core</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="_equinor_fusion_web_msal.html">@equinor/fusion-web-msal</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-3 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_equinor_fusion_web_api_resource.html">@equinor/fusion-web-api-resource</a>
+					</li>
+					<li class="current tsd-kind-module">
+						<a href="_equinor_fusion_web_msal.html">@equinor/fusion-web-msal</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+		<div class="col-7 offset-3 col-content">
+			<h1>Module @equinor/fusion-web-msal</h1>
+			<section class="tsd-panel tsd-comment"><div class="tsd-comment tsd-typography tsd-comment-text">
+					<a href="#equinorfusion-web-msal" id="equinorfusion-web-msal" style="color: inherit; text-decoration: none;">
+						<h1><code>@equinor/fusion-web-msal</code></h1>
+					</a>
+					<blockquote>
+						<p>Light wrapper of Microsoft official <a href="https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/lib/msal-browser">msal library</a></p>
+					</blockquote>
+					<a href="#behavior" id="behavior" style="color: inherit; text-decoration: none;">
+						<h2>Behavior</h2>
+					</a>
+					<p>By default the client will try to uses a hidden iframe to fetch an authorization code from the eSTS.</p>
+					<p>There are cases where this may not work:</p>
+					<ul>
+						<li>Any browser using a form of Intelligent Tracking Prevention</li>
+						<li>If there is not an established session with the service</li>
+						<li>For the cases where interaction is required, you cannot send a request with <code>prompt=none</code></li>
+					</ul>
+					<p><strong>Popup</strong></p>
+					<p>Use when initiating the login process via opening a popup window in the user&#39;s browser</p>
+					<p><strong>Redirect</strong></p>
+					<p>This function redirects the page, so any code that follows this function will not execute.</p>
+					<p><em>IMPORTANT:</em> It is NOT recommended to have code that is dependent on the resolution of the Promise. This function will navigate away from the current browser window. It currently returns a Promise in order to reflect the asynchronous nature of the code running in this function.</p>
+					<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
+						<h2>Usage</h2>
+					</a>
+					<a href="#basic" id="basic" style="color: inherit; text-decoration: none;">
+						<h3>Basic</h3>
+					</a>
+					<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { AuthModule } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@equinor/fusion-web-msal&#x27;</span>;
+
+<span class="hljs-keyword">const</span> doWork = <span class="hljs-keyword">async</span> () =&gt; {
+  <span class="hljs-keyword">const</span> auth = AuthModule.createInstance({
+    <span class="hljs-attr">clientId</span>: <span class="hljs-string">&#x27;azure-tennant-id&#x27;</span>,
+    <span class="hljs-attr">scopes</span>: [<span class="hljs-string">&#x27;openid&#x27;</span>],
+  });
+
+  <span class="hljs-keyword">await</span> auth.login();
+
+  <span class="hljs-keyword">const</span> token = <span class="hljs-keyword">await</span> auth.acquireToken({
+    <span class="hljs-attr">scopes</span>: [<span class="hljs-string">&#x27;email&#x27;</span>],
+  });
+
+  <span class="hljs-keyword">if</span> (!token) <span class="hljs-keyword">throw</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">&#x27;failed to fetch token&#x27;</span>);
+
+  fetch(<span class="hljs-string">&#x27;https://my-server.not/api/bogus&#x27;</span>, {
+    <span class="hljs-attr">headers</span>: {
+      <span class="hljs-attr">Authorization</span>: <span class="hljs-string">`Bearer <span class="hljs-subst">${token.accessToken}</span>`</span>,
+    },
+  });
+};</code></pre>
+					<a href="#popup" id="popup" style="color: inherit; text-decoration: none;">
+						<h3>Popup</h3>
+					</a>
+					<pre><code class="language-typescript">auth.login(<span class="hljs-string">&#x27;popup&#x27;</span>);
+auth.acquireToken(<span class="hljs-string">&#x27;popup&#x27;</span>);</code></pre>
+					<a href="#redirect" id="redirect" style="color: inherit; text-decoration: none;">
+						<h3>Redirect</h3>
+					</a>
+					<pre><code class="language-typescript">auth.login(<span class="hljs-string">&#x27;redirect&#x27;</span>);
+auth.acquireToken(<span class="hljs-string">&#x27;redirect&#x27;</span>);</code></pre>
+			</div></section>
+			<section class="tsd-panel-group tsd-index-group">
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>References</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="_equinor_fusion_web_msal.html#authbehavior" class="tsd-kind-icon">AuthBehavior</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="_equinor_fusion_web_msal.html#authclient" class="tsd-kind-icon">AuthClient</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="_equinor_fusion_web_msal.html#authclientoptions" class="tsd-kind-icon">AuthClientOptions</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="_equinor_fusion_web_msal.html#authmodule" class="tsd-kind-icon">AuthModule</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="_equinor_fusion_web_msal.html#createclient" class="tsd-kind-icon">createClient</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="_equinor_fusion_web_msal.html#createconfig" class="tsd-kind-icon">createConfig</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Classes</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter"><a href="../classes/_equinor_fusion_web_msal.authmodule-1.html" class="tsd-kind-icon">AuthModule</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Interfaces</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/_equinor_fusion_web_msal.account.html" class="tsd-kind-icon">Account</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/_equinor_fusion_web_msal.acquiretoken.html" class="tsd-kind-icon">AcquireToken</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/_equinor_fusion_web_msal.login.html" class="tsd-kind-icon">Login</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Type aliases</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_equinor_fusion_web_msal.html#authbehavior-1" class="tsd-kind-icon">AuthBehavior</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_equinor_fusion_web_msal.html#authclient-1" class="tsd-kind-icon">AuthClient</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter"><a href="_equinor_fusion_web_msal.html#authclient-2" class="tsd-kind-icon">AuthClient</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_equinor_fusion_web_msal.html#authclientoptions-1" class="tsd-kind-icon">AuthClientOptions</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-is-not-exported"><a href="_equinor_fusion_web_msal.html#authrequest" class="tsd-kind-icon">AuthRequest</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_equinor_fusion_web_msal.html#loginclient" class="tsd-kind-icon">LoginClient</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-is-not-exported"><a href="_equinor_fusion_web_msal.html#request" class="tsd-kind-icon">Request</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-is-not-exported"><a href="_equinor_fusion_web_msal.html#request-1" class="tsd-kind-icon">Request</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-is-not-exported"><a href="_equinor_fusion_web_msal.html#tokenclient" class="tsd-kind-icon">TokenClient</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Functions</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter"><a href="_equinor_fusion_web_msal.html#account-2" class="tsd-kind-icon">account</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter"><a href="_equinor_fusion_web_msal.html#acquiretoken-2" class="tsd-kind-icon">acquireToken</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="_equinor_fusion_web_msal.html#createclient-1" class="tsd-kind-icon">createClient</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="_equinor_fusion_web_msal.html#createconfig-1" class="tsd-kind-icon">createConfig</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter"><a href="_equinor_fusion_web_msal.html#login-2" class="tsd-kind-icon">login</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>References</h2>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="authbehavior" class="tsd-anchor"></a>
+					<h3>Auth<wbr>Behavior</h3>
+					<div class="tsd-signature tsd-kind-icon">Auth<wbr>Behavior<span class="tsd-signature-symbol">:</span></div>
+					<aside class="tsd-sources">
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="authclient" class="tsd-anchor"></a>
+					<h3>Auth<wbr>Client</h3>
+					<div class="tsd-signature tsd-kind-icon">Auth<wbr>Client<span class="tsd-signature-symbol">:</span></div>
+					<aside class="tsd-sources">
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="authclientoptions" class="tsd-anchor"></a>
+					<h3>Auth<wbr>Client<wbr>Options</h3>
+					<div class="tsd-signature tsd-kind-icon">Auth<wbr>Client<wbr>Options<span class="tsd-signature-symbol">:</span></div>
+					<aside class="tsd-sources">
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="authmodule" class="tsd-anchor"></a>
+					<h3>Auth<wbr>Module</h3>
+					<div class="tsd-signature tsd-kind-icon">Auth<wbr>Module<span class="tsd-signature-symbol">:</span></div>
+					<aside class="tsd-sources">
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="createclient" class="tsd-anchor"></a>
+					<h3>create<wbr>Client</h3>
+					<div class="tsd-signature tsd-kind-icon">create<wbr>Client<span class="tsd-signature-symbol">:</span></div>
+					<aside class="tsd-sources">
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="createconfig" class="tsd-anchor"></a>
+					<h3>create<wbr>Config</h3>
+					<div class="tsd-signature tsd-kind-icon">create<wbr>Config<span class="tsd-signature-symbol">:</span></div>
+					<aside class="tsd-sources">
+					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Type aliases</h2>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="authbehavior-1" class="tsd-anchor"></a>
+					<h3>Auth<wbr>Behavior</h3>
+					<div class="tsd-signature tsd-kind-icon">Auth<wbr>Behavior<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"popup"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"redirect"</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in
+								<a href="https://github.com/equinor/fusion-api//blob/master/packages/web/msal/src/module.ts#L9">
+									web/msal/src/module.ts:9
+								</a>
+							</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="authclient-1" class="tsd-anchor"></a>
+					<h3>Auth<wbr>Client</h3>
+					<div class="tsd-signature tsd-kind-icon">Auth<wbr>Client<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Pick</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">PublicClientApplication</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">"getAllAccounts"</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in
+								<a href="https://github.com/equinor/fusion-api//blob/master/packages/web/msal/src/account.ts#L3">
+									web/msal/src/account.ts:3
+								</a>
+							</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter">
+					<a name="authclient-2" class="tsd-anchor"></a>
+					<h3>Auth<wbr>Client</h3>
+					<div class="tsd-signature tsd-kind-icon">Auth<wbr>Client&lt;T&gt;<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in
+								<a href="https://github.com/equinor/fusion-api//blob/master/packages/web/msal/src/client.ts#L6">
+									web/msal/src/client.ts:6
+								</a>
+							</li>
+						</ul>
+					</aside>
+					<h4 class="tsd-type-parameters-title">Type parameters</h4>
+					<ul class="tsd-type-parameters">
+						<li>
+							<h4>T</h4>
+						</li>
+					</ul>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5>account<span class="tsd-signature-symbol">: </span><a href="../interfaces/_equinor_fusion_web_msal.account.html" class="tsd-signature-type">Account</a></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>acquire<wbr>Token<span class="tsd-signature-symbol">: </span><a href="../interfaces/_equinor_fusion_web_msal.acquiretoken.html" class="tsd-signature-type">AcquireToken</a></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>client<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>login<span class="tsd-signature-symbol">: </span><a href="../interfaces/_equinor_fusion_web_msal.login.html" class="tsd-signature-type">Login</a></h5>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="authclientoptions-1" class="tsd-anchor"></a>
+					<h3>Auth<wbr>Client<wbr>Options</h3>
+					<div class="tsd-signature tsd-kind-icon">Auth<wbr>Client<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Configuration[&quot;auth&quot;]</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in
+								<a href="https://github.com/equinor/fusion-api//blob/master/packages/web/msal/src/client.ts#L13">
+									web/msal/src/client.ts:13
+								</a>
+							</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-is-not-exported">
+					<a name="authrequest" class="tsd-anchor"></a>
+					<h3>Auth<wbr>Request</h3>
+					<div class="tsd-signature tsd-kind-icon">Auth<wbr>Request<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">PopupRequest</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">RedirectRequest</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in
+								<a href="https://github.com/equinor/fusion-api//blob/master/packages/web/msal/src/module.ts#L7">
+									web/msal/src/module.ts:7
+								</a>
+							</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="loginclient" class="tsd-anchor"></a>
+					<h3>Login<wbr>Client</h3>
+					<div class="tsd-signature tsd-kind-icon">Login<wbr>Client<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Pick</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">PublicClientApplication</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">"ssoSilent"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"loginPopup"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"loginRedirect"</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in
+								<a href="https://github.com/equinor/fusion-api//blob/master/packages/web/msal/src/login.ts#L12">
+									web/msal/src/login.ts:12
+								</a>
+							</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-is-not-exported">
+					<a name="request" class="tsd-anchor"></a>
+					<h3>Request</h3>
+					<div class="tsd-signature tsd-kind-icon">Request<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">SsoSilentRequest</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">PopupRequest</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">RedirectRequest</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in
+								<a href="https://github.com/equinor/fusion-api//blob/master/packages/web/msal/src/login.ts#L10">
+									web/msal/src/login.ts:10
+								</a>
+							</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-is-not-exported">
+					<a name="request-1" class="tsd-anchor"></a>
+					<h3>Request</h3>
+					<div class="tsd-signature tsd-kind-icon">Request<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">SilentRequest</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">PopupRequest</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">RedirectRequest</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in
+								<a href="https://github.com/equinor/fusion-api//blob/master/packages/web/msal/src/token.ts#L11">
+									web/msal/src/token.ts:11
+								</a>
+							</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-is-not-exported">
+					<a name="tokenclient" class="tsd-anchor"></a>
+					<h3>Token<wbr>Client</h3>
+					<div class="tsd-signature tsd-kind-icon">Token<wbr>Client<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Pick</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">PublicClientApplication</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">"acquireTokenSilent"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"acquireTokenPopup"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"acquireTokenRedirect"</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in
+								<a href="https://github.com/equinor/fusion-api//blob/master/packages/web/msal/src/token.ts#L13">
+									web/msal/src/token.ts:13
+								</a>
+							</li>
+						</ul>
+					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Functions</h2>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+					<a name="account-2" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> account</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+						<li class="tsd-signature tsd-kind-icon">account&lt;T&gt;<span class="tsd-signature-symbol">(</span>client<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/_equinor_fusion_web_msal.account.html" class="tsd-signature-type">Account</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in
+										<a href="https://github.com/equinor/fusion-api//blob/master/packages/web/msal/src/account.ts#L9">
+											web/msal/src/account.ts:9
+										</a>
+									</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><a href="_equinor_fusion_web_msal.html#authclient-1" class="tsd-signature-type">AuthClient</a></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>client: <span class="tsd-signature-type">T</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/_equinor_fusion_web_msal.account.html" class="tsd-signature-type">Account</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+					<a name="acquiretoken-2" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> acquire<wbr>Token</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+						<li class="tsd-signature tsd-kind-icon">acquire<wbr>Token&lt;T&gt;<span class="tsd-signature-symbol">(</span>client<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/_equinor_fusion_web_msal.acquiretoken.html" class="tsd-signature-type">AcquireToken</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in
+										<a href="https://github.com/equinor/fusion-api//blob/master/packages/web/msal/src/token.ts#L19">
+											web/msal/src/token.ts:19
+										</a>
+									</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><a href="_equinor_fusion_web_msal.html#tokenclient" class="tsd-signature-type">TokenClient</a></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>client: <span class="tsd-signature-type">T</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/_equinor_fusion_web_msal.acquiretoken.html" class="tsd-signature-type">AcquireToken</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="createclient-1" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> create<wbr>Client</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">create<wbr>Client<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Configuration</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_equinor_fusion_web_msal.html#authclient-1" class="tsd-signature-type">AuthClient</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in
+										<a href="https://github.com/equinor/fusion-api//blob/master/packages/web/msal/src/client.ts#L21">
+											web/msal/src/client.ts:21
+										</a>
+									</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>config: <span class="tsd-signature-type">Configuration</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="_equinor_fusion_web_msal.html#authclient-1" class="tsd-signature-type">AuthClient</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="createconfig-1" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> create<wbr>Config</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">create<wbr>Config<span class="tsd-signature-symbol">(</span>auth<span class="tsd-signature-symbol">: </span><a href="_equinor_fusion_web_msal.html#authclientoptions-1" class="tsd-signature-type">AuthClientOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Configuration</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in
+										<a href="https://github.com/equinor/fusion-api//blob/master/packages/web/msal/src/client.ts#L14">
+											web/msal/src/client.ts:14
+										</a>
+									</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>auth: <a href="_equinor_fusion_web_msal.html#authclientoptions-1" class="tsd-signature-type">AuthClientOptions</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Configuration</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+					<a name="login-2" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> login</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+						<li class="tsd-signature tsd-kind-icon">login&lt;T&gt;<span class="tsd-signature-symbol">(</span>client<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/_equinor_fusion_web_msal.login.html" class="tsd-signature-type">Login</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in
+										<a href="https://github.com/equinor/fusion-api//blob/master/packages/web/msal/src/login.ts#L18">
+											web/msal/src/login.ts:18
+										</a>
+									</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><a href="_equinor_fusion_web_msal.html#loginclient" class="tsd-signature-type">LoginClient</a></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>client: <span class="tsd-signature-type">T</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/_equinor_fusion_web_msal.login.html" class="tsd-signature-type">Login</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<!--{&quot;options&quot;:&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api&quot;,&quot;tsconfig&quot;:&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api&quot;,&quot;inputFiles&quot;:[&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/api-resource/src/collection.spec.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/api-resource/src/collection.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/api-resource/src/index.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/api-resource/src/resource.spec.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/api-resource/src/resource.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/msal/src/account.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/msal/src/client.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/msal/src/index.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/msal/src/login.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/msal/src/module.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/msal/src/token.ts&quot;],&quot;mode&quot;:1,&quot;includeDeclarations&quot;:false,&quot;entryPoint&quot;:&quot;&quot;,&quot;exclude&quot;:[&quot;**/node_modules/**&quot;,&quot;**/*.spec.ts&quot;],&quot;externalPattern&quot;:[],&quot;excludeExternals&quot;:false,&quot;excludeNotExported&quot;:false,&quot;excludeNotDocumented&quot;:false,&quot;excludePrivate&quot;:true,&quot;excludeProtected&quot;:false,&quot;ignoreCompilerErrors&quot;:false,&quot;disableSources&quot;:false,&quot;includes&quot;:&quot;&quot;,&quot;media&quot;:&quot;&quot;,&quot;out&quot;:&quot;docs/html&quot;,&quot;json&quot;:&quot;&quot;,&quot;theme&quot;:&quot;node_modules/typedoc-neo-theme/bin/default&quot;,&quot;name&quot;:&quot;Fusion Core&quot;,&quot;includeVersion&quot;:false,&quot;excludeTags&quot;:[],&quot;readme&quot;:&quot;README.md&quot;,&quot;defaultCategory&quot;:&quot;Other&quot;,&quot;categoryOrder&quot;:[],&quot;categorizeByGroup&quot;:true,&quot;gitRevision&quot;:&quot;&quot;,&quot;gitRemote&quot;:&quot;origin&quot;,&quot;gaID&quot;:&quot;&quot;,&quot;gaSite&quot;:&quot;auto&quot;,&quot;hideGenerator&quot;:false,&quot;toc&quot;:[],&quot;disableOutputCheck&quot;:false,&quot;help&quot;:false,&quot;version&quot;:false,&quot;plugin&quot;:[&quot;typedoc-plugin-lerna-packages&quot;,&quot;typedoc-neo-theme&quot;],&quot;logger&quot;:&quot;console&quot;,&quot;listInvalidSymbolLinks&quot;:false,&quot;lernaExclude&quot;:[],&quot;pathExclude&quot;:[],&quot;source&quot;:[{&quot;path&quot;:&quot;https://github.com/equinor/fusion-api//blob/master/packages/&quot;,&quot;line&quot;:&quot;L&quot;}]}-->
+		</div>
+		<div class="col-2 col-menu secondary-menu">
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-reference tsd-parent-kind-module root">
+						<a href="_equinor_fusion_web_msal.html#authbehavior" class="tsd-kind-icon">Auth<wbr>Behavior</a>
+					</li>
+					<li class=" tsd-kind-reference tsd-parent-kind-module root">
+						<a href="_equinor_fusion_web_msal.html#authclient" class="tsd-kind-icon">Auth<wbr>Client</a>
+					</li>
+					<li class=" tsd-kind-reference tsd-parent-kind-module root">
+						<a href="_equinor_fusion_web_msal.html#authclientoptions" class="tsd-kind-icon">Auth<wbr>Client<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-reference tsd-parent-kind-module root">
+						<a href="_equinor_fusion_web_msal.html#authmodule" class="tsd-kind-icon">Auth<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-reference tsd-parent-kind-module root">
+						<a href="_equinor_fusion_web_msal.html#createclient" class="tsd-kind-icon">create<wbr>Client</a>
+					</li>
+					<li class=" tsd-kind-reference tsd-parent-kind-module root">
+						<a href="_equinor_fusion_web_msal.html#createconfig" class="tsd-kind-icon">create<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter root">
+						<a href="../classes/_equinor_fusion_web_msal.authmodule-1.html" class="tsd-kind-icon">Auth<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module root">
+						<a href="../interfaces/_equinor_fusion_web_msal.account.html" class="tsd-kind-icon">Account</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module root">
+						<a href="../interfaces/_equinor_fusion_web_msal.acquiretoken.html" class="tsd-kind-icon">Acquire<wbr>Token</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module root">
+						<a href="../interfaces/_equinor_fusion_web_msal.login.html" class="tsd-kind-icon">Login</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
+						<a href="_equinor_fusion_web_msal.html#authbehavior-1" class="tsd-kind-icon">Auth<wbr>Behavior</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
+						<a href="_equinor_fusion_web_msal.html#authclient-1" class="tsd-kind-icon">Auth<wbr>Client</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter root">
+						<a href="_equinor_fusion_web_msal.html#authclient-2" class="tsd-kind-icon">Auth<wbr>Client</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
+						<a href="_equinor_fusion_web_msal.html#authclientoptions-1" class="tsd-kind-icon">Auth<wbr>Client<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-not-exported root">
+						<a href="_equinor_fusion_web_msal.html#authrequest" class="tsd-kind-icon">Auth<wbr>Request</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
+						<a href="_equinor_fusion_web_msal.html#loginclient" class="tsd-kind-icon">Login<wbr>Client</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-not-exported root">
+						<a href="_equinor_fusion_web_msal.html#request" class="tsd-kind-icon">Request</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-not-exported root">
+						<a href="_equinor_fusion_web_msal.html#request-1" class="tsd-kind-icon">Request</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-not-exported root">
+						<a href="_equinor_fusion_web_msal.html#tokenclient" class="tsd-kind-icon">Token<wbr>Client</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter root">
+						<a href="_equinor_fusion_web_msal.html#account-2" class="tsd-kind-icon">account</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter root">
+						<a href="_equinor_fusion_web_msal.html#acquiretoken-2" class="tsd-kind-icon">acquire<wbr>Token</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="_equinor_fusion_web_msal.html#createclient-1" class="tsd-kind-icon">create<wbr>Client</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="_equinor_fusion_web_msal.html#createconfig-1" class="tsd-kind-icon">create<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter root">
+						<a href="_equinor_fusion_web_msal.html#login-2" class="tsd-kind-icon">login</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

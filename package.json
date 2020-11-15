@@ -3,6 +3,19 @@
   "version": "1.0.0",
   "description": "Fusion",
   "private": true,
+  "license": "ISC",
+  "homepage": "https://github.com/equinor/fusion-api#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/equinor/fusion-api.git"
+  },
+  "scripts": {
+    "test": "lerna run test",
+    "lint": "lerna run lint",
+    "doc": "npm run doc:web && npm run doc:markdown",
+    "doc:web": "npx typedoc",
+    "doc:markdown": "npx typedoc --options typedoc.markdown.js"
+  },
   "devDependencies": {
     "eslint": "^7.13.0",
     "husky": "^4.3.0",
@@ -10,29 +23,18 @@
     "lint-staged": "^10.5.1",
     "prettier": "^2.1.2",
     "typedoc": "^0.19.2",
+    "typedoc-neo-theme": "^1.0.10",
+    "typedoc-plugin-lerna-packages": "^0.3.1",
+    "typedoc-plugin-markdown": "^3.0.11",
     "typescript": "^4.0.5"
   },
-  "scripts": {
-    "test": "lerna run test",
-    "lint": "lerna run lint"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/equinor/fusion-api.git"
-  },
-  "keywords": [],
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/equinor/fusion-api/issues"
-  },
-  "homepage": "https://github.com/equinor/fusion-api#readme",
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
     }
   },
   "lint-staged": {
-    "./packages/*/src/**/*.{js,ts,tsx}": [
+    "./packages/**/src/**/*.{js,ts,tsx}": [
       "eslint --quiet --fix"
     ]
   }

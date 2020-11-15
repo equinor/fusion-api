@@ -1,0 +1,477 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>ApiResource | Fusion Core</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<ul class="results-priority" style="display:none">
+					</ul>
+					<a href="../index.html" class="title">Fusion Core</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../modules/_equinor_fusion_web_api_resource.html">@equinor/fusion-web-api-resource</a>
+				</li>
+				<li>
+					<a href="_equinor_fusion_web_api_resource.apiresource-1.html">ApiResource</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-3 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+					<li class="current tsd-kind-module">
+						<a href="../modules/_equinor_fusion_web_api_resource.html">@equinor/fusion-web-api-resource</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/_equinor_fusion_web_msal.html">@equinor/fusion-web-msal</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+		<div class="col-7 offset-3 col-content">
+			<h1>Class ApiResource&lt;T&gt;</h1>
+			<section class="tsd-panel tsd-comment"><div class="tsd-comment tsd-typography tsd-comment-shorttext">
+					<div class="lead">
+						<p>TODO: write</p>
+					</div>
+					</div><div class="tsd-comment tsd-typography tsd-comment-tags">
+					<dl class="tsd-comment-tags"><dt>example</dt>
+						<dd><pre><code>const<span class="hljs-built_in"> resource </span>= new Resource(<span class="hljs-string">&#x27;/api/:service/:id&#x27;</span>, {request: {headers: {<span class="hljs-string">&#x27;Content-Type&#x27;</span>: <span class="hljs-string">&#x27;application/json&#x27;</span>}}});
+const url = resource.url(<span class="hljs-string">&#x27;https://nowhere.now&#x27;</span>, { service: <span class="hljs-string">&#x27;test&#x27;</span>, id: <span class="hljs-string">&#x27;99&#x27;</span> });
+const data = await fetch(url, {headers: resource.headers});</code></pre>
+					</dd></dl>
+			</div></section>
+			<section class="tsd-panel tsd-type-parameters">
+				<h3>Type parameters</h3>
+				<ul class="tsd-type-parameters">
+					<li>
+						<h4>T</h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">ApiResource</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="_equinor_fusion_web_api_resource.apiresource-1.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_equinor_fusion_web_api_resource.apiresource-1.html#auth" class="tsd-kind-icon">auth</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_equinor_fusion_web_api_resource.apiresource-1.html#path" class="tsd-kind-icon">path</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_equinor_fusion_web_api_resource.apiresource-1.html#request" class="tsd-kind-icon">request</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Accessors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="_equinor_fusion_web_api_resource.apiresource-1.html#headers" class="tsd-kind-icon">headers</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="_equinor_fusion_web_api_resource.apiresource-1.html#pattern" class="tsd-kind-icon">pattern</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_equinor_fusion_web_api_resource.apiresource-1.html#match" class="tsd-kind-icon">match</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_equinor_fusion_web_api_resource.apiresource-1.html#stringify" class="tsd-kind-icon">stringify</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_equinor_fusion_web_api_resource.apiresource-1.html#url" class="tsd-kind-icon">url</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Api<wbr>Resource<span class="tsd-signature-symbol">(</span>path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, auth<span class="tsd-signature-symbol">?: </span><a href="../modules/_equinor_fusion_web_api_resource.html#apiresourceauth-1" class="tsd-signature-type">ApiResourceAuth</a>, request<span class="tsd-signature-symbol">?: </span><a href="../modules/_equinor_fusion_web_api_resource.html#apiresourcerequest-1" class="tsd-signature-type">ApiResourceRequest</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_equinor_fusion_web_api_resource.apiresource-1.html" class="tsd-signature-type">ApiResource</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in
+										<a href="https://github.com/equinor/fusion-api//blob/master/packages/web/api-resource/src/resource.ts#L24">
+											web/api-resource/src/resource.ts:24
+										</a>
+									</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>path: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> auth: <a href="../modules/_equinor_fusion_web_api_resource.html#apiresourceauth-1" class="tsd-signature-type">ApiResourceAuth</a></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> request: <a href="../modules/_equinor_fusion_web_api_resource.html#apiresourcerequest-1" class="tsd-signature-type">ApiResourceRequest</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="_equinor_fusion_web_api_resource.apiresource-1.html" class="tsd-signature-type">ApiResource</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="auth" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> auth</h3>
+					<div class="tsd-signature tsd-kind-icon">auth<span class="tsd-signature-symbol">:</span> <a href="../modules/_equinor_fusion_web_api_resource.html#apiresourceauth-1" class="tsd-signature-type">ApiResourceAuth</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in
+								<a href="https://github.com/equinor/fusion-api//blob/master/packages/web/api-resource/src/resource.ts#L25">
+									web/api-resource/src/resource.ts:25
+								</a>
+							</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="path" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> path</h3>
+					<div class="tsd-signature tsd-kind-icon">path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in
+								<a href="https://github.com/equinor/fusion-api//blob/master/packages/web/api-resource/src/resource.ts#L25">
+									web/api-resource/src/resource.ts:25
+								</a>
+							</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="request" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> request</h3>
+					<div class="tsd-signature tsd-kind-icon">request<span class="tsd-signature-symbol">:</span> <a href="../modules/_equinor_fusion_web_api_resource.html#apiresourcerequest-1" class="tsd-signature-type">ApiResourceRequest</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in
+								<a href="https://github.com/equinor/fusion-api//blob/master/packages/web/api-resource/src/resource.ts#L25">
+									web/api-resource/src/resource.ts:25
+								</a>
+							</li>
+						</ul>
+					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Accessors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="headers" class="tsd-anchor"></a>
+					<h3>headers</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> headers<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ApiResourceRequest[&quot;headers&quot;]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in
+										<a href="https://github.com/equinor/fusion-api//blob/master/packages/web/api-resource/src/resource.ts#L37">
+											web/api-resource/src/resource.ts:37
+										</a>
+									</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">ApiResourceRequest[&quot;headers&quot;]</span></h4>
+							<p>request headers</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="pattern" class="tsd-anchor"></a>
+					<h3>pattern</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> pattern<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">UrlPattern</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in
+										<a href="https://github.com/equinor/fusion-api//blob/master/packages/web/api-resource/src/resource.ts#L30">
+											web/api-resource/src/resource.ts:30
+										</a>
+									</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">UrlPattern</span></h4>
+							<p><a href="https://www.npmjs.com/package/url-pattern" class="external">url-pattern</a></p>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="match" class="tsd-anchor"></a>
+					<h3>match</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">match<span class="tsd-signature-symbol">(</span>path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in
+										<a href="https://github.com/equinor/fusion-api//blob/master/packages/web/api-resource/src/resource.ts#L45">
+											web/api-resource/src/resource.ts:45
+										</a>
+									</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography tsd-comment-shorttext">
+								<div class="lead">
+									<p>Matches resource path with provided path</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>path: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography tsd-comment-text">
+										<p>path to test</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="stringify" class="tsd-anchor"></a>
+					<h3>stringify</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">stringify<span class="tsd-signature-symbol">(</span>obj<span class="tsd-signature-symbol">?: </span><a href="" class="tsd-signature-type">T</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in
+										<a href="https://github.com/equinor/fusion-api//blob/master/packages/web/api-resource/src/resource.ts#L53">
+											web/api-resource/src/resource.ts:53
+										</a>
+									</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography tsd-comment-shorttext">
+								<div class="lead">
+									<p>Stringifies path with provided object</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> obj: <a href="" class="tsd-signature-type">T</a></h5>
+									<div class="tsd-comment tsd-typography tsd-comment-text">
+										<p>object to stringify</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="url" class="tsd-anchor"></a>
+					<h3>url</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">url<span class="tsd-signature-symbol">(</span>endpoint<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, obj<span class="tsd-signature-symbol">?: </span><a href="" class="tsd-signature-type">T</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in
+										<a href="https://github.com/equinor/fusion-api//blob/master/packages/web/api-resource/src/resource.ts#L62">
+											web/api-resource/src/resource.ts:62
+										</a>
+									</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography tsd-comment-shorttext">
+								<div class="lead">
+									<p>Creates an url from provided object</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>endpoint: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography tsd-comment-text">
+										<p>base url</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> obj: <a href="" class="tsd-signature-type">T</a></h5>
+									<div class="tsd-comment tsd-typography tsd-comment-text">
+										<p>object to stringify</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<!--{&quot;options&quot;:&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api&quot;,&quot;tsconfig&quot;:&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api&quot;,&quot;inputFiles&quot;:[&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/api-resource/src/collection.spec.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/api-resource/src/collection.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/api-resource/src/index.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/api-resource/src/resource.spec.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/api-resource/src/resource.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/msal/src/account.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/msal/src/client.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/msal/src/index.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/msal/src/login.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/msal/src/module.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/msal/src/token.ts&quot;],&quot;mode&quot;:1,&quot;includeDeclarations&quot;:false,&quot;entryPoint&quot;:&quot;&quot;,&quot;exclude&quot;:[&quot;**/node_modules/**&quot;,&quot;**/*.spec.ts&quot;],&quot;externalPattern&quot;:[],&quot;excludeExternals&quot;:false,&quot;excludeNotExported&quot;:false,&quot;excludeNotDocumented&quot;:false,&quot;excludePrivate&quot;:true,&quot;excludeProtected&quot;:false,&quot;ignoreCompilerErrors&quot;:false,&quot;disableSources&quot;:false,&quot;includes&quot;:&quot;&quot;,&quot;media&quot;:&quot;&quot;,&quot;out&quot;:&quot;docs/html&quot;,&quot;json&quot;:&quot;&quot;,&quot;theme&quot;:&quot;node_modules/typedoc-neo-theme/bin/default&quot;,&quot;name&quot;:&quot;Fusion Core&quot;,&quot;includeVersion&quot;:false,&quot;excludeTags&quot;:[],&quot;readme&quot;:&quot;README.md&quot;,&quot;defaultCategory&quot;:&quot;Other&quot;,&quot;categoryOrder&quot;:[],&quot;categorizeByGroup&quot;:true,&quot;gitRevision&quot;:&quot;&quot;,&quot;gitRemote&quot;:&quot;origin&quot;,&quot;gaID&quot;:&quot;&quot;,&quot;gaSite&quot;:&quot;auto&quot;,&quot;hideGenerator&quot;:false,&quot;toc&quot;:[],&quot;disableOutputCheck&quot;:false,&quot;help&quot;:false,&quot;version&quot;:false,&quot;plugin&quot;:[&quot;typedoc-plugin-lerna-packages&quot;,&quot;typedoc-neo-theme&quot;],&quot;logger&quot;:&quot;console&quot;,&quot;listInvalidSymbolLinks&quot;:false,&quot;lernaExclude&quot;:[],&quot;pathExclude&quot;:[],&quot;source&quot;:[{&quot;path&quot;:&quot;https://github.com/equinor/fusion-api//blob/master/packages/&quot;,&quot;line&quot;:&quot;L&quot;}]}-->
+		</div>
+		<div class="col-2 col-menu secondary-menu">
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-reference tsd-parent-kind-module root">
+						<a href="../modules/_equinor_fusion_web_api_resource.html#apiresource" class="tsd-kind-icon">Api<wbr>Resource</a>
+					</li>
+					<li class=" tsd-kind-reference tsd-parent-kind-module root">
+						<a href="../modules/_equinor_fusion_web_api_resource.html#apiresourceauth" class="tsd-kind-icon">Api<wbr>Resource<wbr>Auth</a>
+					</li>
+					<li class=" tsd-kind-reference tsd-parent-kind-module root">
+						<a href="../modules/_equinor_fusion_web_api_resource.html#apiresourcecollection" class="tsd-kind-icon">Api<wbr>Resource<wbr>Collection</a>
+					</li>
+					<li class=" tsd-kind-reference tsd-parent-kind-module root">
+						<a href="../modules/_equinor_fusion_web_api_resource.html#apiresourcerequest" class="tsd-kind-icon">Api<wbr>Resource<wbr>Request</a>
+					</li>
+					<li class=" tsd-kind-reference tsd-parent-kind-module root">
+						<a href="../modules/_equinor_fusion_web_api_resource.html#requestmethod" class="tsd-kind-icon">Request<wbr>Method</a>
+					</li>
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter root">
+						<a href="_equinor_fusion_web_api_resource.apiresource-1.html" class="tsd-kind-icon">Api<wbr>Resource</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="_equinor_fusion_web_api_resource.apiresource-1.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="_equinor_fusion_web_api_resource.apiresource-1.html#auth" class="tsd-kind-icon">auth</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="_equinor_fusion_web_api_resource.apiresource-1.html#path" class="tsd-kind-icon">path</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="_equinor_fusion_web_api_resource.apiresource-1.html#request" class="tsd-kind-icon">request</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="_equinor_fusion_web_api_resource.apiresource-1.html#headers" class="tsd-kind-icon">headers</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="_equinor_fusion_web_api_resource.apiresource-1.html#pattern" class="tsd-kind-icon">pattern</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_equinor_fusion_web_api_resource.apiresource-1.html#match" class="tsd-kind-icon">match</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_equinor_fusion_web_api_resource.apiresource-1.html#stringify" class="tsd-kind-icon">stringify</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_equinor_fusion_web_api_resource.apiresource-1.html#url" class="tsd-kind-icon">url</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+					<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter root">
+						<a href="_equinor_fusion_web_api_resource.apiresourcecollection-1.html" class="tsd-kind-icon">Api<wbr>Resource<wbr>Collection</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
+						<a href="../modules/_equinor_fusion_web_api_resource.html#apiresourceauth-1" class="tsd-kind-icon">Api<wbr>Resource<wbr>Auth</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
+						<a href="../modules/_equinor_fusion_web_api_resource.html#apiresourcerequest-1" class="tsd-kind-icon">Api<wbr>Resource<wbr>Request</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
+						<a href="../modules/_equinor_fusion_web_api_resource.html#requestmethod-1" class="tsd-kind-icon">Request<wbr>Method</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter tsd-is-not-exported root">
+						<a href="../modules/_equinor_fusion_web_api_resource.html#resourcector" class="tsd-kind-icon">Resource<wbr>Ctor</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter tsd-is-not-exported root">
+						<a href="../modules/_equinor_fusion_web_api_resource.html#matchrequestmethod" class="tsd-kind-icon">match<wbr>Request<wbr>Method</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

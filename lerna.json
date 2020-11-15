@@ -2,7 +2,7 @@
   "version": "independent",
   "command": {
     "bootstrap": {
-      "hoist": true
+      "hoist": false
     },
     "publish": {
       "ignoreChanges": ["*.spec.ts", "*.md"],
@@ -10,6 +10,7 @@
     }
   },
   "packages": [
-    "packages/**"
+    "packages/*",
+    "packages/*/*"
   ]
 }

@@ -1,0 +1,316 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Fusion Core</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<ul class="results-priority" style="display:none">
+					</ul>
+					<a href="index.html" class="title">Fusion Core</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+			</ul>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-3 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_equinor_fusion_web_api_resource.html">@equinor/fusion-web-api-resource</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_equinor_fusion_web_msal.html">@equinor/fusion-web-msal</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+		<div class="col-7 offset-3 col-content">
+			<h1>Fusion Core</h1>
+			<div class="tsd-panel tsd-typography">
+				<a href="#fusion" id="fusion" style="color: inherit; text-decoration: none;">
+					<h1>Fusion</h1>
+				</a>
+				<p>Everything a Fusion app needs to communicate with the core.</p>
+				<p><a href="https://npmjs.org/package/@equinor/fusion"><img src="https://img.shields.io/npm/v/@equinor/fusion.svg" alt="Version"></a>
+					<a href="https://npmjs.org/package/@equinor/fusion"><img src="https://img.shields.io/npm/dw/@equinor/fusion.svg" alt="Downloads/week"></a>
+					<a href="https://github.com/equinor/fusion/blob/master/package.json"><img src="https://img.shields.io/npm/l/@equinor/fusion.svg" alt="License"></a>
+				<a href="https://lerna.js.org/"><img src="https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg" alt="lerna"></a></p>
+				<ul>
+					<li><a href="#install">Install</a></li>
+					<li><a href="#usage-as-app-developer">Usage as App developer</a><ul>
+							<li><a href="#current-user">Current user</a></li>
+							<li><a href="#core-resources">Core resources</a></li>
+							<li><a href="#core-settings">Core settings</a></li>
+							<li><a href="#app-settings">App settings</a></li>
+						</ul>
+					</li>
+					<li><a href="#usage-as-core-developer">Usage as Core developer</a><ul>
+							<li><a href="#bootstrap-the-fusion-core">Bootstrap the fusion core</a></li>
+						</ul>
+					</li>
+				</ul>
+				<a href="#install" id="install" style="color: inherit; text-decoration: none;">
+					<h1>Install</h1>
+				</a>
+				<a href="#yarn" id="yarn" style="color: inherit; text-decoration: none;">
+					<h3>Yarn</h3>
+				</a>
+				<pre><code class="language-sh-session">$ yarn add @equinor/fusion</code></pre>
+				<a href="#npm" id="npm" style="color: inherit; text-decoration: none;">
+					<h3>NPM</h3>
+				</a>
+				<pre><code class="language-sh-session">$ npm install @equinor/fusion --save</code></pre>
+				<a href="#usage-as-app-developer" id="usage-as-app-developer" style="color: inherit; text-decoration: none;">
+					<h1>Usage as App developer</h1>
+				</a>
+				<a href="#current-user" id="current-user" style="color: inherit; text-decoration: none;">
+					<h2>Current user</h2>
+				</a>
+				<pre><code class="language-javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { Spinner } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@equinor/fusion-components&quot;</span>;
+<span class="hljs-keyword">import</span> { useCurrentUser } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@equinor/fusion&quot;</span>;
+
+<span class="hljs-keyword">const</span> MyComponent = <span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-keyword">const</span> currentUser = useCurrentUser();
+
+    <span class="hljs-comment">// Current user might not be retrieved from the cache when the component loads,</span>
+    <span class="hljs-comment">// So check for nulL!</span>
+    <span class="hljs-function"><span class="hljs-title">if</span>(<span class="hljs-params">currentUser == <span class="hljs-literal">null</span></span>)</span> {
+        <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Spinner</span> /&gt;</span></span>;
+    }
+
+    <span class="hljs-keyword">return</span> (
+        <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Hi {currentUser.name}!<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span></span>
+    );
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> MyComponent; 
+</code></pre>
+				<a href="#core-resources" id="core-resources" style="color: inherit; text-decoration: none;">
+					<h2>Core resources</h2>
+				</a>
+				<pre><code class="language-javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { Spinner } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@equinor/fusion-components&quot;</span>;
+<span class="hljs-keyword">import</span> { useCurrentContext, ContextTypes, useHandover, useHandoverMcpkgs } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@equinor/fusion&quot;</span>;
+
+<span class="hljs-keyword">const</span> MyHandoverCommpkgDetails = <span class="hljs-function">(<span class="hljs-params">{ id }</span>) =&gt;</span> {
+    <span class="hljs-keyword">const</span> currentProject = useCurrentContext(ContextTypes.PDP);
+    <span class="hljs-keyword">const</span> [isFetching, handoverMcpkgs] = useHandoverMcpkgs(currentProject, id);
+
+    <span class="hljs-function"><span class="hljs-title">if</span>(<span class="hljs-params">isFetching</span>)</span> {
+        <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Spinner</span> /&gt;</span></span>;
+    }
+
+    <span class="hljs-keyword">return</span> (
+        <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">ul</span>&gt;</span>
+            {handoverMcpkgs.map(mcpkg =&gt; (
+                <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>
+                    {mcpkg.mcPkgNo}
+                <span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+            ))}
+        <span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span></span>
+    );
+};
+
+<span class="hljs-keyword">const</span> MyHandoverComponent = <span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-keyword">const</span> currentProject = useCurrentContext(ContextTypes.PDP);
+    <span class="hljs-keyword">const</span> [isFetching, handoverData] = useHandover(currentProject);
+
+    <span class="hljs-function"><span class="hljs-title">if</span>(<span class="hljs-params">isFetching</span>)</span> {
+        <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Spinner</span> /&gt;</span></span>;
+    }
+
+    <span class="hljs-keyword">return</span> (
+        <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">ul</span>&gt;</span>
+            {handoverData.map(handoverItem =&gt; (
+                <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-name">h2</span>&gt;</span>{handoverItem.commpkgNo}<span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-name">MyHandoverCommpkgDetails</span> <span class="hljs-attr">id</span>=<span class="hljs-string">{handoverItem.id}</span>  /&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+            ))}
+        <span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span></span>
+    );
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> MyComponent; 
+</code></pre>
+				<a href="#core-settings" id="core-settings" style="color: inherit; text-decoration: none;">
+					<h2>Core settings</h2>
+				</a>
+				<p>Core settings are read-only for apps</p>
+				<pre><code class="language-javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { useCoreSettings, ComponentDisplayTypes } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@equinor/fusion&quot;</span>;
+
+<span class="hljs-keyword">const</span> MyComponent = <span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-keyword">const</span> coreSettings = useCoreSettings();
+
+    <span class="hljs-function"><span class="hljs-title">if</span>(<span class="hljs-params">coreSettings.componentDisplayType === ComponentDisplayTypes.Compact</span>)</span> {
+        <span class="hljs-keyword">return</span> (<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">span</span>&gt;</span>Looks like you prefere compact mode!<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span></span>);
+    } <span class="hljs-keyword">else</span> {
+        <span class="hljs-keyword">return</span> (<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">h2</span>&gt;</span>Some more spacing for you!<span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span></span>)
+    }
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> MyComponent; 
+</code></pre>
+				<a href="#app-settings" id="app-settings" style="color: inherit; text-decoration: none;">
+					<h2>App settings</h2>
+				</a>
+				<p>App settings are automatically scoped to the current app</p>
+				<pre><code class="language-javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { Button } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@equinor/fusion-components&quot;</span>;
+<span class="hljs-keyword">import</span> { useAppSettings } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@equinor/fusion&quot;</span>;
+
+<span class="hljs-keyword">const</span> MyComponent = <span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-keyword">const</span> [appSettings, setAppSettings] = useAppSettings();
+
+    <span class="hljs-keyword">return</span> (
+        <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Button</span>
+            <span class="hljs-attr">primary</span> <span class="hljs-attr">contained</span>
+            <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> setAppSettings(&quot;toggle&quot;, !appSettings.toggle)}
+        &gt;
+            Click to toggle {appSettings.toggle ? &quot;On&quot; : &quot;Off&quot;}
+        <span class="hljs-tag">&lt;/<span class="hljs-name">Button</span>&gt;</span></span>
+    );
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> MyComponent; 
+</code></pre>
+				<a href="#usage-as-core-developer" id="usage-as-core-developer" style="color: inherit; text-decoration: none;">
+					<h1>Usage as Core developer</h1>
+				</a>
+				<a href="#bootstrap-the-fusion-core" id="bootstrap-the-fusion-core" style="color: inherit; text-decoration: none;">
+					<h2>Bootstrap the fusion core</h2>
+				</a>
+				<pre><code class="language-javascript"><span class="hljs-keyword">import</span> React, { useRef } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { render } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-dom&quot;</span>;
+<span class="hljs-keyword">import</span> { Router } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-router&quot;</span>;
+<span class="hljs-keyword">import</span> { createBrowserHistory } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;history&quot;</span>;
+<span class="hljs-keyword">import</span> {
+    AuthContainer,
+    createFusionContext,
+    FusionContext,
+    ServiceResolver,
+} <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@equinor/fusion&quot;</span>;
+
+<span class="hljs-keyword">const</span> serviceResolver: ServiceResolver = {
+    <span class="hljs-attr">getDataProxyUrl</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-string">&quot;http://api.url.com&quot;</span>,
+    <span class="hljs-attr">getOrgUrl</span>: <span class="hljs-function">() =&gt;</span> <span class="hljs-string">&quot;http://api.url.com&quot;</span>,
+};
+
+<span class="hljs-keyword">const</span> start = <span class="hljs-keyword">async</span> () =&gt; {
+    <span class="hljs-keyword">const</span> authContainer = <span class="hljs-keyword">new</span> AuthContainer();
+
+    <span class="hljs-comment">// Handle redirect from login</span>
+    <span class="hljs-keyword">await</span> authContainer.handleWindowCallbackAsync();
+
+    <span class="hljs-comment">// Register the main fusion AAD app (get the client id from config)</span>
+    <span class="hljs-keyword">const</span> coreAppClientId = <span class="hljs-string">&quot;{client-id}&quot;</span>;
+    <span class="hljs-keyword">const</span> coreAppRegistered = <span class="hljs-keyword">await</span> authContainer.registerAppAsync(
+        coreAppClientId,
+        [serviceResolver.getDataProxyUrl(), serviceResolver.getOrgUrl()]
+    );
+
+    <span class="hljs-function"><span class="hljs-title">if</span>(<span class="hljs-params">!coreAppRegistered</span>)</span> {
+        authContainer.login(coreAppClientId);
+    } <span class="hljs-keyword">else</span> {
+
+        <span class="hljs-keyword">const</span> Root = <span class="hljs-function">() =&gt;</span> {
+            <span class="hljs-keyword">const</span> root = useRef();
+            <span class="hljs-keyword">const</span> overlay = useRef();
+            <span class="hljs-keyword">const</span> fusionContext = createFusionContext(
+                authContainer,
+                serviceResolver,
+                { root, overlay, }
+            );
+
+            <span class="hljs-keyword">return</span> (
+                <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Router</span> <span class="hljs-attr">history</span>=<span class="hljs-string">{fusionContext.history}</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-name">FusionContext.Provider</span> <span class="hljs-attr">value</span>=<span class="hljs-string">{fusionContext}</span>&gt;</span>
+                        <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;fusion-root&quot;</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">{rootRef}</span>&gt;</span>
+                            {/* The app component goes here */}
+                        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+                        <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;overlay-container&quot;</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">{overlayRef}</span>&gt;</span>
+                            {/* Leave this empty. Used for dialogs, popovers, tooltips etc. */}
+                        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+                    <span class="hljs-tag">&lt;/<span class="hljs-name">FusionContext.Provider</span>&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-name">Router</span>&gt;</span></span>
+            );
+        };
+
+        render(<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Root</span> /&gt;</span></span>, <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">&quot;app&quot;</span>));
+    }
+};
+
+start();</code></pre>
+			</div>
+			<!--{&quot;options&quot;:&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api&quot;,&quot;tsconfig&quot;:&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api&quot;,&quot;inputFiles&quot;:[&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/api-resource/src/collection.spec.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/api-resource/src/collection.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/api-resource/src/index.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/api-resource/src/resource.spec.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/api-resource/src/resource.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/msal/src/account.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/msal/src/client.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/msal/src/index.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/msal/src/login.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/msal/src/module.ts&quot;,&quot;/Users/odin.rochmann/Develop/Fusion/fusion-api/packages/web/msal/src/token.ts&quot;],&quot;mode&quot;:1,&quot;includeDeclarations&quot;:false,&quot;entryPoint&quot;:&quot;&quot;,&quot;exclude&quot;:[&quot;**/node_modules/**&quot;,&quot;**/*.spec.ts&quot;],&quot;externalPattern&quot;:[],&quot;excludeExternals&quot;:false,&quot;excludeNotExported&quot;:false,&quot;excludeNotDocumented&quot;:false,&quot;excludePrivate&quot;:true,&quot;excludeProtected&quot;:false,&quot;ignoreCompilerErrors&quot;:false,&quot;disableSources&quot;:false,&quot;includes&quot;:&quot;&quot;,&quot;media&quot;:&quot;&quot;,&quot;out&quot;:&quot;docs/html&quot;,&quot;json&quot;:&quot;&quot;,&quot;theme&quot;:&quot;node_modules/typedoc-neo-theme/bin/default&quot;,&quot;name&quot;:&quot;Fusion Core&quot;,&quot;includeVersion&quot;:false,&quot;excludeTags&quot;:[],&quot;readme&quot;:&quot;README.md&quot;,&quot;defaultCategory&quot;:&quot;Other&quot;,&quot;categoryOrder&quot;:[],&quot;categorizeByGroup&quot;:true,&quot;gitRevision&quot;:&quot;&quot;,&quot;gitRemote&quot;:&quot;origin&quot;,&quot;gaID&quot;:&quot;&quot;,&quot;gaSite&quot;:&quot;auto&quot;,&quot;hideGenerator&quot;:false,&quot;toc&quot;:[],&quot;disableOutputCheck&quot;:false,&quot;help&quot;:false,&quot;version&quot;:false,&quot;plugin&quot;:[&quot;typedoc-plugin-lerna-packages&quot;,&quot;typedoc-neo-theme&quot;],&quot;logger&quot;:&quot;console&quot;,&quot;listInvalidSymbolLinks&quot;:false,&quot;lernaExclude&quot;:[],&quot;pathExclude&quot;:[],&quot;source&quot;:[{&quot;path&quot;:&quot;https://github.com/equinor/fusion-api//blob/master/packages/&quot;,&quot;line&quot;:&quot;L&quot;}]}-->
+		</div>
+		<div class="col-2 col-menu secondary-menu">
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
