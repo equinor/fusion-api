@@ -13,3 +13,7 @@ export { WorkOrder } from './workorder/WorkOrder';
 export { WorkOrderMaterial } from './workorder/WorkOrderMaterial';
 export { WorkOrderMccr } from './workorder/WorkOrderMccr';
 export { Milestone } from './milestone/Milestone';
+export { McPackage } from './mcPackage/McPackage';
+export { McNcr } from './mcPackage/McNcr';
+export { McPunchItem } from './mcPackage/McPunchItem';
+export { McWorkOrder } from './mcPackage/McWorkOrder';
