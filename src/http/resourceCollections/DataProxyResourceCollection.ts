@@ -80,4 +80,44 @@ export default class DataProxyResourceCollection extends BaseResourceCollection 
             `api/contexts/${contextId}/work-orders/${workOrderId}/mccr`
         );
     }
+
+    public mcPackages(contextId: string) {
+        return combineUrls(this.getBaseUrl(), 'api', 'contexts', contextId, 'mc-pkgs');
+    }
+
+    public mcWorkOrders(contextId: string, mcPackageId: string) {
+        return combineUrls(
+            this.getBaseUrl(),
+            'api',
+            'contexts',
+            contextId,
+            'mc-pkgs',
+            mcPackageId,
+            'work-orders'
+        );
+    }
+
+    public mcNcr(contextId: string, mcPackageId: string) {
+        return combineUrls(
+            this.getBaseUrl(),
+            'api',
+            'contexts',
+            contextId,
+            'mc-pkgs',
+            mcPackageId,
+            'ncr'
+        );
+    }
+
+    public mcPunch(contextId: string, mcPackageId: string) {
+        return combineUrls(
+            this.getBaseUrl(),
+            'api',
+            'contexts',
+            contextId,
+            'mc-pkgs',
+            mcPackageId,
+            'punch'
+        );
+    }
 }
