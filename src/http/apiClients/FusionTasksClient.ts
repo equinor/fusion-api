@@ -1,7 +1,7 @@
 import { FusionApiHttpErrorResponse } from '.';
 import { HttpResponse } from '../HttpClient';
 import BaseApiClient from './BaseApiClient';
-import { PimsTask, ProcosysTask } from './models/fusionTasks';
+import { PimsTask, ProCoSysTask } from './models/fusionTasks';
 
 export default class FusionTasksClient extends BaseApiClient {
     protected getBaseUrl(): string {
@@ -16,8 +16,8 @@ export default class FusionTasksClient extends BaseApiClient {
         return await this.httpClient.getAsync<PimsTask[], FusionApiHttpErrorResponse>(url);
     }
 
-    async getProcosysTasksAsync(personId: string): Promise<HttpResponse<ProcosysTask[]>> {
+    async getProcosysTasksAsync(personId: string): Promise<HttpResponse<ProCoSysTask[]>> {
         const url = this.resourceCollections.fusionTasks.procosysTasks(personId);
-        return await this.httpClient.getAsync<ProcosysTask[], FusionApiHttpErrorResponse>(url);
+        return await this.httpClient.getAsync<ProCoSysTask[], FusionApiHttpErrorResponse>(url);
     }
 }

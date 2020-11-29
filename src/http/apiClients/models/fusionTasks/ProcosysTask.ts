@@ -1,4 +1,4 @@
-export type ProcosysTask = {
+export type ProCoSysTask = {
     id: string;
     siteCode: string;
     projectIdentifier: string;
