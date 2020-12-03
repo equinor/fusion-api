@@ -16,6 +16,10 @@ import {
     WorkOrderMaterial,
     WorkOrderMccr,
     Milestone,
+    McPackage,
+    McPunchItem,
+    McWorkOrder,
+    McNcr,
 } from './models/dataProxy';
 import {
     HandoverActions,
@@ -106,5 +110,29 @@ export default class DataProxyClient extends BaseApiClient {
     async getWorkOrderMccrAsync(contextId: string, workOrderId: string) {
         const url = this.resourceCollections.dataProxy.workOrdersMccr(contextId, workOrderId);
         return await this.httpClient.getAsync<WorkOrderMccr[], FusionApiHttpErrorResponse>(url);
+    }
+
+    async getMcPackageAsync(context: string, invalidateCache: boolean) {
+        const url = this.resourceCollections.dataProxy.mcPackages(context);
+        const options = invalidateCache ? { headers: { 'x-pp-cache-policy': 'no-cache' } } : {};
+        return await this.httpClient.getAsync<McPackage[], FusionApiHttpErrorResponse>(
+            url,
+            options
+        );
+    }
+
+    async getMcPunchAsync(contextId: string, workOrderId: string) {
+        const url = this.resourceCollections.dataProxy.mcPunch(contextId, workOrderId);
+        return await this.httpClient.getAsync<McPunchItem[], FusionApiHttpErrorResponse>(url);
+    }
+
+    async getMcWorkOrderAsync(contextId: string, workOrderId: string) {
+        const url = this.resourceCollections.dataProxy.mcWorkOrders(contextId, workOrderId);
+        return await this.httpClient.getAsync<McWorkOrder[], FusionApiHttpErrorResponse>(url);
+    }
+
+    async getMcNcrAsync(contextId: string, workOrderId: string) {
+        const url = this.resourceCollections.dataProxy.mcNcr(contextId, workOrderId);
+        return await this.httpClient.getAsync<McNcr[], FusionApiHttpErrorResponse>(url);
     }
 }

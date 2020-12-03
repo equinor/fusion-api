@@ -1,5 +1,6 @@
 import BaseResourceCollection from './BaseResourceCollection';
 import { combineUrls } from '../../utils/url';
+import { ContextTypes } from '../apiClients/models/context';
 
 export default class ReportResourceCollection extends BaseResourceCollection {
     protected getBaseUrl() {
@@ -60,5 +61,18 @@ export default class ReportResourceCollection extends BaseResourceCollection {
 
     auditLog(reportId: string) {
         return combineUrls(this.getBaseUrl(), 'reports', reportId, 'auditlog');
+    }
+
+    checkAccess(reportId: string, contextExternalId: string, contextType: ContextTypes) {
+        return combineUrls(
+            this.getBaseUrl(),
+            'reports',
+            reportId,
+            'contexts',
+            contextExternalId,
+            'contexttypes',
+            contextType,
+            'checkaccess'
+        );
     }
 }
