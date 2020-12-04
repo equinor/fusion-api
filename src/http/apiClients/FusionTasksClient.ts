@@ -8,11 +8,8 @@ export default class FusionTasksClient extends BaseApiClient {
         return this.serviceResolver.getFusionBaseUrl();
     }
 
-    async getPimsTasksAsync(
-        personId: string,
-        sourceSystem: string
-    ): Promise<HttpResponse<PimsTask[]>> {
-        const url = this.resourceCollections.fusionTasks.pimsTasks(personId, sourceSystem);
+    async getPimsTasksAsync(personId: string): Promise<HttpResponse<PimsTask[]>> {
+        const url = this.resourceCollections.fusionTasks.pimsTasks(personId);
         return await this.httpClient.getAsync<PimsTask[], FusionApiHttpErrorResponse>(url);
     }
 
