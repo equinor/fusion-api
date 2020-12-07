@@ -14,4 +14,5 @@ export type ProCoSysTask = {
     dueDate?: Date;
     subCategory: string;
     taskTypeKey: string;
+    projectDescription: string;
 };
