@@ -1,16 +1,35 @@
 export type PersonPresenceAvailability =
-    | 'Offline'
-    | 'Online'
-    | 'None'
-    | 'IdleBusy'
+    | 'Away'
+    | 'Available'
+    | 'AvailableIdle'
+    | 'BeRightBack'
+    | 'Busy'
+    | 'BusyIdle'
     | 'DoNotDisturb'
-    | 'BeRightBack';
+    | 'Offline'
+    | 'PresenceUnknown';
+
+export type PersonPresenceActivity =
+    | 'Available'
+    | 'Away'
+    | 'BeRightBack'
+    | 'Busy'
+    | 'DoNotDisturb'
+    | 'InACall'
+    | 'InAConferenceCall'
+    | 'Inactive'
+    | 'InAMeeting'
+    | 'Offline'
+    | 'OffWork'
+    | 'OutOfOffice'
+    | 'PresenceUnknown'
+    | 'Presenting'
+    | 'UrgentInterruptionsOnly';
 
 type PersonPresence = {
     mail: string | null;
     availability: PersonPresenceAvailability;
-    activity: string | null;
-    deviceType: string;
+    activity: PersonPresenceActivity;
 };
 
 export default PersonPresence;
