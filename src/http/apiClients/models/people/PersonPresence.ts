@@ -1,13 +1,10 @@
 export type PersonPresenceAvailability =
-    | 'Away'
-    | 'Available'
-    | 'AvailableIdle'
-    | 'BeRightBack'
-    | 'Busy'
-    | 'BusyIdle'
-    | 'DoNotDisturb'
     | 'Offline'
-    | 'PresenceUnknown';
+    | 'Online'
+    | 'None'
+    | 'IdleBusy'
+    | 'DoNotDisturb'
+    | 'BeRightBack';
 
 type PersonPresence = {
     mail: string | null;
