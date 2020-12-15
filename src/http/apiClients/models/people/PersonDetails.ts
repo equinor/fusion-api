@@ -7,7 +7,10 @@ import PersonRoleScope from './PersonRoleScope';
 import PersonAccountType from './PersonAccountType';
 import PersonCompany from './PersonCompany';
 import PersonNotificationSettings from './PersonNotificationSettings';
-import PersonPresence, { PersonPresenceAvailability } from './PersonPresence';
+import PersonPresence, {
+    PersonPresenceAvailability,
+    PersonPresenceActivity,
+} from './PersonPresence';
 
 export {
     PersonRole,
@@ -21,6 +24,7 @@ export {
     PersonPresence,
     PersonNotificationSettings,
     PersonPresenceAvailability,
+    PersonPresenceActivity,
 };
 
 type PersonDetails = {
