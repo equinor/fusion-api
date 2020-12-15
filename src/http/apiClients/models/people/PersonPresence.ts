@@ -9,7 +9,7 @@ export type PersonPresenceAvailability =
 type PersonPresence = {
     mail: string | null;
     availability: PersonPresenceAvailability;
-    activity: string;
+    activity: string | null;
 };
 
 export default PersonPresence;
