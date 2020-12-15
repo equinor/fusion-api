@@ -7,7 +7,7 @@ export type PersonPresenceAvailability =
     | 'BeRightBack';
 
 type PersonPresence = {
-    mail: string | null;
+    id: string;
     availability: PersonPresenceAvailability;
     activity: string | null;
 };
