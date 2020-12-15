@@ -145,7 +145,6 @@ export {
     PersonNotificationSettings,
     PersonPresence,
     PersonPresenceAvailability,
-    PersonPresenceActivity,
 } from './http/apiClients/models/people/PersonDetails';
 
 export { default as RoleDefinition } from './http/apiClients/models/people/RoleDefinition';

@@ -9,27 +9,10 @@ export type PersonPresenceAvailability =
     | 'Offline'
     | 'PresenceUnknown';
 
-export type PersonPresenceActivity =
-    | 'Available'
-    | 'Away'
-    | 'BeRightBack'
-    | 'Busy'
-    | 'DoNotDisturb'
-    | 'InACall'
-    | 'InAConferenceCall'
-    | 'Inactive'
-    | 'InAMeeting'
-    | 'Offline'
-    | 'OffWork'
-    | 'OutOfOffice'
-    | 'PresenceUnknown'
-    | 'Presenting'
-    | 'UrgentInterruptionsOnly';
-
 type PersonPresence = {
     mail: string | null;
     availability: PersonPresenceAvailability;
-    activity: PersonPresenceActivity;
+    activity: string;
 };
 
 export default PersonPresence;
