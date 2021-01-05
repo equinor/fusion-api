@@ -66,9 +66,11 @@
         "react": "^16.13.1",
         "react-router": "^5.0.1",
         "react-router-dom": "^5.0.1",
+        "rxjs": "^6.6.3",
         "tslib": "^2.0.0",
         "tslint-config-prettier": "^1.18.0",
         "typedoc": "0.17.0-3",
+        "typesafe-actions": "^5.1.0",
         "typescript": "^3.9.7"
     },
     "peerDependencies": {

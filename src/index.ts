@@ -207,10 +207,12 @@ export {
 } from './core/UserMenuContainer';
 
 export {
-    default as TelemetryLogger,
+    TelemetryObserver,
+    TelemetryActions,
+    TelemetryLogger,
     useTelemetryLogger,
     useTelemetryInitializer,
-} from './utils/TelemetryLogger';
+} from './utils/telemetry';
 
 export { default as FeatureLogger, useFeatureLogger } from './utils/FeatureLogger';
 
@@ -240,3 +242,5 @@ export {
 
 export { default as EventHub, IEventHub } from './utils/EventHub';
 export { default as DistributedState, IDistributedState } from './utils/DistributedState';
+
+export { useEpic, useSelector, useObservableSelector, combineEpics } from './epic';
