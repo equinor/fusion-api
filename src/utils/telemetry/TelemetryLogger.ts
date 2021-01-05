@@ -8,13 +8,11 @@ import {
     IDependencyTelemetry,
     IMetricTelemetry,
 } from '@microsoft/applicationinsights-web';
-import { useFusionContext } from '../core/FusionContext';
-import { useEffect } from 'react';
-import { IAuthContainer } from '../auth/AuthContainer';
+import { IAuthContainer } from '../../auth/AuthContainer';
 
 export type TelemetryInitializer = (item: ITelemetryItem) => void | boolean;
 
-export default class TelemetryLogger {
+export class TelemetryLogger {
     private isInitialized: boolean = false;
     private readonly internalAppInsights: ApplicationInsights;
     private initializers: TelemetryInitializer[] = [];
@@ -126,17 +124,4 @@ export default class TelemetryLogger {
     }
 }
 
-export const useTelemetryLogger = () => {
-    const {
-        logging: { telemetry },
-    } = useFusionContext();
-    return telemetry;
-};
-
-export const useTelemetryInitializer = (initializer: TelemetryInitializer) => {
-    const telemetryLogger = useTelemetryLogger();
-
-    useEffect(() => {
-        return telemetryLogger.registerInitializer(initializer);
-    }, [initializer]);
-};
+export default TelemetryLogger;

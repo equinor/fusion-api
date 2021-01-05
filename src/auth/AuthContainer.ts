@@ -4,7 +4,7 @@ import AuthNonce from './AuthNonce';
 import AuthCache from './AuthCache';
 import AuthUser from './AuthUser';
 import { trimTrailingSlash } from '../utils/url';
-import TelemetryLogger from '../utils/TelemetryLogger';
+import { TelemetryLogger } from '../utils/telemetry';
 
 export class FusionAuthAppNotFoundError extends Error {
     constructor(clientId: string) {

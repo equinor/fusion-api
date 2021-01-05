@@ -12,7 +12,7 @@ import AppManifest from '../http/apiClients/models/fusion/apps/AppManifest';
 import { History } from 'history';
 import { combineUrls } from '../utils/url';
 import FeatureLogger from '../utils/FeatureLogger';
-import TelemetryLogger from '../utils/TelemetryLogger';
+import { TelemetryLogger } from '../utils/telemetry';
 
 type ContextCache = {
     current: Context | null;

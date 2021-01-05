@@ -16,7 +16,7 @@ import TasksContainer from './TasksContainer';
 import NotificationCenter from './NotificationCenter';
 import PeopleContainer from './PeopleContainer';
 import UserMenuContainer from './UserMenuContainer';
-import TelemetryLogger from '../utils/TelemetryLogger';
+import { TelemetryLogger } from '../utils/telemetry';
 import EventHub from '../utils/EventHub';
 import FeatureLogger from '../utils/FeatureLogger';
 

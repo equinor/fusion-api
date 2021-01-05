@@ -4,7 +4,7 @@ import ApiClients from '../http/apiClients';
 import FusionClient from '../http/apiClients/FusionClient';
 import { useFusionContext } from '../core/FusionContext';
 import { useEffect, useState } from 'react';
-import TelemetryLogger from '../utils/TelemetryLogger';
+import { TelemetryLogger } from '../utils/telemetry';
 import FeatureLogger from '../utils/FeatureLogger';
 import DistributedState, { IDistributedState } from '../utils/DistributedState';
 import { IEventHub } from '../utils/EventHub';
@@ -246,7 +246,7 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
                 (cur, key) => ({ ...cur, [key]: { ...cur[key], ...apps[key] } }),
                 { ...this.apps.state }
             );
-            this.apps.state = Object.freeze(nextState);
+            this.apps.state = Object.freeze({ ...this.apps.state, ...nextState });
         }
     }
 }
