@@ -207,12 +207,10 @@ export {
 } from './core/UserMenuContainer';
 
 export {
-    TelemetryObserver,
-    TelemetryActions,
-    TelemetryLogger,
+    default as TelemetryLogger,
     useTelemetryLogger,
     useTelemetryInitializer,
-} from './utils/telemetry';
+} from './utils/TelemetryLogger';
 
 export { default as FeatureLogger, useFeatureLogger } from './utils/FeatureLogger';
 
