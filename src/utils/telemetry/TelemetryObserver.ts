@@ -1,4 +1,4 @@
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, Subscription } from 'rxjs';
 import { withLatestFrom } from 'rxjs/operators';
 
 import { ActionType, createAction, getType, PayloadActionCreator } from 'typesafe-actions';
@@ -27,7 +27,7 @@ export const TelemetryActions = {
 
 export class TelemetryObserver<C = any, A extends Actions = Actions> extends Subject<A> {
     public readonly performance = new Performance();
-    protected _subscription;
+    protected _subscription: Subscription;
     constructor(
         readonly name: string,
         readonly context$: Observable<C>,
