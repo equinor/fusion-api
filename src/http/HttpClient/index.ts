@@ -14,7 +14,7 @@ import { useFusionContext } from '../../core/FusionContext';
 import RequestBody from '../models/RequestBody';
 import BlobContainer from '../models/BlobContainer';
 import JSON from '../../utils/JSON';
-import TelemetryLogger from '../../utils/TelemetryLogger';
+import { TelemetryLogger } from '../../utils/telemetry';
 import DistributedState, { IDistributedState } from '../../utils/DistributedState';
 import { IEventHub } from '../../utils/EventHub';
 
