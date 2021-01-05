@@ -1,7 +1,8 @@
-import { useState, useLayoutEffect } from 'react';
+import { useMemo } from 'react';
 
 import { Observable } from 'rxjs';
-import { pluck, distinctUntilChanged, tap } from 'rxjs/operators';
+import { pluck } from 'rxjs/operators';
+import useObservableState from './useObservableState';
 
 /**
  * Hook selector for attribute on a observable
@@ -18,15 +19,8 @@ export const useObservableSelector = <S, P extends keyof S>(
         initial?: S[P];
     }
 ): S[P] | undefined => {
-    const [state, setState] = useState<S[typeof property] | undefined>(options?.initial);
-
-    useLayoutEffect(() => {
-        const subscription = state$
-            .pipe(pluck(property), distinctUntilChanged(options?.compare))
-            .subscribe(setState);
-        return () => subscription.unsubscribe();
-    }, [state$, property]);
-    return state;
+    const prop$ = useMemo(() => state$.pipe(pluck(property)), [state$, property]);
+    return useObservableState(prop$, options);
 };
 
 export default useObservableSelector;
