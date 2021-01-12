@@ -345,7 +345,9 @@ export default class HttpClient implements IHttpClient {
                 }
 
                 // Add more info
-                const errorResponse = this.parseResponseJSONAsync<TExpectedErrorResponse>(response);
+                const errorResponse = await this.parseResponseJSONAsync<TExpectedErrorResponse>(
+                    response
+                );
 
                 throw new HttpClientRequestFailedError(url, response.status, errorResponse);
             }
