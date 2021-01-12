@@ -419,7 +419,12 @@ export default class HttpClient implements IHttpClient {
             : await this.parseResponseJSONAsync<TResponse>(response);
         // TODO: Update cache status?
 
-        return this.createHttpResponse<TResponse, TExpectedErrorResponse>(request, response, data);
+        // TODO: response should hint of null or throw empty response error, too big for current fix scope
+        return this.createHttpResponse<TResponse, TExpectedErrorResponse>(
+            request,
+            response,
+            data as TResponse
+        );
     }
 
     private createHttpResponse<TResponse, TExpectedErrorResponse>(
