@@ -11,6 +11,7 @@ import PowerBIResourceCollection from './PowerBIResourceCollection';
 import NotificationResourceCollection from './NotificationResourceCollection';
 import InfoResourceCollection from './InfoResourceCollection';
 import UserSettingsResourceCollection from './UserSettingsResoureCollections';
+import FusionTasksResourceCollection from './FusionTasksResourceCollection';
 
 type ResourceCollections = {
     dataProxy: DataProxyResourceCollection;
@@ -24,6 +25,7 @@ type ResourceCollections = {
     notification: NotificationResourceCollection;
     info: InfoResourceCollection;
     userSettings: UserSettingsResourceCollection;
+    fusionTasks: FusionTasksResourceCollection;
 };
 
 export { DataProxyResourceCollection };
@@ -43,6 +45,7 @@ export const createResourceCollections = (
     notification: new NotificationResourceCollection(serviceResolver),
     info: new InfoResourceCollection(serviceResolver),
     userSettings: new UserSettingsResourceCollection(serviceResolver),
+    fusionTasks: new FusionTasksResourceCollection(serviceResolver),
 });
 
 export default ResourceCollections;
