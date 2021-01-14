@@ -6,4 +6,5 @@ export type PimsTask = {
     createdDate: Date;
     isOverdue: boolean;
     daysOverdue: number;
+    taskTypeKey: string;
 };
