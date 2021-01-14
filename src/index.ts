@@ -157,7 +157,7 @@ export {
     PersonNotification,
 } from './http/apiClients/models/NotificationCard/NotificationCard';
 
-export { PimsTask, ProcosysTask } from './http/apiClients/models/fusionTasks';
+export { PimsTask, ProCoSysTask } from './http/apiClients/models/fusionTasks';
 
 export { default as useApiClient } from './http/hooks/useApiClient';
 export { default as useApiClients } from './http/hooks/useApiClients';

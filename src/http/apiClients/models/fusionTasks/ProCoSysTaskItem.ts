@@ -1,4 +1,4 @@
-export type ProcosysTask = {
+export type ProCoSysTask = {
     id: string;
     siteCode: string;
     projectIdentifier: string;
@@ -14,4 +14,5 @@ export type ProcosysTask = {
     dueDate?: Date;
     subCategory: string;
     taskTypeKey: string;
+    projectDescription: string;
 };

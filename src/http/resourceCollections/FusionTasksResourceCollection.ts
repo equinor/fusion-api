@@ -10,8 +10,8 @@ export default class FusionTasksResourceCollection extends BaseResourceCollectio
         return combineUrls(this.getBaseUrl(), 'persons', personId, 'tasks');
     }
 
-    pimsTasks(personId: string, taskType: string): string {
-        return combineUrls(this.personTasks(personId), 'pims', taskType);
+    pimsTasks(personId: string): string {
+        return combineUrls(this.personTasks(personId), 'pims');
     }
 
     procosysTasks(personId: string): string {
