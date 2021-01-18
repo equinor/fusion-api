@@ -1,1 +1,1 @@
-export type HandoverLineStatus = 'Started' | 'Finished' | 'Not Applicable' | null;
+export type HandoverLineStatus = 'started' | 'finished' | 'na' | null;
