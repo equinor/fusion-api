@@ -1,3 +1,4 @@
+import { HandoverLineStatus } from './HandoverLineStatus';
 import { HandoverStatus } from './HandoverStatus';
 
 export type HandoverItem = {
@@ -22,6 +23,8 @@ export type HandoverItem = {
     hasUnsignedActions: boolean;
     hasYellowLineMarkup: boolean;
     hasBlueLineMarkup: boolean;
+    yellowLineStatus: HandoverLineStatus;
+    blueLineStatus: HandoverLineStatus;
     id: string;
     isDemolition: boolean;
     isInOperation: boolean;
