@@ -7,9 +7,9 @@ import ServiceResolver from '../resourceCollections/ServiceResolver';
 
 export default abstract class BaseApiClient {
     constructor(
-        protected httpClient: IHttpClient,
-        protected resourceCollections: ResourceCollections,
-        protected serviceResolver: ServiceResolver
+        public readonly httpClient: IHttpClient,
+        public readonly resourceCollections: ResourceCollections,
+        public readonly serviceResolver: ServiceResolver
     ) {}
 
     protected abstract getBaseUrl(): string;
