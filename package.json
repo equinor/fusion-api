@@ -72,11 +72,6 @@
         "typescript": "^3.9.7"
     },
     "peerDependencies": {
-        "@types/history": "^4.7.3",
-        "@types/react": "17.x",
-        "@types/react-router": "5.x",
-        "@types/react-router-dom": "5.x",
-        "@types/uuid": "^3.4.5",
         "history": "^4.9.0",
         "react": "17.x",
         "react-router": "^5.0.1",
