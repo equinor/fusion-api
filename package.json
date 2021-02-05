@@ -68,7 +68,7 @@
         "react-router-dom": "^5.0.1",
         "tslib": "^2.0.0",
         "tslint-config-prettier": "^1.18.0",
-        "typedoc": "0.17.0-3",
+        "typedoc": "0.20.21",
         "typescript": "^3.9.7"
     },
     "peerDependencies": {
