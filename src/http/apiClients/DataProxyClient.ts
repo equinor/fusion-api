@@ -20,6 +20,7 @@ import {
     McPunchItem,
     McWorkOrder,
     McNcr,
+    OperationItem,
 } from './models/dataProxy';
 import {
     HandoverActions,
@@ -55,6 +56,15 @@ export default class DataProxyClient extends BaseApiClient {
             { credentials: 'include' },
             undefined,
             voidResponseParser
+        );
+    }
+
+    async getOperationAsync(context: string, invalidateCache: boolean) {
+        const url = this.resourceCollections.dataProxy.operation(context);
+        const options = invalidateCache ? { headers: { 'x-pp-cache-policy': 'no-cache' } } : {};
+        return await this.httpClient.getAsync<OperationItem[], FusionApiHttpErrorResponse>(
+            url,
+            options
         );
     }
 
