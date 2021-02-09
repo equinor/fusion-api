@@ -60,7 +60,7 @@
         "eslint-plugin-react": "^7.20.6",
         "eslint-plugin-tsdoc": "^0.2.7",
         "history": "^4.9.0",
-        "husky": "^4.3.0",
+        "husky": "^5.0.9",
         "lint-staged": "^10.3.0",
         "prettier": "^2.1.1",
         "react": "^16.13.1",
