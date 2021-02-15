@@ -242,3 +242,5 @@ export {
 
 export { default as EventHub, IEventHub } from './utils/EventHub';
 export { default as DistributedState, IDistributedState } from './utils/DistributedState';
+
+export { useEpic, useSelector, useObservableSelector, combineEpics } from './epic';
