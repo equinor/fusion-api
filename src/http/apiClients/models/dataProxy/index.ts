@@ -1,4 +1,5 @@
 export { HandoverItem } from './handover/HandoverItem';
+export { OperationItem } from './handover/OperationItem';
 export { HandoverMcpkg } from './handover/HandoverMcpkg';
 export { HandoverWorkOrder } from './handover/HandoverWorkOrder';
 export { HandoverUnsignedTask } from './handover/HandoverUnsignedTask';

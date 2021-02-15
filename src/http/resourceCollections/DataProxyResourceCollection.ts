@@ -44,6 +44,10 @@ export default class DataProxyResourceCollection extends BaseResourceCollection 
         return combineUrls(this.getBaseUrl(), 'api-signin');
     }
 
+    operation(context: string): string {
+        return combineUrls(this.getBaseUrl(), 'api', 'contexts', context, 'operation');
+    }
+
     handover(context: string): string {
         return combineUrls(this.getBaseUrl(), 'api', 'contexts', context, 'handover');
     }
