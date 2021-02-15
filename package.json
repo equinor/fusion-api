@@ -69,7 +69,7 @@
         "rxjs": "^6.6.3",
         "tslib": "^2.0.0",
         "tslint-config-prettier": "^1.18.0",
-        "typedoc": "0.17.0-3",
+        "typedoc": "0.20.25",
         "typesafe-actions": "^5.1.0",
         "typescript": "^4.1.3"
     },
