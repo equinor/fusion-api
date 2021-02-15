@@ -10,7 +10,7 @@ export { default as AuthToken } from './auth/AuthToken';
 
 export { default as useCurrentUser } from './auth/useCurrentUser';
 
-export { registerApp, useCurrentApp } from './app/AppContainer';
+export { registerApp, useCurrentApp, useApps } from './app/AppContainer';
 export { default as AppManifest } from './app/AppManifest';
 export { default as ApiAppManifest } from './http/apiClients/models/fusion/apps/AppManifest';
 export { default as AppCategory } from './http/apiClients/models/fusion/apps/AppCategory';
