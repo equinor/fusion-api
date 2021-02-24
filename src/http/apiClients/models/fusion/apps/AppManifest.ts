@@ -23,6 +23,7 @@ type AppManifest = {
     accentColor: string | null;
     categoryId: string | null;
     category: AppCategory | null;
+    hide?: boolean;
 };
 
 export default AppManifest;
