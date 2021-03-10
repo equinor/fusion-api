@@ -15,6 +15,8 @@ type Position = {
     totalChildCount: number;
     projectId: string;
     contractId: string | null;
+    isTaskOwner: boolean;
+    hasChangesInDraft?: boolean;
 };
 
 export default Position;
