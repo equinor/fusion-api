@@ -25,6 +25,7 @@ type PositionInstance = {
     positionId: string;
     externalId: string;
     parentPositionId: string | null;
+    hasChangesInDraft?: boolean;
 };
 
 export default PositionInstance;
