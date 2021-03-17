@@ -247,10 +247,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
 
     getHistory(): Context[] {
         const value = this.toObject();
-        const currentContextTypes = useCurrentContextTypes();
-        return value && value.history
-            ? value.history.filter((context) => currentContextTypes.includes(context.type.id))
-            : [];
+        return value?.history || [];
     }
 
     async getCurrentContextAsync() {
@@ -322,13 +319,18 @@ const useCurrentContextTypes = () => {
     return app && app.context ? app.context.types : [];
 };
 
+const getValidContexts = (contexts: Context[]) =>
+    contexts.filter((context) => useCurrentContextTypes().includes(context.type.id));
+
 const useContextHistory = () => {
     const contextManager = useContextManager();
-    const [history, setHistory] = useState<Context[]>(contextManager.getHistory());
+    const [history, setHistory] = useState<Context[]>(
+        getValidContexts(contextManager.getHistory())
+    );
 
     const setHistoryFromCache = useCallback((contextCache: ContextCache) => {
         if (contextCache.history !== history) {
-            setHistory(contextCache.history || []);
+            setHistory(getValidContexts(contextCache.history || []));
         }
     }, []);
 
