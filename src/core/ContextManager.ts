@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import ApiClients from '../http/apiClients';
 import ContextClient from '../http/apiClients/ContextClient';
 import { useFusionContext } from './FusionContext';
-import { Context, ContextTypes, ContextManifest } from '../http/apiClients/models/context';
+import { Context, ContextTypes } from '../http/apiClients/models/context';
 import ReliableDictionary, { LocalStorageProvider } from '../utils/ReliableDictionary';
 import useDebouncedAbortable from '../hooks/useDebouncedAbortable';
 import useApiClients from '../http/hooks/useApiClients';
@@ -78,7 +78,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
 
         const newUrl = await this.buildUrlWithContext();
         if (newUrl && this.history.location.pathname.indexOf(newUrl) !== 0)
-            this.history.push(newUrl);
+            this.history.replace(newUrl);
     };
 
     private async resolveContextFromUrlOrLocalStorageAsync(app: AppManifest | null) {
@@ -152,7 +152,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
                 hasAppPath ? appPath : '',
                 buildUrl(context, scopedPath + this.history.location.search)
             );
-            if (this.history.location.pathname.indexOf(newUrl) !== 0) this.history.push(newUrl);
+            if (this.history.location.pathname.indexOf(newUrl) !== 0) this.history.replace(newUrl);
         }
 
         await this.setAsync('current', context);
@@ -245,9 +245,12 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         return value ? value.current : null;
     }
 
+    getValidContexts = (contexts: Context[]) =>
+        contexts.filter((context) => useCurrentContextTypes().includes(context.type.id));
+
     getHistory(): Context[] {
         const value = this.toObject();
-        return value && value.history ? value.history : [];
+        return value?.history || [];
     }
 
     async getCurrentContextAsync() {
@@ -321,11 +324,13 @@ const useCurrentContextTypes = () => {
 
 const useContextHistory = () => {
     const contextManager = useContextManager();
-    const [history, setHistory] = useState<Context[]>(contextManager.getHistory());
+    const [history, setHistory] = useState<Context[]>(
+        contextManager.getValidContexts(contextManager.getHistory())
+    );
 
     const setHistoryFromCache = useCallback((contextCache: ContextCache) => {
         if (contextCache.history !== history) {
-            setHistory(contextCache.history || []);
+            setHistory(contextManager.getValidContexts(contextCache.history || []));
         }
     }, []);
 
