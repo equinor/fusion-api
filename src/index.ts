@@ -131,6 +131,8 @@ export {
     CreateTransientSnapshotRequest,
     OrgSnapshotStatus,
     OrgSnapshotStatusProgress,
+    OrgProjectDescription,
+    OrgProjectLink
 } from './http/apiClients/models/org/OrgProject';
 export {
     default as PersonDetails,

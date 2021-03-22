@@ -19,6 +19,8 @@ import OrgSnapshot, {
 import ApproveSnapshotRequest from './ApproveSnapshotRequest';
 import CreateSnapshotRequest from './CreateSnapshotRequest';
 import CreateTransientSnapshotRequest from './CreateTransientSnapshotRequest';
+import OrgProjectDescription from './OrgProjectDescription';
+import OrgProjectLink from './OrgProjectLink';
 
 type OrgProject = {
     dates: OrgProjectDates;
@@ -28,6 +30,8 @@ type OrgProject = {
     name: string;
     projectId: string;
     projectType: OrgProjectType;
+    description?: OrgProjectDescription;
+    links?: OrgProjectLink[];
 };
 
 export {
@@ -51,6 +55,8 @@ export {
     CreateTransientSnapshotRequest,
     OrgSnapshotStatus,
     OrgSnapshotStatusProgress,
+    OrgProjectDescription,
+    OrgProjectLink
 };
 
 export default OrgProject;
