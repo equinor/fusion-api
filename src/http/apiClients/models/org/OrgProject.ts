@@ -56,7 +56,7 @@ export {
     OrgSnapshotStatus,
     OrgSnapshotStatusProgress,
     OrgProjectDescription,
-    OrgProjectLink
+    OrgProjectLink,
 };
 
 export default OrgProject;
