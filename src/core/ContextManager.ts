@@ -245,9 +245,6 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         return value ? value.current : null;
     }
 
-    getValidContexts = (contexts: Context[]) =>
-        contexts.filter((context) => useCurrentContextTypes().includes(context.type.id));
-
     getHistory(): Context[] {
         const value = this.toObject();
         return value?.history || [];
@@ -322,21 +319,29 @@ const useCurrentContextTypes = () => {
     return app && app.context ? app.context.types : [];
 };
 
+const filterContextByContextType = (validContextTypes: ContextTypes[], contexts: Context[]) =>
+    contexts.filter((context) => validContextTypes.includes(context.type.id));
+
 const useContextHistory = () => {
     const contextManager = useContextManager();
+    const validContextTypes = useCurrentContextTypes();
     const [history, setHistory] = useState<Context[]>(
-        contextManager.getValidContexts(contextManager.getHistory())
+        filterContextByContextType(validContextTypes, contextManager.getHistory())
     );
 
-    const setHistoryFromCache = useCallback((contextCache: ContextCache) => {
-        if (contextCache.history !== history) {
-            setHistory(contextManager.getValidContexts(contextCache.history || []));
-        }
-    }, []);
+    const setHistoryFromCache = useCallback(
+        (contextCache: ContextCache) => {
+            if (contextCache.history !== history) {
+                setHistory(
+                    filterContextByContextType(validContextTypes, contextCache.history || [])
+                );
+            }
+        },
+        [validContextTypes]
+    );
 
     useEffect(() => {
         contextManager.toObjectAsync().then(setHistoryFromCache);
-
         return contextManager.on('change', setHistoryFromCache);
     }, []);
 
