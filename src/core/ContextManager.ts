@@ -342,7 +342,6 @@ const useContextHistory = () => {
 
     useEffect(() => {
         contextManager.toObjectAsync().then(setHistoryFromCache);
-
         return contextManager.on('change', setHistoryFromCache);
     }, []);
 
