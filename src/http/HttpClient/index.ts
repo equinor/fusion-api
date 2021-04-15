@@ -298,6 +298,30 @@ export default class HttpClient implements IHttpClient {
         return new File([blob], fileName);
     }
 
+    async uploadFileAsync<TExpectedErrorResponse>(
+        url: string,
+        file: File,
+        method: 'PUT' | 'PATCH' | 'POST',
+        init?: RequestInit | null
+    ): Promise<Response> {
+        const body = new FormData();
+        body.append('file', file);
+
+        const requestInit = ensureRequestInit(
+            {
+                ...init,
+                method,
+                body,
+            },
+            (input) => {
+                (input.headers as Headers).delete('Content-Type');
+                return input;
+            }
+        );
+
+        return this.performFetchAsync<TExpectedErrorResponse>(url, requestInit);
+    }
+
     protected responseIsRetriable(response: Response, retryTimeout: number) {
         if (retryTimeout > 20000 || response.headers.get('x-fusion-retriable') === 'false') {
             return false;
