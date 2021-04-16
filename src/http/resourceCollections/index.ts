@@ -12,6 +12,7 @@ import NotificationResourceCollection from './NotificationResourceCollection';
 import InfoResourceCollection from './InfoResourceCollection';
 import UserSettingsResourceCollection from './UserSettingsResoureCollections';
 import FusionTasksResourceCollection from './FusionTasksResourceCollection';
+import BookmarksResourceCollection from './BookmarksResourceCollection';
 
 type ResourceCollections = {
     dataProxy: DataProxyResourceCollection;
@@ -26,6 +27,7 @@ type ResourceCollections = {
     info: InfoResourceCollection;
     userSettings: UserSettingsResourceCollection;
     fusionTasks: FusionTasksResourceCollection;
+    bookmarks: BookmarksResourceCollection;
 };
 
 export { DataProxyResourceCollection };
@@ -46,6 +48,7 @@ export const createResourceCollections = (
     info: new InfoResourceCollection(serviceResolver),
     userSettings: new UserSettingsResourceCollection(serviceResolver),
     fusionTasks: new FusionTasksResourceCollection(serviceResolver),
+    bookmarks: new BookmarksResourceCollection(serviceResolver),
 });
 
 export default ResourceCollections;

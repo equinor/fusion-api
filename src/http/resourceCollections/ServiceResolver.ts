@@ -13,6 +13,7 @@ type ServiceResolver = {
     getNotificationBaseUrl: () => string;
     getInfoUrl: () => string;
     getFusionTasksBaseUrl: () => string;
+    getBookmarksBaseUrl: () => string;
 };
 
 export default ServiceResolver;
