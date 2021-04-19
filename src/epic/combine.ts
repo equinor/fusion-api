@@ -4,8 +4,8 @@ import { Epic, Action } from './epic';
 /**
  * Merges all epics into a single one.
  */
-export function combineEpics<T extends Action, O extends T = T, S = void, D = any>(
-    ...epics: Epic<T, O, S, D>[]
+export function combineEpics<T extends Action = Action, O extends T = T, S = void, D = unknown>(
+    ...epics: Epic[]
 ): Epic<T, O, S, D> {
     const merger = (...args: Parameters<Epic>) =>
         merge(
