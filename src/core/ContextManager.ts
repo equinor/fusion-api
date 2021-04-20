@@ -404,7 +404,7 @@ const useContextQuery = (): {
                 }
             }
         },
-        [currentTypes]
+        [currentTypes, filterContexts]
     );
 
     useDebouncedAbortable(fetchContexts, queryText);
