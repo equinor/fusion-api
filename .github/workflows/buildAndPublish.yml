@@ -26,16 +26,6 @@ jobs:
         npm run update-version-definition:no-commit
         npm run tsc
 
-    - name: Config git user
-      run: |
-        git config --global user.name "${{ github.actor }}"
-        git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-
-    - name: Commit changes and push
-      run: |
-        git commit -m "Update version.ts" -a
-        git push
-
     - name: npm publish
       run: npm publish --access public
       env:
