@@ -7,6 +7,7 @@ on:
 
 jobs:
     build:
+        if: "!github.event.release.prerelease"
         runs-on: ubuntu-latest
         strategy:
           matrix:
