@@ -382,6 +382,7 @@ const useContextQuery = (): {
     const [error, setError] = useState<Error | null>(null);
     const apiClients = useApiClients();
     const currentTypes = useCurrentContextTypes();
+    const filterContexts = useCurrentApp()?.context?.filterContexts;
 
     const canQueryWithText = (text: string) => !!text && text.length > 2;
 
@@ -394,7 +395,7 @@ const useContextQuery = (): {
                         query,
                         ...currentTypes
                     );
-                    setContexts(response.data);
+                    setContexts(filterContexts?.(response.data) || response.data);
                     setIsQuerying(false);
                 } catch (e) {
                     setError(e);
