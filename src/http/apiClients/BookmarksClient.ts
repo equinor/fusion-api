@@ -1,6 +1,8 @@
 import BaseApiClient from './BaseApiClient';
 import { FusionApiHttpErrorResponse } from '.';
-import { Bookmark } from './models/bookmarks/Bookmark';
+import BookmarkResponse from './models/bookmarks/BookmarkResponse';
+import BookmarkListResponse from './models/bookmarks/BookmarkListResponse';
+import BookmarkRequest from './models/bookmarks/BookmarkRequest';
 
 export class BookmarksClient extends BaseApiClient {
     protected getBaseUrl(): string {
@@ -9,15 +11,22 @@ export class BookmarksClient extends BaseApiClient {
 
     async getBookmark(bookmarkId: string) {
         const url = this.resourceCollections.bookmarks.bookmark(bookmarkId);
-        return await this.httpClient.getAsync<any, FusionApiHttpErrorResponse>(url);
+        return await this.httpClient.getAsync<BookmarkResponse, FusionApiHttpErrorResponse>(url);
+    }
+    async getBookmarks(appKey: string) {
+        const url = this.resourceCollections.bookmarks.queryBookmarks(appKey);
+        return await this.httpClient.getAsync<BookmarkListResponse[], FusionApiHttpErrorResponse>(
+            url
+        );
     }
 
-    async addBookmark(bookmark: Bookmark) {
+    async addBookmark(bookmark: BookmarkRequest) {
         const url = this.resourceCollections.bookmarks.addBookmark();
-        return await this.httpClient.postAsync<Bookmark, Bookmark, FusionApiHttpErrorResponse>(
-            url,
-            bookmark
-        );
+        return await this.httpClient.postAsync<
+            BookmarkRequest,
+            BookmarkResponse,
+            FusionApiHttpErrorResponse
+        >(url, bookmark);
     }
 }
 
