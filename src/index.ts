@@ -159,6 +159,11 @@ export {
     PersonNotification,
 } from './http/apiClients/models/NotificationCard/NotificationCard';
 
+export {
+    BookmarkRequest,
+    BookmarkResponse,
+    BookmarkListResponse,
+} from './http/apiClients/models/bookmarks/';
 export { PimsTask, ProCoSysTask } from './http/apiClients/models/fusionTasks';
 
 export { default as useApiClient } from './http/hooks/useApiClient';
