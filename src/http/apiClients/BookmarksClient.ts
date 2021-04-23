@@ -28,6 +28,21 @@ export class BookmarksClient extends BaseApiClient {
             FusionApiHttpErrorResponse
         >(url, bookmark);
     }
+
+    async updateBookmark(bookmarkId: string, bookmark: Partial<BookmarkRequest>) {
+        const url = this.resourceCollections.bookmarks.updateBookmark(bookmarkId);
+
+        return await this.httpClient.patchAsync<
+            Partial<Omit<BookmarkRequest, 'appKey' | 'contextId'>>,
+            BookmarkResponse,
+            FusionApiHttpErrorResponse
+        >(url, bookmark);
+    }
+
+    async deleteBookmark(bookmarkId: string) {
+        const url = this.resourceCollections.bookmarks.deleteBookmark(bookmarkId);
+        return await this.httpClient.deleteAsync<void, FusionApiHttpErrorResponse>(url);
+    }
 }
 
 export default BookmarksClient;

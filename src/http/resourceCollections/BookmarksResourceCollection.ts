@@ -18,6 +18,14 @@ export default class BookmarksResourceCollection extends BaseResourceCollection 
         return combineUrls(this.getBaseUrl(), 'bookmarks');
     }
 
+    deleteBookmark(bookmarkId: string): string {
+        return combineUrls(this.getBaseUrl(), 'bookmarks', bookmarkId);
+    }
+
+    updateBookmark(bookmarkId: string): string {
+        return combineUrls(this.getBaseUrl(), 'bookmarks', bookmarkId);
+    }
+
     queryBookmarks(appKey: string): string {
         const baseUrl = this.bookmarks();
 
