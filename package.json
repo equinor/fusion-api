@@ -76,11 +76,11 @@
     },
     "peerDependencies": {
         "history": "^4.9.0",
+        "odata-query": "^5.7.0",
         "react": "17.x",
         "react-router": "^5.0.1",
         "react-router-dom": "^5.0.1",
-        "uuid": "^3.3.3",
-        "odata-query": "^5.7.0"
+        "uuid": "^3.3.3"
     },
     "files": [
         "/lib"

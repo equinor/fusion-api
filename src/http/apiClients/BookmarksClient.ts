@@ -16,7 +16,12 @@ export class BookmarksClient extends BaseApiClient {
     async getBookmarks(appKey: string) {
         const url = this.resourceCollections.bookmarks.queryBookmarks(appKey);
         return await this.httpClient.getAsync<BookmarkListResponse[], FusionApiHttpErrorResponse>(
-            url
+            url,
+            {
+                headers: {
+                    'api-version': '1.0-preview',
+                },
+            }
         );
     }
 
@@ -26,7 +31,11 @@ export class BookmarksClient extends BaseApiClient {
             BookmarkRequest,
             BookmarkResponse,
             FusionApiHttpErrorResponse
-        >(url, bookmark);
+        >(url, bookmark, {
+            headers: {
+                'api-version': '1.0-preview',
+            },
+        });
     }
 
     async updateBookmark(bookmarkId: string, bookmark: Partial<BookmarkRequest>) {
@@ -36,7 +45,11 @@ export class BookmarksClient extends BaseApiClient {
             Partial<Omit<BookmarkRequest, 'appKey' | 'contextId'>>,
             BookmarkResponse,
             FusionApiHttpErrorResponse
-        >(url, bookmark);
+        >(url, bookmark, {
+            headers: {
+                'api-version': '1.0-preview',
+            },
+        });
     }
 
     async deleteBookmark(bookmarkId: string) {
