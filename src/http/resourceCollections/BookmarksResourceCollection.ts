@@ -26,6 +26,36 @@ export default class BookmarksResourceCollection extends BaseResourceCollection 
         return combineUrls(this.getBaseUrl(), 'bookmarks', bookmarkId);
     }
 
+    applyBookmark(bookmarkId: string): string {
+        return combineUrls(this.getBaseUrl(), 'bookmarks', bookmarkId, 'apply');
+    }
+
+    addFavouriteBookmark(): string {
+        return combineUrls(this.getBaseUrl(), 'persons', 'me', 'bookmarks', 'favourites');
+    }
+
+    deleteFavoriteBookmark(bookmarkId: string): string {
+        return combineUrls(
+            this.getBaseUrl(),
+            'persons',
+            'me',
+            'bookmarks',
+            'favourites',
+            bookmarkId
+        );
+    }
+
+    headBookmark(bookmarkId: string): string {
+        return combineUrls(
+            this.getBaseUrl(),
+            'persons',
+            'me',
+            'bookmarks',
+            'favourites',
+            bookmarkId
+        );
+    }
+
     queryBookmarks(appKey: string): string {
         const baseUrl = this.bookmarks();
 

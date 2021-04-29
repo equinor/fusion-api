@@ -163,6 +163,9 @@ export {
     BookmarkRequest,
     BookmarkResponse,
     BookmarkListResponse,
+    BookmarkFavouriteRequest,
+    BookmarkPatchRequest,
+    BookmarkPayloadResponse,
 } from './http/apiClients/models/bookmarks/';
 export { PimsTask, ProCoSysTask } from './http/apiClients/models/fusionTasks';
 

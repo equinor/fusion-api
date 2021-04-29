@@ -2,7 +2,7 @@ type AccountType = 'Consultant' | 'Employee' | 'External' | 'Local';
 type AccountClassification = 'Unclassified' | 'Internal' | 'External';
 
 type Person = {
-    azureUniquePersonId: string;
+    azureUniqueId: string;
     mail?: string;
     name: string;
     phoneNumber?: string;

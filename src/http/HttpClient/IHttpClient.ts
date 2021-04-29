@@ -79,6 +79,12 @@ export default interface IHttpClient {
         responseParser?: ResponseParser<TResponse>
     ): Promise<HttpResponse<TResponse>>;
 
+    headAsync<TResponse, TExpectedErrorResponse>(
+        url: string,
+        init?: RequestInit | null,
+        responseParser?: ResponseParser<TResponse>
+    ): Promise<HttpResponse<TResponse>>;
+
     /**
      *  Performs a POST with multipart form data
      * @param url Request url
