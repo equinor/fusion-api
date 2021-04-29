@@ -1,11 +1,4 @@
-import JSON from '../utils/JSON';
-
-const b64DecodeUnicode = (str: string) =>
-    decodeURIComponent(
-        Array.prototype.map
-            .call(atob(str), (c: any) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-            .join('')
-    );
+import jwt_decode from 'jwt-decode';
 
 export class FusionAuthTokenParseError extends Error {
     constructor(token: string) {
@@ -15,8 +8,7 @@ export class FusionAuthTokenParseError extends Error {
 
 export default class AuthToken {
     static parse(token: string): AuthToken {
-        const userPart = token.split('.')[1];
-        const parsedToken = JSON.parse<ParsedBearerToken>(b64DecodeUnicode(userPart));
+        const parsedToken = jwt_decode(token) as ParsedBearerToken;
 
         if (!parsedToken) {
             throw new FusionAuthTokenParseError(token);
