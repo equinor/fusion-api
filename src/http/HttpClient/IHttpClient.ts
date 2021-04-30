@@ -78,7 +78,13 @@ export default interface IHttpClient {
         init?: RequestInit | null,
         responseParser?: ResponseParser<TResponse>
     ): Promise<HttpResponse<TResponse>>;
-
+    /**
+     * Perform a HEAD request
+     *
+     * @param url Request url
+     * @param init Optional request init object
+     *
+     */
     headAsync<TResponse, TExpectedErrorResponse>(
         url: string,
         init?: RequestInit | null,
