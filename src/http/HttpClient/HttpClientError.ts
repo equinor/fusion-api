@@ -13,15 +13,12 @@ export class HttpClientParseError extends HttpClientError {
 }
 
 export class HttpClientRequestFailedError<TErrorResponse> extends HttpClientError {
-    url: string;
-    statusCode: number;
-    response: TErrorResponse;
-
-    constructor(url: string, statusCode: number, errorResponse: TErrorResponse) {
+    constructor(
+        public url: string,
+        public statusCode: number,
+        public response: TErrorResponse,
+        public headers?: Headers
+    ) {
         super(`[${url}] returned HTTP status code [${statusCode}]`);
-
-        this.url = url;
-        this.statusCode = statusCode;
-        this.response = errorResponse;
     }
 }
