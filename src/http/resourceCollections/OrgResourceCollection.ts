@@ -51,6 +51,12 @@ export default class OrgResourceCollection extends BaseResourceCollection {
     instance(projectId: string, positionId: string, instanceId: string) {
         return combineUrls(this.instances(projectId, positionId), instanceId);
     }
+    positionsDraft(projectId: string, draftId: string) {
+        return combineUrls(this.project(projectId), 'drafts', draftId, 'positions');
+    }
+    positionDraft(projectId: string, positionId: string, draftId: string) {
+        return combineUrls(this.positionsDraft(projectId, draftId), positionId);
+    }
 
     publish(projectId: string, draftId: string) {
         return combineUrls(this.project(projectId), 'drafts', draftId, 'publish');

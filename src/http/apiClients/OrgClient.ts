@@ -79,6 +79,33 @@ export default class OrgClient extends BaseApiClient {
             },
         });
     }
+    public async getPositionsAllowHeaders(
+        projectId: string,
+        draftId?: string
+    ): Promise<string | null> {
+        const orgResources = this.resourceCollections.org;
+
+        const url = draftId
+            ? orgResources.positionsDraft(projectId, draftId)
+            : orgResources.positions(projectId);
+
+        try {
+            const response = await this.httpClient.optionsAsync<void, FusionApiHttpErrorResponse>(
+                url,
+                {
+                    headers: {
+                        'api-version': '2.0',
+                    },
+                },
+                () => Promise.resolve()
+            );
+
+            const allowHeader = response.headers.get('Allow');
+            return allowHeader;
+        } catch (e) {
+            return null;
+        }
+    }
 
     public async getPositionAsync(
         projectId: string,
@@ -348,6 +375,34 @@ export default class OrgClient extends BaseApiClient {
             return false;
         } catch (e) {
             return false;
+        }
+    }
+    public async getPositionAllowHeaders(
+        projectId: string,
+        positionId: string,
+        draftId?: string
+    ): Promise<string | null> {
+        const orgResources = this.resourceCollections.org;
+
+        const url = draftId
+            ? orgResources.positionDraft(projectId, positionId, draftId)
+            : orgResources.position(projectId, positionId);
+
+        try {
+            const response = await this.httpClient.optionsAsync<void, FusionApiHttpErrorResponse>(
+                url,
+                {
+                    headers: {
+                        'api-version': '2.0',
+                    },
+                },
+                () => Promise.resolve()
+            );
+
+            const allowHeader = response.headers.get('Allow');
+            return allowHeader;
+        } catch (e) {
+            return null;
         }
     }
 
