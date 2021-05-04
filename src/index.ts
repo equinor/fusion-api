@@ -16,6 +16,9 @@ export { default as ApiAppManifest } from './http/apiClients/models/fusion/apps/
 export { default as AppCategory } from './http/apiClients/models/fusion/apps/AppCategory';
 export { default as AppType } from './http/apiClients/models/fusion/apps/AppType';
 
+// TODO export all models
+export * from './http/apiClients/models';
+
 export {
     default as FusionContext,
     IFusionContext,
