@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ReactNode } from 'react';
 import uuid from 'uuid/v1';
 import ReliableDictionary, { LocalStorageProvider } from '../utils/ReliableDictionary';
 import { useEventEmitterValue } from '../utils/EventEmitter';
@@ -27,7 +27,7 @@ export type NotificationRequest = {
      * */
     priority?: NotificationPriority;
     title: string;
-    body?: string;
+    body?: ReactNode;
     cancelLabel?: string;
     confirmLabel?: string;
 
