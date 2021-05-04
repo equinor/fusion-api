@@ -14,72 +14,77 @@ export class BookmarksClient extends BaseApiClient {
         return this.serviceResolver.getFusionBaseUrl();
     }
 
-    async getBookmark(bookmarkId: string) {
-        const baseUrl = this.resourceCollections.bookmarks.bookmark(bookmarkId);
-        const url = `${baseUrl}?api-version=1.0-preview`;
-        return await this.httpClient.getAsync<BookmarkResponse, FusionApiHttpErrorResponse>(url);
-    }
-    async getBookmarks(appKey: string) {
-        const baseUrl = this.resourceCollections.bookmarks.queryBookmarks(appKey);
-        const url = `${baseUrl}&api-version=1.0-preview`;
-        return await this.httpClient.getAsync<BookmarkListResponse[], FusionApiHttpErrorResponse>(
-            url
-        );
+    protected createUrl(href: string, params?: Record<string, string>): string {
+        params = { ['api-version']: '1.0-preview', ...params };
+        const url = new URL(href);
+        Object.keys(params).forEach((p) => url.searchParams.append(p, params![p]));
+        return url.toString();
     }
 
-    async addBookmark(bookmark: BookmarkRequest) {
+    public getBookmark(bookmarkId: string) {
+        const baseUrl = this.resourceCollections.bookmarks.bookmark(bookmarkId);
+        const url = this.createUrl(baseUrl);
+        return this.httpClient.getAsync<BookmarkResponse, FusionApiHttpErrorResponse>(url);
+    }
+
+    public async getBookmarks(appKey: string) {
+        const baseUrl = this.resourceCollections.bookmarks.queryBookmarks(appKey);
+        const url = this.createUrl(baseUrl);
+        return this.httpClient.getAsync<BookmarkListResponse[], FusionApiHttpErrorResponse>(url);
+    }
+
+    public addBookmark(bookmark: BookmarkRequest) {
         const baseUrl = this.resourceCollections.bookmarks.addBookmark();
-        const url = `${baseUrl}?api-version=1.0-preview`;
-        return await this.httpClient.postAsync<
+        const url = this.createUrl(baseUrl);
+        return this.httpClient.postAsync<
             BookmarkRequest,
             BookmarkResponse,
             FusionApiHttpErrorResponse
         >(url, bookmark);
     }
 
-    async updateBookmark(bookmarkId: string, bookmark: BookmarkPatchRequest) {
+    public updateBookmark(bookmarkId: string, bookmark: BookmarkPatchRequest) {
         const baseUrl = this.resourceCollections.bookmarks.updateBookmark(bookmarkId);
-        const url = `${baseUrl}?api-version=1.0-preview`;
-        return await this.httpClient.patchAsync<
+        const url = this.createUrl(baseUrl);
+        return this.httpClient.patchAsync<
             BookmarkPatchRequest,
             BookmarkResponse,
             FusionApiHttpErrorResponse
         >(url, bookmark);
     }
 
-    async deleteBookmark(bookmarkId: string) {
+    public deleteBookmark(bookmarkId: string) {
         const baseUrl = this.resourceCollections.bookmarks.deleteBookmark(bookmarkId);
-        const url = `${baseUrl}?api-version=1.0-preview`;
-        return await this.httpClient.deleteAsync<void, FusionApiHttpErrorResponse>(url);
+        const url = this.createUrl(baseUrl);
+        return this.httpClient.deleteAsync<void, FusionApiHttpErrorResponse>(url);
     }
 
-    async applyBookmark(bookmarkId: string) {
+    public applyBookmark(bookmarkId: string) {
         const baseUrl = this.resourceCollections.bookmarks.applyBookmark(bookmarkId);
-        const url = `${baseUrl}?api-version=1.0-preview`;
-        return await this.httpClient.getAsync<BookmarkPayloadResponse, FusionApiHttpErrorResponse>(
-            url
-        );
+        const url = this.createUrl(baseUrl);
+        return this.httpClient.getAsync<BookmarkPayloadResponse, FusionApiHttpErrorResponse>(url);
     }
-    async addToFavourites(bookmark: BookmarkFavouriteRequest) {
+
+    public addToFavourites(bookmark: BookmarkFavouriteRequest) {
         const baseUrl = this.resourceCollections.bookmarks.addFavouriteBookmark();
-        const url = `${baseUrl}?api-version=1.0-preview`;
-        return await this.httpClient.postAsync<
+        const url = this.createUrl(baseUrl);
+        return this.httpClient.postAsync<
             BookmarkFavouriteRequest,
             void,
             FusionApiHttpErrorResponse
         >(url, bookmark);
     }
 
-    async deleteFavouriteBookmark(bookmarkId: string) {
+    public deleteFavouriteBookmark(bookmarkId: string) {
         const baseUrl = this.resourceCollections.bookmarks.deleteFavoriteBookmark(bookmarkId);
-        const url = `${baseUrl}?api-version=1.0-preview`;
-        return await this.httpClient.deleteAsync<void, FusionApiHttpErrorResponse>(url);
+        const url = this.createUrl(baseUrl);
+        return this.httpClient.deleteAsync<void, FusionApiHttpErrorResponse>(url);
     }
 
-    async headBookmark(bookmarkId: string) {
+    public headBookmark(bookmarkId: string) {
         const baseUrl = this.resourceCollections.bookmarks.headBookmark(bookmarkId);
-        const url = `${baseUrl}?api-version=1.0-preview`;
-        return await this.httpClient.headAsync<void, FusionApiHttpErrorResponse>(url);
+        const url = this.createUrl(baseUrl);
+        return this.httpClient.headAsync<void, FusionApiHttpErrorResponse>(url);
     }
 }
 
