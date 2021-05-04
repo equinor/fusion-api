@@ -1,4 +1,4 @@
-type BookmarkFavouriteRequest = {
+export type BookmarkFavouriteRequest = {
     bookmarkId: string;
 };
 

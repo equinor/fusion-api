@@ -1,7 +1,7 @@
-type AccountType = 'Consultant' | 'Employee' | 'External' | 'Local';
-type AccountClassification = 'Unclassified' | 'Internal' | 'External';
+export type AccountType = 'Consultant' | 'Employee' | 'External' | 'Local';
+export type AccountClassification = 'Unclassified' | 'Internal' | 'External';
 
-type Person = {
+export type Person = {
     azureUniqueId: string;
     mail?: string;
     name: string;
@@ -10,11 +10,11 @@ type Person = {
     accountType: AccountType;
     accountClassification: AccountClassification;
 };
-type Context = {
+export type Context = {
     id: string;
     name: string;
 };
-type BookmarkResponse = {
+export type BookmarkResponse = {
     id: string;
     name: string;
     description?: string;

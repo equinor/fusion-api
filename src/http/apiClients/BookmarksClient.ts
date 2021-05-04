@@ -27,8 +27,8 @@ export class BookmarksClient extends BaseApiClient {
         return this.httpClient.getAsync<BookmarkResponse, FusionApiHttpErrorResponse>(url);
     }
 
-    public async getBookmarks(appKey: string) {
-        const baseUrl = this.resourceCollections.bookmarks.queryBookmarks(appKey);
+    public async getBookmarks(appkey: string) {
+        const baseUrl = this.resourceCollections.bookmarks.queryBookmarks({ appkey });
         const url = this.createUrl(baseUrl);
         return this.httpClient.getAsync<BookmarkListResponse[], FusionApiHttpErrorResponse>(url);
     }

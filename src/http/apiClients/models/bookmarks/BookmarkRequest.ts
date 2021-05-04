@@ -1,4 +1,4 @@
-type BookmarkRequest = {
+export type BookmarkRequest = {
     name: string;
     description?: string;
     isShared: boolean;

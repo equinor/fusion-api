@@ -1,14 +1,6 @@
-import BookmarkRequest from './BookmarkRequest';
-import BookmarkListResponse from './BookmarkListResponse';
-import BookmarkResponse from './BookmarkResponse';
-import BookmarkPayloadResponse from './BookmarkPayloadResponse';
-import BookmarkFavouriteRequest from './BookmarkFavouriteRequest';
-import BookmarkPatchRequest from './BookmarkPatchRequest';
-export {
-    BookmarkResponse,
-    BookmarkListResponse,
-    BookmarkRequest,
-    BookmarkPayloadResponse,
-    BookmarkFavouriteRequest,
-    BookmarkPatchRequest,
-};
+export { BookmarkRequest } from './BookmarkRequest';
+export { BookmarkListResponse } from './BookmarkListResponse';
+export { BookmarkResponse } from './BookmarkResponse';
+export { BookmarkPayloadResponse } from './BookmarkPayloadResponse';
+export { BookmarkFavouriteRequest } from './BookmarkFavouriteRequest';
+export { BookmarkPatchRequest } from './BookmarkPatchRequest';
