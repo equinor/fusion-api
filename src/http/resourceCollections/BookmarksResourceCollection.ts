@@ -1,6 +1,6 @@
 import BaseResourceCollection from './BaseResourceCollection';
 import { combineUrls } from '../../utils/url';
-import buildQuery from 'odata-query';
+import buildQuery, { Filter as OdataFilter } from 'odata-query';
 
 export default class BookmarksResourceCollection extends BaseResourceCollection {
     protected getBaseUrl(): string {
@@ -56,14 +56,9 @@ export default class BookmarksResourceCollection extends BaseResourceCollection 
         );
     }
 
-    queryBookmarks(appKey: string): string {
+    queryBookmarks(filter: { appkey: string } & OdataFilter): string {
         const baseUrl = this.bookmarks();
-
-        const odataQuery = buildQuery({
-            filter: {
-                appKey: appKey,
-            },
-        });
+        const odataQuery = buildQuery({ filter });
         return `${baseUrl}${odataQuery}`;
     }
 }
