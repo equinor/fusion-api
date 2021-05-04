@@ -14,7 +14,7 @@ import { useFusionContext } from '../../core/FusionContext';
 import RequestBody from '../models/RequestBody';
 import BlobContainer from '../models/BlobContainer';
 import JSON from '../../utils/JSON';
-import TelemetryLogger from '../../utils/TelemetryLogger';
+import { TelemetryLogger } from '../../utils/telemetry';
 import DistributedState, { IDistributedState } from '../../utils/DistributedState';
 import { IEventHub } from '../../utils/EventHub';
 
@@ -30,6 +30,18 @@ export {
 type RequestsInProgress = { [key: string]: Promise<HttpResponse<any>> };
 
 export const voidResponseParser = () => Promise.resolve();
+
+const parseHeaders = (input: string): Headers =>
+    input
+        .trim()
+        .split(/[\r\n]+/)
+        .reduce((headerMap, line) => {
+            const parts = line.split(': ');
+            const header = parts.shift();
+            const value = parts.join(': ');
+            header && headerMap.append(header, value);
+            return headerMap;
+        }, new Headers());
 
 export default class HttpClient implements IHttpClient {
     private authContainer: IAuthContainer;
@@ -219,23 +231,12 @@ export default class HttpClient implements IHttpClient {
             }
 
             xhr.addEventListener('load', () => {
-                const headerLines = xhr.getAllResponseHeaders();
-                const headers = headerLines.trim().split(/[\r\n]+/);
-
-                const headerMap = headers.reduce((headerMap, line) => {
-                    const parts = line.split(': ');
-                    const header = parts.shift();
-                    const value = parts.join(': ');
-                    if (header) headerMap.append(header, value);
-                    return headerMap;
-                }, new Headers());
-
                 const response: HttpResponse<TResponse> = {
                     data: responseParser
                         ? responseParser(xhr.responseText)
                         : JSON.parse<TResponse>(xhr.responseText),
                     status: xhr.status,
-                    headers: headerMap,
+                    headers: parseHeaders(xhr.getAllResponseHeaders()),
                     refreshRequest: null,
                 };
                 resolve(response);
@@ -243,11 +244,14 @@ export default class HttpClient implements IHttpClient {
 
             xhr.upload.addEventListener('error', () => {
                 const response = xhr.responseText;
+                const headers = parseHeaders(xhr.getAllResponseHeaders());
                 if (response) {
                     const errorResponse = JSON.parse<TExpectedErrorResponse>(response);
-                    reject(new HttpClientRequestFailedError(url, xhr.status, errorResponse));
+                    reject(
+                        new HttpClientRequestFailedError(url, xhr.status, errorResponse, headers)
+                    );
                 }
-                reject(new HttpClientRequestFailedError(url, xhr.status, null));
+                reject(new HttpClientRequestFailedError(url, xhr.status, null, headers));
             });
 
             xhr.open('POST', url, true);
@@ -349,7 +353,7 @@ export default class HttpClient implements IHttpClient {
     private async performFetchAsync<TExpectedErrorResponse>(
         url: string,
         init: RequestInit,
-        retryTimeout: number = 3000
+        retryTimeout = 3000
     ): Promise<Response> {
         try {
             const options = await this.transformRequestAsync(url, init);
@@ -366,7 +370,12 @@ export default class HttpClient implements IHttpClient {
                     response
                 );
 
-                throw new HttpClientRequestFailedError(url, response.status, errorResponse);
+                throw new HttpClientRequestFailedError(
+                    url,
+                    response.status,
+                    errorResponse,
+                    response.headers
+                );
             }
 
             return response;
