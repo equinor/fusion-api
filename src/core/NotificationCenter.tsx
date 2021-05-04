@@ -30,6 +30,7 @@ export type NotificationRequest = {
     body?: ReactNode;
     cancelLabel?: string;
     confirmLabel?: string;
+    hideCancelAction?: boolean;
 
     /**
      * How long should the notification be visible to the user?
