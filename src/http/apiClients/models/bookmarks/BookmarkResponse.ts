@@ -23,5 +23,7 @@ type BookmarkResponse = {
     context?: Context;
     payload: unknown;
     createdBy: Person;
+    created: Date;
+    updated?: Date | null;
 };
 export default BookmarkResponse;
