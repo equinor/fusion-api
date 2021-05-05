@@ -34,8 +34,10 @@ export default class PeopleResourceCollection extends BaseResourceCollection {
         return combineUrls(this.getBaseUrl(), 'roles', 'mappings');
     }
 
-    searchPersons(query: string): string {
-        const oDataQuery = buildQuery({ search: query });
+    searchPersons(query: string, filter?: string): string {
+        const oDataQuery = filter
+            ? buildQuery({ search: query, filter })
+            : buildQuery({ search: query });
         const url = combineUrls(this.getBaseUrl(), 'persons');
 
         return `${url}${oDataQuery}`;
