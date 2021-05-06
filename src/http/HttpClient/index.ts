@@ -1,4 +1,4 @@
-import uuid from 'uuid/v1';
+import uuid from 'uuid';
 import { IAuthContainer } from '../../auth/AuthContainer';
 import AbortControllerManager from '../../utils/AbortControllerManager';
 import IHttpClient, { ResponseParser } from './IHttpClient';
@@ -50,7 +50,7 @@ export default class HttpClient implements IHttpClient {
     private telemetryLogger: TelemetryLogger;
 
     private requestsInProgress: IDistributedState<RequestsInProgress>;
-    private sessionId = uuid();
+    private sessionId = uuid.v1();
 
     constructor(
         authContainer: IAuthContainer,
