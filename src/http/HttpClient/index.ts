@@ -1,4 +1,4 @@
-import uuid from 'uuid/v1';
+import uuid from 'uuid';
 import { IAuthContainer } from '../../auth/AuthContainer';
 import AbortControllerManager from '../../utils/AbortControllerManager';
 import IHttpClient, { ResponseParser } from './IHttpClient';
@@ -14,7 +14,7 @@ import { useFusionContext } from '../../core/FusionContext';
 import RequestBody from '../models/RequestBody';
 import BlobContainer from '../models/BlobContainer';
 import JSON from '../../utils/JSON';
-import TelemetryLogger from '../../utils/TelemetryLogger';
+import { TelemetryLogger } from '../../utils/telemetry';
 import DistributedState, { IDistributedState } from '../../utils/DistributedState';
 import { IEventHub } from '../../utils/EventHub';
 
@@ -50,7 +50,7 @@ export default class HttpClient implements IHttpClient {
     private telemetryLogger: TelemetryLogger;
 
     private requestsInProgress: IDistributedState<RequestsInProgress>;
-    private sessionId = uuid();
+    private sessionId = uuid.v1();
 
     constructor(
         authContainer: IAuthContainer,
@@ -184,6 +184,23 @@ export default class HttpClient implements IHttpClient {
         init = ensureRequestInit(init, (init) => ({
             ...init,
             method: 'OPTIONS',
+        }));
+
+        const response = await this.performFetchAsync<TExpectedErrorResponse>(url, init);
+        return await this.parseResponseAsync<TResponse, TExpectedErrorResponse>(
+            init,
+            response,
+            responseParser
+        );
+    }
+    async headAsync<TResponse, TExpectedErrorResponse>(
+        url: string,
+        init?: RequestInit | null,
+        responseParser?: ResponseParser<TResponse>
+    ) {
+        init = ensureRequestInit(init, (init) => ({
+            ...init,
+            method: 'HEAD',
         }));
 
         const response = await this.performFetchAsync<TExpectedErrorResponse>(url, init);

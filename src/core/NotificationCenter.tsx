@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import uuid from 'uuid/v1';
+import React, { useState, useEffect, ReactNode } from 'react';
+import uuid from 'uuid';
 import ReliableDictionary, { LocalStorageProvider } from '../utils/ReliableDictionary';
 import { useEventEmitterValue } from '../utils/EventEmitter';
 import { useFusionContext } from './FusionContext';
@@ -27,9 +27,10 @@ export type NotificationRequest = {
      * */
     priority?: NotificationPriority;
     title: string;
-    body?: string;
+    body?: ReactNode;
     cancelLabel?: string;
     confirmLabel?: string;
+    hideCancelAction?: boolean;
 
     /**
      * How long should the notification be visible to the user?
@@ -271,7 +272,7 @@ export default class NotificationCenter extends ReliableDictionary<
 
     private createNotification(notificationRequest: NotificationRequest): Notification {
         return {
-            id: notificationRequest.id || uuid(),
+            id: notificationRequest.id || uuid.v1(),
             request: notificationRequest,
             response: null,
             presented: new Date(),
