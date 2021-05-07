@@ -239,14 +239,14 @@ export default class OrgClient extends BaseApiClient {
     public async getPositionReportPathAsync(
         projectId: string,
         positionId: string,
-        date: string,
+        instanceId: string,
         snapshotId?: string
     ): Promise<HttpResponse<PositionReportPath>> {
         const orgResources = this.resourceCollections.org;
 
         const url = snapshotId
-            ? orgResources.snapshotReportsTo(snapshotId, positionId, date)
-            : orgResources.reportsTo(projectId, positionId, date);
+            ? orgResources.snapshotReportsTo(snapshotId, positionId)
+            : orgResources.reportsTo(projectId, positionId, instanceId);
         return this.httpClient.getAsync<PositionReportPath, FusionApiHttpErrorResponse>(url, {
             headers: {
                 'api-version': '2.0',
