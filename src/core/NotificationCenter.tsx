@@ -1,5 +1,5 @@
 import React, { useState, useEffect, ReactNode } from 'react';
-import uuid from 'uuid';
+import { v1 as uuidv1 } from 'uuid';
 import ReliableDictionary, { LocalStorageProvider } from '../utils/ReliableDictionary';
 import { useEventEmitterValue } from '../utils/EventEmitter';
 import { useFusionContext } from './FusionContext';
@@ -272,7 +272,7 @@ export default class NotificationCenter extends ReliableDictionary<
 
     private createNotification(notificationRequest: NotificationRequest): Notification {
         return {
-            id: notificationRequest.id || uuid.v1(),
+            id: notificationRequest.id || uuidv1(),
             request: notificationRequest,
             response: null,
             presented: new Date(),
