@@ -1,4 +1,4 @@
-import * as uuid from 'uuid';
+import { v1 as uuidv1 } from 'uuid';
 import AuthApp from './AuthApp';
 
 export class FusionNonceNotFoundError extends Error {
@@ -16,7 +16,7 @@ export default class AuthNonce {
     }
 
     static createNew(app: AuthApp): AuthNonce {
-        const id = uuid.v1();
+        const id = uuidv1();
         const nonce = new AuthNonce(id, app.clientId);
         localStorage.setItem(AuthNonce.createCacheKey(nonce.key), nonce.toString());
         return nonce;

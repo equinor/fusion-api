@@ -1,4 +1,4 @@
-import uuid from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import DistributedState from './DistributedState';
 import { IEventHub } from './EventHub';
 import ApiClients from '../http/apiClients';
@@ -36,7 +36,7 @@ const getSessionId = () => {
         return existingSessionId;
     }
 
-    const newSessionId = uuid.v4();
+    const newSessionId = uuidv4();
     sessionStorage.setItem(FUSION_SESSION_ID, newSessionId);
     return newSessionId;
 };
