@@ -386,7 +386,7 @@ export default class OrgClient extends BaseApiClient {
 
         const url = draftId
             ? orgResources.positionDraft(projectId, positionId, draftId)
-            : orgResources.position(projectId, positionId);
+            : orgResources.position(projectId, positionId, false);
 
         try {
             const response = await this.httpClient.optionsAsync<void, FusionApiHttpErrorResponse>(
