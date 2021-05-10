@@ -109,9 +109,13 @@ export default class OrgResourceCollection extends BaseResourceCollection {
         );
     }
 
-    reportsTo(projectId: string, positionId: string, date: string) {
-        const url = combineUrls(this.position(projectId, positionId, false), 'reportsTo');
-        return `${url}?date=${date}`;
+    reportsTo(projectId: string, positionId: string, instanceId: string) {
+        return combineUrls(
+            this.position(projectId, positionId, false),
+            'instances',
+            instanceId,
+            'reports-to'
+        );
     }
 
     disciplineNetwork(projectId: string, discipline: string) {
@@ -163,8 +167,12 @@ export default class OrgResourceCollection extends BaseResourceCollection {
     snapshotRoleDescription(snapshotId: string, positionId: string) {
         return combineUrls(this.snapshotPosition(snapshotId, positionId), 'role-description');
     }
-    snapshotReportsTo(snapshotId: string, positionId: string, date: string) {
-        const url = combineUrls(this.snapshotPosition(snapshotId, positionId), 'reports-to');
-        return `${url}?date=${date}`;
+    snapshotReportsTo(snapshotId: string, positionId: string, instanceId: string) {
+        return combineUrls(
+            this.snapshotPosition(snapshotId, positionId),
+            'instances',
+            instanceId,
+            'reports-to'
+        );
     }
 }
