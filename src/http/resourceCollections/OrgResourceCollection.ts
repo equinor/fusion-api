@@ -167,7 +167,12 @@ export default class OrgResourceCollection extends BaseResourceCollection {
     snapshotRoleDescription(snapshotId: string, positionId: string) {
         return combineUrls(this.snapshotPosition(snapshotId, positionId), 'role-description');
     }
-    snapshotReportsTo(snapshotId: string, positionId: string) {
-        return combineUrls(this.snapshotPosition(snapshotId, positionId), 'reports-to');
+    snapshotReportsTo(snapshotId: string, positionId: string, instanceId: string) {
+        return combineUrls(
+            this.snapshotPosition(snapshotId, positionId),
+            'instances',
+            instanceId,
+            'reports-to'
+        );
     }
 }

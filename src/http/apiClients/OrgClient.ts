@@ -245,7 +245,7 @@ export default class OrgClient extends BaseApiClient {
         const orgResources = this.resourceCollections.org;
 
         const url = snapshotId
-            ? orgResources.snapshotReportsTo(snapshotId, positionId)
+            ? orgResources.snapshotReportsTo(snapshotId, positionId, instanceId)
             : orgResources.reportsTo(projectId, positionId, instanceId);
         return this.httpClient.getAsync<PositionReportPath, FusionApiHttpErrorResponse>(url, {
             headers: {
