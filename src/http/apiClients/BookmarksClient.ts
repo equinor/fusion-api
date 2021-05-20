@@ -15,7 +15,7 @@ export class BookmarksClient extends BaseApiClient {
     }
 
     protected createUrl(href: string, params?: Record<string, string>): string {
-        params = { ['api-version']: '1.0-preview', ...params };
+        params = { ['api-version']: '1.0', ...params };
         const url = new URL(href);
         Object.keys(params).forEach((p) => url.searchParams.append(p, params![p]));
         return url.toString();
