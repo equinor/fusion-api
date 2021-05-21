@@ -17,6 +17,7 @@ import JSON from '../../utils/JSON';
 import { TelemetryLogger } from '../../utils/telemetry';
 import DistributedState, { IDistributedState } from '../../utils/DistributedState';
 import { IEventHub } from '../../utils/EventHub';
+import { FusionApiHttpErrorResponse } from '../apiClients';
 
 // Export interface, response and error types
 export {
@@ -317,6 +318,29 @@ export default class HttpClient implements IHttpClient {
         }
 
         return new File([blob], fileName);
+    }
+
+    async uploadFileAsync<TExpectedErrorResponse>(
+        url: string,
+        file: File,
+        method: 'PUT' | 'PATCH' | 'POST',
+        init?: RequestInit | null
+    ): Promise<Response> {
+        const body = new FormData();
+        body.append('file', file);
+
+        const requestInit = ensureRequestInit(
+            {
+                ...init,
+                method,
+                body,
+            },
+            (input) => {
+                (input.headers as Headers).delete('Content-Type');
+                return input;
+            }
+        );
+        return this.performFetchAsync<TExpectedErrorResponse>(url, requestInit);
     }
 
     protected responseIsRetriable(response: Response, retryTimeout: number) {
