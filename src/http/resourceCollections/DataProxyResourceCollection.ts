@@ -124,4 +124,12 @@ export default class DataProxyResourceCollection extends BaseResourceCollection 
             'punch'
         );
     }
+
+    public swcrPackages(context: string) {
+        return combineUrls(this.getBaseUrl(), 'api', 'contexts', context, 'swcr');
+    }
+
+    public swcrSignatures(context: string, swcrId: string) {
+        return combineUrls(this.swcrPackages(context), swcrId, 'signatures');
+    }
 }
