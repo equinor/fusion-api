@@ -9,4 +9,3 @@ export type SwcrSignature = {
     swcrId: string;
     rowKey: string;
 };
-

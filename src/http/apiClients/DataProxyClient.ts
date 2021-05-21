@@ -30,7 +30,6 @@ import {
 } from '../resourceCollections/DataProxyResourceCollection';
 import { HttpResponse, voidResponseParser } from '../HttpClient';
 
-
 // Export models
 export {
     HandoverItem,
