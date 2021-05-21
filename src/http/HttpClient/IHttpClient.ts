@@ -116,4 +116,18 @@ export default interface IHttpClient {
      * @param url Request url
      */
     getFileAsync<TExpectedErrorResponse>(url: string): Promise<File>;
+
+    /**
+     * Performs a request to upload file with choise of method
+     * @param url Request url
+     * @param file File to upload
+     * @param method Request method
+     * @param init Optional request init object
+     */
+    uploadFileAsync<TExpectedErrorResponse>(
+        url: string,
+        file: File,
+        method: 'PUT' | 'PATCH' | 'POST',
+        init?: RequestInit | null
+    ): Promise<Response>;
 }
