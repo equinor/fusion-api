@@ -21,6 +21,8 @@ import {
     McWorkOrder,
     McNcr,
     OperationItem,
+    SwcrPackage,
+    SwcrSignature,
 } from './models/dataProxy';
 import {
     HandoverActions,
@@ -144,5 +146,19 @@ export default class DataProxyClient extends BaseApiClient {
     async getMcNcrAsync(contextId: string, workOrderId: string) {
         const url = this.resourceCollections.dataProxy.mcNcr(contextId, workOrderId);
         return await this.httpClient.getAsync<McNcr[], FusionApiHttpErrorResponse>(url);
+    }
+
+    async getSwcrAsync(context: string, invalidateCache: boolean) {
+        const url = this.resourceCollections.dataProxy.swcrPackages(context);
+        const options = invalidateCache ? { headers: { 'x-pp-cache-policy': 'no-cache' } } : {};
+        return await this.httpClient.getAsync<SwcrPackage[], FusionApiHttpErrorResponse>(
+            url,
+            options
+        );
+    }
+
+    async getSwcrSignaturesAsync(context: string, swcrId: string) {
+        const url = this.resourceCollections.dataProxy.swcrSignatures(context, swcrId);
+        return await this.httpClient.getAsync<SwcrSignature[], FusionApiHttpErrorResponse>(url);
     }
 }
