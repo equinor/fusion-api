@@ -18,3 +18,5 @@ export { McPackage } from './mcPackage/McPackage';
 export { McNcr } from './mcPackage/McNcr';
 export { McPunchItem } from './mcPackage/McPunchItem';
 export { McWorkOrder } from './mcPackage/McWorkOrder';
+export { SwcrPackage,SwcrStatus } from './swcr/SwcrPackage';
+export {SwcrSignature} from './swcr/SwcrSignature'

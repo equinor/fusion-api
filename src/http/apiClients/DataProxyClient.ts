@@ -21,14 +21,15 @@ import {
     McWorkOrder,
     McNcr,
     OperationItem,
+    SwcrPackage,
+    SwcrSignature,
 } from './models/dataProxy';
 import {
     HandoverActions,
     AccumulatedActions,
 } from '../resourceCollections/DataProxyResourceCollection';
 import { HttpResponse, voidResponseParser } from '../HttpClient';
-import { SwcrPackage } from './models/dataProxy/swcr/Swcr';
-import SwcrSignature from './models/dataProxy/swcr/SwcrSignatures';
+
 
 // Export models
 export {

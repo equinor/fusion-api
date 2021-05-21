@@ -1,4 +1,4 @@
-type SwcrSignature = {
+export type SwcrSignature = {
     swcrNo: string;
     ranking: string;
     signatureRole: string;
@@ -10,4 +10,3 @@ type SwcrSignature = {
     rowKey: string;
 };
 
-export default SwcrSignature;
