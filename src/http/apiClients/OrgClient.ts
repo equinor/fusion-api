@@ -63,6 +63,33 @@ export default class OrgClient extends BaseApiClient {
         );
     }
 
+    public async getProjectImageAsync(args: { projectId: string }): Promise<File> {
+        const { projectId } = args;
+        const orgResources = this.resourceCollections.org;
+        const url = orgResources.project(projectId + '/image');
+        return this.httpClient.getFileAsync<FusionApiHttpErrorResponse>(url);
+    }
+
+    public async updateProjectImageAsync(args: {
+        projectId: string;
+        file: File;
+    }): Promise<Response> {
+        const { projectId, file } = args;
+        const orgResources = this.resourceCollections.org;
+        const url = orgResources.project(projectId + '/image');
+        const requestInit: RequestInit = {
+            headers: {
+                'api-version': '2.0',
+            },
+        };
+        return this.httpClient.uploadFileAsync<FusionApiHttpErrorResponse>(
+            url,
+            file,
+            'PUT',
+            requestInit
+        );
+    }
+
     public async getPositionsAsync(
         projectId: string,
         expandProperties?: string[],
