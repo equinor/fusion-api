@@ -13,6 +13,7 @@ export type Person = {
 export type Context = {
     id: string;
     name: string;
+    type: string;
 };
 export type BookmarkResponse = {
     id: string;
