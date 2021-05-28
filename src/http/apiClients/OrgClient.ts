@@ -90,6 +90,23 @@ export default class OrgClient extends BaseApiClient {
         );
     }
 
+    public async deleteProjectImageAsync(
+        projectId: string
+    ): Promise<HttpResponse<void>> {
+        const orgResources = this.resourceCollections.org;
+        const url = orgResources.project(projectId + '/image');
+        const requestHeader: RequestInit = {
+            headers: {
+                'api-version': '2.0',
+            },
+        };
+        return this.httpClient.deleteAsync<void, FusionApiHttpErrorResponse>(
+            url,
+            requestHeader,
+            () => Promise.resolve()
+        );
+    }
+
     public async getPositionsAsync(
         projectId: string,
         expandProperties?: string[],
