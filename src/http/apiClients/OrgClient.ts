@@ -90,9 +90,7 @@ export default class OrgClient extends BaseApiClient {
         );
     }
 
-    public async deleteProjectImageAsync(
-        projectId: string
-    ): Promise<HttpResponse<void>> {
+    public async deleteProjectImageAsync(projectId: string): Promise<HttpResponse<void>> {
         const orgResources = this.resourceCollections.org;
         const url = orgResources.project(projectId + '/image');
         const requestHeader: RequestInit = {
