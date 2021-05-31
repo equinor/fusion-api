@@ -66,7 +66,7 @@ export default class OrgClient extends BaseApiClient {
     public async getProjectImageAsync(args: { projectId: string }): Promise<File> {
         const { projectId } = args;
         const orgResources = this.resourceCollections.org;
-        const url = orgResources.project(projectId + '/image');
+        const url = orgResources.projectImage(projectId);
         return this.httpClient.getFileAsync<FusionApiHttpErrorResponse>(url);
     }
 
@@ -76,7 +76,7 @@ export default class OrgClient extends BaseApiClient {
     }): Promise<Response> {
         const { projectId, file } = args;
         const orgResources = this.resourceCollections.org;
-        const url = orgResources.project(projectId + '/image');
+        const url = orgResources.projectImage(projectId);
         const requestInit: RequestInit = {
             headers: {
                 'api-version': '2.0',
@@ -92,7 +92,7 @@ export default class OrgClient extends BaseApiClient {
 
     public async deleteProjectImageAsync(projectId: string): Promise<HttpResponse<void>> {
         const orgResources = this.resourceCollections.org;
-        const url = orgResources.project(projectId + '/image');
+        const url = orgResources.projectImage(projectId);
         const requestHeader: RequestInit = {
             headers: {
                 'api-version': '2.0',
