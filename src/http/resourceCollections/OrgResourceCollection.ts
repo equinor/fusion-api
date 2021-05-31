@@ -135,7 +135,7 @@ export default class OrgResourceCollection extends BaseResourceCollection {
     }
 
     projectImage(projectId: string) {
-        return combineUrls(this.getBaseUrl(), 'projects', projectId, 'image');
+        return combineUrls(this.project(projectId), 'image');
     }
 
     snapshots(projectId: string) {
