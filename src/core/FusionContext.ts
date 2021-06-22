@@ -222,6 +222,7 @@ const ensureGlobalFusionContextType = () => {
     if (!win[globalEquinorFusionContextKey]) {
         return createContext<IFusionContext>({} as IFusionContext);
     }
+    debugger;
     const existingFusionContext = win[globalEquinorFusionContextKey] as IFusionContext;
 
     return createContext<IFusionContext>(
