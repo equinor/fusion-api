@@ -35,12 +35,12 @@ export type McPackage = {
     rfccPlannedDate: string;
     rfccForecastDate: string;
     rfccActualDate: string;
+    rfccShippedDate: string;
     tacPlannedDate: string;
     tacForecastDate: string;
     rfocPlannedDate: string;
     rfocForecastDate: string;
     rfocActualDate: string;
-    rfocShippedDate: string;
     tacIsShipped: boolean;
     tacIsAccepted: boolean;
     isVoided: boolean;
