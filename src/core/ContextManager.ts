@@ -22,7 +22,7 @@ type ContextCache = {
 
 export default class ContextManager extends ReliableDictionary<ContextCache> {
     private readonly contextClient: ContextClient;
-    private isSettingFromRoute: boolean = false;
+    private isSettingFromRoute = false;
 
     constructor(
         apiClients: ApiClients,
@@ -34,51 +34,50 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         super(new LocalStorageProvider(`FUSION_CURRENT_CONTEXT`, new EventHub()));
         this.contextClient = apiClients.context;
 
-        const unlistenAppContainer = this.appContainer.on('change', (app) => {
-            this.resolveContextFromUrlOrLocalStorageAsync(app);
-            unlistenAppContainer();
+        this.history.listen((e) => {
+            this.ensureCurrentContextExistsInUrl();
         });
-
-        this.history.listen(this.ensureCurrentContextExistsInUrl);
     }
 
     private appHasContext = (): boolean => Boolean(this.appContainer.currentApp?.context);
 
     private getAppPath = () => `/apps/${this.appContainer.currentApp?.key}`;
 
-    private urlHasPath = (path: string): boolean =>
-        this.history.location.pathname.indexOf(path) !== -1;
+    private urlHasPath = (path: string): boolean => !!path.match(/^[/]?apps/);
 
     private getScopedPath = (path: string): string =>
         this.history.location.pathname.replace(path, '');
 
-    private buildUrlWithContext = async () => {
-        const currentContext = await this.getCurrentContextAsync();
+    private buildUrlWithContext = async (context: Context) => {
         const buildUrl = this.appContainer.currentApp?.context?.buildUrl;
 
-        if (
-            !this.appHasContext() ||
-            !buildUrl ||
-            !currentContext?.id ||
-            this.history.location.pathname.indexOf(currentContext.id) !== -1
-        )
+        if (!buildUrl || !context.id) {
             return null;
+        }
 
+        const path = this.history.location.pathname;
         const appPath = this.getAppPath();
+        const cgi = window.location.search;
         const newUrl = combineUrls(
-            this.urlHasPath(appPath) ? appPath : '',
-            buildUrl(currentContext, this.getScopedPath(appPath))
+            this.urlHasPath(path) ? appPath : '',
+            buildUrl(context, this.getScopedPath(appPath) + cgi)
         );
 
         return newUrl;
     };
 
+    private updateContextLocation = async (context: Context) => {
+        const newUrl = await this.buildUrlWithContext(context);
+        const oldUrl = this.history.location.pathname + this.history.location.search;
+        if (newUrl && newUrl !== oldUrl) {
+            this.history.replace(newUrl);
+        }
+    };
+
     private ensureCurrentContextExistsInUrl = async () => {
         if (!this.appHasContext()) return;
-
-        const newUrl = await this.buildUrlWithContext();
-        if (newUrl && this.history.location.pathname.indexOf(newUrl) !== 0)
-            this.history.replace(newUrl);
+        const context = await this.getCurrentContextAsync();
+        context && this.updateContextLocation(context);
     };
 
     private async resolveContextFromUrlOrLocalStorageAsync(app: AppManifest | null) {
@@ -91,9 +90,11 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
                 ? getContextFromUrl(this.getScopedPath(this.getAppPath()))
                 : null;
 
-        if (contextId) return this.setCurrentContextFromIdAsync(contextId);
-
-        this.ensureCurrentContextExistsInUrl();
+        if (contextId) {
+            await this.setCurrentContextFromIdAsync(contextId);
+        } else {
+            await this.ensureCurrentContextExistsInUrl();
+        }
     }
 
     private async validateContext(context: Context | null) {
@@ -136,23 +137,14 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
     }
 
     async setCurrentContextAsync(context: Context | null) {
-        const buildUrl = this.appContainer.currentApp?.context?.buildUrl;
         const currentContext = await this.getAsync('current');
 
         if (currentContext?.id === context?.id) {
             return this.ensureCurrentContextExistsInUrl();
         }
 
-        const appPath = `/apps/${this.appContainer.currentApp?.key}`;
-        const hasAppPath = this.history.location.pathname.indexOf(appPath) !== -1;
-        const scopedPath = this.history.location.pathname.replace(appPath, '');
-
-        if (buildUrl) {
-            const newUrl = combineUrls(
-                hasAppPath ? appPath : '',
-                buildUrl(context, scopedPath + this.history.location.search)
-            );
-            if (this.history.location.pathname.indexOf(newUrl) !== 0) this.history.replace(newUrl);
+        if (context && this.appHasContext()) {
+            await this.updateContextLocation(context);
         }
 
         await this.setAsync('current', context);
@@ -250,7 +242,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         return value?.history || [];
     }
 
-    async getCurrentContextAsync() {
+    async getCurrentContextAsync(resolve = true): Promise<Context | null> {
         // Avoid returning cached context if we're in the process of resolving a context from the current route
         if (this.isSettingFromRoute) {
             return null;
@@ -259,6 +251,11 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         const currentContext = await this.getAsync('current');
 
         if (!currentContext) {
+            if (resolve) {
+                const { currentApp } = this.appContainer;
+                await this.resolveContextFromUrlOrLocalStorageAsync(currentApp);
+                return this.getCurrentContextAsync(false);
+            }
             return null;
         }
 
