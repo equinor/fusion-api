@@ -35,6 +35,7 @@ export type McPackage = {
     rfccPlannedDate: string;
     rfccForecastDate: string;
     rfccActualDate: string;
+    rfccShippedDate: string;
     tacPlannedDate: string;
     tacForecastDate: string;
     rfocPlannedDate: string;
