@@ -127,7 +127,8 @@ export const createFusionContext = (
     serviceResolver: ServiceResolver,
     refs: Refs,
     options?: FusionContextOptions,
-    browserHistory?: History
+    browserHistory?: History,
+    contextManager?: ContextManager
 ): IFusionContext => {
     const telemetryLogger = new TelemetryLogger(
         options && options.telemetry ? options.telemetry.instrumentationKey : '',
@@ -168,13 +169,14 @@ export const createFusionContext = (
     );
     appContainerFactory(appContainer);
 
-    const contextManager = new ContextManager(
+    contextManager ??= new ContextManager(
         apiClients,
         appContainer,
         featureLogger,
         telemetryLogger,
         history
     );
+
     const tasksContainer = new TasksContainer(apiClients, new EventHub());
     const notificationCenter = new NotificationCenter(new EventHub(), apiClients);
     const peopleContainer = new PeopleContainer(apiClients, resourceCollections, new EventHub());
@@ -222,18 +224,18 @@ const ensureGlobalFusionContextType = () => {
     if (!win[globalEquinorFusionContextKey]) {
         return createContext<IFusionContext>({} as IFusionContext);
     }
-    debugger;
     const existingFusionContext = win[globalEquinorFusionContextKey] as IFusionContext;
 
-    return createContext<IFusionContext>(
-        createFusionContext(
-            existingFusionContext.auth.container,
-            existingFusionContext.http.serviceResolver,
-            existingFusionContext.refs,
-            existingFusionContext.options,
-            existingFusionContext.history
-        )
+    const context = createFusionContext(
+        existingFusionContext.auth.container,
+        existingFusionContext.http.serviceResolver,
+        existingFusionContext.refs,
+        existingFusionContext.options,
+        existingFusionContext.history,
+        existingFusionContext.contextManager
     );
+
+    return createContext<IFusionContext>(context);
 };
 
 const FusionContext = ensureGlobalFusionContextType();
