@@ -34,8 +34,17 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         super(new LocalStorageProvider(`FUSION_CURRENT_CONTEXT`, new EventHub()));
         this.contextClient = apiClients.context;
 
-        this.history.listen((e) => {
-            this.ensureCurrentContextExistsInUrl();
+        // resolve context when the browser location changes
+        this.history.listen(() => this.resolveContextFromUrl());
+
+        /**
+         * bootstrap
+         * after first app is loaded, the context is resolved, since the app contains the method for
+         * resolving the context from the location path
+         */
+        const unlistenAppContainer = this.appContainer.on('change', (app) => {
+            this.resolveContextFromUrl(app);
+            unlistenAppContainer();
         });
     }
 
@@ -80,7 +89,8 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         context && this.updateContextLocation(context);
     };
 
-    private async resolveContextFromUrlOrLocalStorageAsync(app: AppManifest | null) {
+    private async resolveContextFromUrl(app?: AppManifest | null) {
+        app ??= this.appContainer.currentApp;
         if (!app || !app.context) return;
 
         const getContextFromUrl = app.context.getContextFromUrl;
@@ -92,8 +102,6 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
 
         if (contextId) {
             await this.setCurrentContextFromIdAsync(contextId);
-        } else {
-            await this.ensureCurrentContextExistsInUrl();
         }
     }
 
@@ -183,6 +191,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
 
         const history = await this.getAsync('history');
         if (history) {
+            debugger;
             history
                 // Remove the current context from the previous history (it's added to the start of the history)
                 .filter((c) => c.id !== currentContext.id)
@@ -252,8 +261,9 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
 
         if (!currentContext) {
             if (resolve) {
+                console.log('ok');
                 const { currentApp } = this.appContainer;
-                await this.resolveContextFromUrlOrLocalStorageAsync(currentApp);
+                await this.resolveContextFromUrl(currentApp);
                 return this.getCurrentContextAsync(false);
             }
             return null;
