@@ -31,6 +31,9 @@ type AppConfig<T> = {
  * This will allow existing published apps to still use the default config, while the preview version can use the v2.0. 
  * Default can be overridden when all versions are using the v2.0, and 2.0 can be deleted.
  * 
+ * Config is returned as a Partial<TConfig>. This is to remind the consumer that the object returned from the API is not guaranteed to honor the specified ts type.
+ * All nested config types should also think of the same issue, however this is not enforced by the framework.
+ * 
  * @param tag The tag for the config version, defaults to null (main config)
  * @returns App config element
  */
