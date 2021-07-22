@@ -27,6 +27,14 @@ type AppContainerEvents = {
     fetch: (status: boolean) => void;
 };
 
+/**
+ * Api model for app config endpoint
+ */
+type ApiAppConfig<T> = {
+    environment: T,
+    endpoints: { [key: string]: string; }
+}
+
 const compareApp = (a: AppManifest, b?: AppManifest) => {
     if (!b) return true;
     const attr = Object.keys(a) as Array<keyof AppManifest>;
@@ -87,7 +95,7 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
     get allApps() {
         return this.apps.state;
     }
-
+    
     private readonly fusionClient: FusionClient;
     private readonly telemetryLogger: TelemetryLogger;
 
@@ -171,6 +179,8 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
             return await this.setCurrentAppAsync(appKey);
         }
 
+        
+
         if (!app.AppComponent) {
             await this.fusionClient.loadAppScriptAsync(appKey);
             return await this.setCurrentAppAsync(appKey);
@@ -248,6 +258,40 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
             );
             this.apps.state = Object.freeze({ ...this.apps.state, ...nextState });
         }
+    }
+
+    private readonly configCache:any = {};
+
+    async getConfigAsync<T>(tag?: string | null, cancellationToken? : AbortSignal) : Promise<ApiAppConfig<T>> {        
+        const appKey = this._currentApp.state?.key;
+        const tagCacheKey = `${appKey}-${tag ?? "default"}`;
+
+        // We cannot get configs without an active app..
+        if (!appKey) {
+            throw new Error("Current app is null, cannot get config");
+        }
+
+        // Try to resolve from cache
+        const cachedConfig = this.configCache[tagCacheKey];
+        if (cachedConfig) {
+            return cachedConfig as ApiAppConfig<T>;
+        }
+
+        // Fetch from store
+        const getConfigUrl = (appKey: string, tag: string | null = null) => {
+            let url = `/api/apps/${appKey}/config`;
+            if (tag) { url += `?tag=${tag}`; }
+            return url;
+        }
+
+        try {
+            const resp = await this.fusionClient.getAsync<ApiAppConfig<T>>(getConfigUrl(appKey, tag), { signal: cancellationToken });
+            this.configCache[tagCacheKey] = resp.data;
+
+            return resp.data;
+        } catch (error) {
+            throw error;
+        } 
     }
 }
 
