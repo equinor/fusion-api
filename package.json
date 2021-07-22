@@ -61,7 +61,7 @@
         "eslint-plugin-tsdoc": "^0.2.7",
         "history": "^4.9.0",
         "husky": "^5.0.9",
-        "lint-staged": "^10.3.0",
+        "lint-staged": "^11.1.0",
         "prettier": "^2.1.1",
         "react": "^17.0.1",
         "react-router": "^5.0.1",
