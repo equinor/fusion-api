@@ -361,6 +361,7 @@ export default class NotificationCenter extends ReliableDictionary<
 
 const NotificationContext = React.createContext<INotificationContext>({} as INotificationContext);
 
+// eslint-disable-next-line react/prop-types
 export const NotificationContextProvider: React.FC = ({ children }) => {
     const [presenters, setPresenters] = React.useState<NotificationPresenterRegistration[]>([]);
     const [cardPresenter, setCardPresenter] = React.useState<NotificationCardPresenterRegistration>(
