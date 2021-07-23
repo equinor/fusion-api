@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 /**
  * Public facing model for config.
-*/
+ */
 export type AppEnvironmentConfig<TConfig> = {
     environment: Partial<TConfig>,
     endpoints: { [key: string]: string; }
@@ -37,18 +37,18 @@ type AppConfig<T> = {
  * @param tag The tag for the config version, defaults to null (main config)
  * @returns App config element
  */
-export const useAppConfig = <T>(tag?: string | null) : AppConfig<T> => {
+export const useAppConfig = <T>(tag?: string | null): AppConfig<T> => {
 
     const fusion = useFusionContext();
 
-    const [config, setConfig] = useState<AppEnvironmentConfig<T>|null>(null);
+    const [config, setConfig] = useState<AppEnvironmentConfig<T> | null>(null);
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const [error, setError] = useState<Error | null>(null);
 
-    const fetchConfigAsync = useCallback(async (tag?: string | null, cancellationToken?: AbortSignal ) => {
+    const fetchConfigAsync = useCallback(async (tag?: string | null, cancellationToken?: AbortSignal) => {
         setIsFetching(true);
         setError(null);
-        
+
         try {
             // Using the fusion context as a repository for configs, so we can cache values between usage.
             const config = await fusion.app.container.getConfigAsync(tag, cancellationToken);
@@ -56,18 +56,18 @@ export const useAppConfig = <T>(tag?: string | null) : AppConfig<T> => {
             // Model should be safe to just cast. If the api model from the app container changes we might have to transform
             setConfig(config as AppEnvironmentConfig<T>);
 
-        } catch (err) {            
+        } catch (err) {
             // Track error
-            fusion.logging.telemetry.trackException({ exception: err});
-            fusion.logging.telemetry.trackTrace({ message: `Could not load config for app ${fusion.app.container.currentApp?.key} @ tag ${tag}: ${err.message}`});
-            
+            fusion.logging.telemetry.trackException({ exception: err });
+            fusion.logging.telemetry.trackTrace({ message: `Could not load config for app ${fusion.app.container.currentApp?.key} @ tag ${tag}: ${err.message}` });
+
             setConfig(null);
             setError(err);
         } finally {
             setIsFetching(false);
         }
     }, [fusion.app.container]);
-    
+
     useEffect(() => {
         const cancellationSource = new AbortController();
 
