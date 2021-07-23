@@ -74,7 +74,7 @@ export const useAppConfig = <T>(tag?: string | null) : AppConfig<T> => {
         fetchConfigAsync(tag, cancellationSource.signal);
 
         return () => { cancellationSource.abort() }
-    }, [tag]);
+    }, [tag, fusion.app.container]);
 
     return {
         isFetching: isFetching,
