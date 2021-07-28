@@ -233,6 +233,7 @@ export { default as useAsyncData } from './hooks/useAsyncData';
 export { default as useFusionEnvironment } from './hooks/useFusionEnvironment';
 export { default as useSignalRHub } from './hooks/useSignalRHub';
 export { default as useAppAuth } from './hooks/useAppAuth';
+export { useAppConfig } from './hooks/useAppConfig';
 
 export { Day, Month, Calendar, CalendarDate, createCalendar, isSameDate } from './utils/Calendar';
 

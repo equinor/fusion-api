@@ -1,3 +1,4 @@
+/* eslint-disable no-fallthrough */
 import AppManifest from './AppManifest';
 import EventEmitter, { useEventEmitterValue } from '../utils/EventEmitter';
 import ApiClients from '../http/apiClients';
@@ -25,6 +26,14 @@ type AppContainerEvents = {
     update: (app: Record<string, AppManifest>) => void;
     change: (app: AppManifest | null) => void;
     fetch: (status: boolean) => void;
+};
+
+/**
+ * Api model for app config endpoint
+ */
+type ApiAppConfig<T> = {
+    environment: T;
+    endpoints: Record<string, string>;
 };
 
 const compareApp = (a: AppManifest, b?: AppManifest) => {
@@ -220,6 +229,7 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
     }
 
     private update(): Promise<void> {
+        // eslint-disable-next-line no-async-promise-executor
         this._updatePromise = new Promise(async (resolve, reject) => {
             try {
                 this.emit('fetch', true);
@@ -248,6 +258,43 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
             );
             this.apps.state = Object.freeze({ ...this.apps.state, ...nextState });
         }
+    }
+
+    private readonly configCache: Record<string, unknown> = {};
+
+    async getConfigAsync<T>(
+        tag?: string | null,
+        cancellationToken?: AbortSignal
+    ): Promise<ApiAppConfig<T>> {
+        const appKey = this._currentApp.state?.key;
+        const tagCacheKey = `${appKey}-${tag ?? 'default'}`;
+
+        // We cannot get configs without an active app..
+        if (!appKey) {
+            throw new Error('Current app is null, cannot get config');
+        }
+
+        // Try to resolve from cache
+        const cachedConfig = this.configCache[tagCacheKey];
+        if (cachedConfig) {
+            return cachedConfig as ApiAppConfig<T>;
+        }
+
+        // Fetch from store
+        const getConfigUrl = (appKey: string, tag: string | null = null) => {
+            let url = `/api/apps/${appKey}/config`;
+            if (tag) {
+                url += `?tag=${tag}`;
+            }
+            return url;
+        };
+
+        const resp = await this.fusionClient.getAsync<ApiAppConfig<T>>(getConfigUrl(appKey, tag), {
+            signal: cancellationToken,
+        });
+        this.configCache[tagCacheKey] = resp.data;
+
+        return resp.data;
     }
 }
 
