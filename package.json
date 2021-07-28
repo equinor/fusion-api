@@ -1,6 +1,6 @@
 {
     "name": "@equinor/fusion",
-    "version": "3.2.8",
+    "version": "3.3.0",
     "description": "Everything a Fusion app needs to communicate with the core",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -33,11 +33,11 @@
     },
     "lint-staged": {
         "./src/**/*.{js,ts,tsx}": [
-            "prettier --write ",
             "eslint --quiet --fix"
         ]
     },
     "dependencies": {
+        "@equinor/eslint-config-fusion": "^0.1.2",
         "@microsoft/applicationinsights-web": "^2.4.3",
         "@microsoft/signalr": "^5.0.6",
         "jwt-decode": "^3.1.2",
