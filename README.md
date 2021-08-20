@@ -216,3 +216,35 @@ const start = async () => {
 
 start();
 ```
+
+## Hooks
+
+// TODO: @tobiasny write something
+
+### useAbortableRequest
+```tsx
+export const MyComponents = () => {
+    const {someClient} = useApiClients();
+    const [state, setState] = useState();
+    const [error, setError] = useState();
+    const [loading, setLoading] = useState();
+    const executeRequest = useCallback(async(e: Event) => {
+        try{
+            setLoading(true);
+            const response = someClient.getFoo(e.target.value);
+            setState(response);
+        } catch (e) {
+            setError(e.message);
+        } finally (){
+            setLoading(false);
+        }
+    }, [someClient]);
+    const onAbort = useCallback(() => console.debug('request was aborted'));
+    const onInput = useAbortableRequest(executeRequest, onAbort);
+    return (
+        <div>
+            <input type="text" onInput={onInput} />
+            <span>${state}</span>
+        </div>
+}
+```
