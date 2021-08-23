@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef } from 'react';
  * Hook for making HTTP requests abortable
  */
 
-export default <T extends Array<unknown>>(
+export const useAbortableRequest = <T extends Array<unknown>>(
     cb: (...args: T) => void,
     onAbort?: ((this: AbortSignal, ev: Event) => any) | null
 ) => {
@@ -27,3 +27,5 @@ export default <T extends Array<unknown>>(
 
     return abortableRequest;
 };
+
+export default useAbortableRequest;
