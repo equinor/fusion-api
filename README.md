@@ -219,9 +219,9 @@ start();
 
 ## Hooks
 
-// TODO: @tobiasny write something
-
 ### useAbortableRequest
+This hook will make an HTTP callback abortable, i.e allows for cancellation of a pending HTTP request. The HTTP callback in the example below is defined as `executeRequest`, which will make an HTTP request towards some API client. The callback will be made abortable when the callback is passed onto the `useAbortableRequest` hook, with the custom abort signal handler `onAbort`. E.g if the abortable callback `onInput` initiates a request, but the `MyComponents` component is unmounted, the initiated HTTP request will be cancelled.
+
 ```tsx
 export const MyComponents = () => {
     const {someClient} = useApiClients();

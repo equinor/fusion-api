@@ -3,6 +3,10 @@ import { useCallback, useEffect, useRef } from 'react';
 
 /**
  * Hook for making HTTP requests abortable
+ * @typeParam T Specifies the types of input parameters of the HTTP callback function `cb`
+ * @param cb Callback function to be made abortable. Must execute an HTTP request
+ * @param onAbort Custom handler for abort event
+ * @returns HTTP callback function wrapped as an abortable callback
  */
 
 export const useAbortableRequest = <T extends Array<unknown>>(
@@ -14,7 +18,7 @@ export const useAbortableRequest = <T extends Array<unknown>>(
     const abortableRequest = useCallback(
         (...argss: T) => {
             ref.current && ref.current();
-            ref.current = abortable(async (signal) => {
+            ref.current = abortable(async (signal: AbortSignal) => {
                 onAbort && (signal.onabort = onAbort);
                 if (signal.aborted) return;
                 return cb(...argss);
