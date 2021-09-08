@@ -46,9 +46,10 @@ export const useTableExport = (props: { fileName: string; dataSetName: string })
         document.body.appendChild(a);
         debugger;
         a.click();
-        window.URL.revokeObjectURL(createdUrl);
         return () => {
             a.remove();
+
+            window.URL.revokeObjectURL(createdUrl);
         };
     }, [url]);
 
