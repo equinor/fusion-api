@@ -36,10 +36,10 @@ export const useTableExport = (props: { fileName: string; dataSetName: string })
         if (!url) return;
         const a = document.createElement('a');
         a.href = `https://pro-s-portal-pr-2713.azurewebsites.net${url}`;
-
+        a.download = fileName;
         document.body.appendChild(a);
         debugger;
-
+        a.click();
         return () => {
             a.remove();
         };
