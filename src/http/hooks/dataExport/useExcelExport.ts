@@ -34,9 +34,11 @@ export const useTableExport = (props: { fileName: string; dataSetName: string })
 
     useEffect(() => {
         if (!url) return;
+        debugger;
         const createdUrl = window.URL.createObjectURL(
             `https://pro-s-portal-pr-2713.azurewebsites.net${url}`
         );
+        debugger;
         const a = document.createElement('a');
         a.style.display = 'none';
         a.href = createdUrl;
