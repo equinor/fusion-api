@@ -38,7 +38,7 @@ export const useTableExport = (props: { fileName: string; dataSetName: string })
         const a = document.createElement('a');
         a.style.display = 'none';
         a.href = `https://pro-s-portal-pr-2713.azurewebsites.net${url}`;
-        a.setAttribute('download', `${fileName}`);
+        a.setAttribute('download', fileName + '.xlsx');
         document.body.appendChild(a);
         a.click();
         return () => {
