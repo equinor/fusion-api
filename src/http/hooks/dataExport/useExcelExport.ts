@@ -38,6 +38,7 @@ export const useTableExport = (props: { fileName: string; dataSetName: string })
         a.href = url;
 
         document.body.appendChild(a);
+        debugger;
         a.click();
         return () => {
             a.remove();
