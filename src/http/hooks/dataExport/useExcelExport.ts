@@ -40,6 +40,7 @@ export const useTableExport = (props: { fileName: string; dataSetName: string })
         a.href = `https://pro-s-portal-pr-2713.azurewebsites.net${url}`;
         a.download = fileName + '.xlsx';
         document.body.appendChild(a);
+        debugger;
         a.click();
         return () => {
             a.remove();
