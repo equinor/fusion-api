@@ -46,3 +46,4 @@ export const useTableExport = (props: { fileName: string; dataSetName: string })
 
     return { client };
 };
+export default useTableExport;
