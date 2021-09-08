@@ -14,6 +14,7 @@ import InfoClient from './InfoClient';
 import UserSettingsClient from './UserSettingsClient';
 import FusionTasksClient from './FusionTasksClient';
 import BookmarksClient from './BookmarksClient';
+import { DataExportClient } from './DataExportClient';
 
 export { FusionApiHttpErrorResponse } from './models/common/FusionApiHttpErrorResponse';
 
@@ -31,6 +32,7 @@ type ApiClients = {
     userSettings: UserSettingsClient;
     fusionTasks: FusionTasksClient;
     bookmarks: BookmarksClient;
+    dataExport: DataExportClient;
 };
 
 export const createApiClients = (
@@ -51,6 +53,7 @@ export const createApiClients = (
     userSettings: new UserSettingsClient(httpClient, resources, serviceResolver),
     fusionTasks: new FusionTasksClient(httpClient, resources, serviceResolver),
     bookmarks: new BookmarksClient(httpClient, resources, serviceResolver),
+    dataExport: new DataExportClient(httpClient, resources, serviceResolver),
 });
 
 export default ApiClients;
