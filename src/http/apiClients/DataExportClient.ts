@@ -5,7 +5,7 @@ import { DataExportResponse } from './models/dataExport/dataExportResponse';
 
 export class DataExportClient extends BaseApiClient {
     protected getBaseUrl(): string {
-        return this.serviceResolver.getFusionBaseUrl();
+        return this.serviceResolver.getDataExportBaseUrl();
     }
 
     protected createUrl(href: string, params?: Record<string, string>): string {
