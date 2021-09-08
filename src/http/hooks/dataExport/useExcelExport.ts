@@ -34,12 +34,17 @@ export const useTableExport = (props: { fileName: string; dataSetName: string })
 
     useEffect(() => {
         if (!url) return;
+        const createdUrl = window.URL.createObjectURL(
+            `https://pro-s-portal-pr-2713.azurewebsites.net${url}`
+        );
         const a = document.createElement('a');
-        a.href = `https://pro-s-portal-pr-2713.azurewebsites.net${url}`;
+        a.style.display = 'none';
+        a.href = createdUrl;
         a.download = `${fileName}.xlsx`;
         document.body.appendChild(a);
         debugger;
         a.click();
+        window.URL.revokeObjectURL(createdUrl);
         return () => {
             a.remove();
         };
