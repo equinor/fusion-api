@@ -166,7 +166,7 @@ export { PimsTask, ProCoSysTask } from './http/apiClients/models/fusionTasks';
 
 export { default as useApiClient } from './http/hooks/useApiClient';
 export { default as useApiClients } from './http/hooks/useApiClients';
-
+export { default as useExcelExport } from './http/hooks/dataExport/useExcelExport';
 export {
     createPagination,
     applyPagination,
