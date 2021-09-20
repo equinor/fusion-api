@@ -16,7 +16,7 @@ export class DataExportClient extends BaseApiClient {
     }
 
     public createExcelFile(excelData: DataExportRequest) {
-        const baseUrl = this.resourceCollections.dataExport.exportData();
+        const baseUrl = this.resourceCollections.dataExport.export();
         const url = this.createUrl(baseUrl);
         return this.httpClient.postAsync<
             DataExportRequest,

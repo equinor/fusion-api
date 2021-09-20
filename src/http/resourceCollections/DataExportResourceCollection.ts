@@ -3,10 +3,14 @@ import BaseResourceCollection from './BaseResourceCollection';
 
 export default class DataExportResourceCollection extends BaseResourceCollection {
     protected getBaseUrl(): string {
-        return 'https://pro-s-portal-pr-2713.azurewebsites.net';
+        return this.serviceResolver.getDataExportBaseUrl();
     }
 
-    exportData(): string {
+    export(): string {
         return combineUrls(this.getBaseUrl(), 'api', 'data-exports');
+    }
+
+    download(id: string): string {
+        return combineUrls(this.getBaseUrl(), 'api', 'data-exports', id);
     }
 }
