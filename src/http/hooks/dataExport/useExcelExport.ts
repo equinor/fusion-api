@@ -26,7 +26,7 @@ import { Sheet } from '../../../http/apiClients/models/fusion/dataExport/Sheet';
  *
  */
 export const useTableExport = (props: { fileName: string; dataSetName: string }) => {
-    const { dataExport } = useApiClients();
+    const { fusion } = useApiClients();
     const {
         http: { resourceCollections },
     } = useFusionContext();
@@ -38,7 +38,7 @@ export const useTableExport = (props: { fileName: string; dataSetName: string })
             try {
                 const {
                     data: { tempId },
-                } = await dataExport.createExcelFile({
+                } = await fusion.createExcelFile({
                     fileName,
                     dataSetName,
                     sheets: data.sheets,
@@ -48,7 +48,7 @@ export const useTableExport = (props: { fileName: string; dataSetName: string })
                 console.error(err);
             }
         },
-        [dataExport, fileName]
+        [fusion, fileName]
     );
 
     useEffect(() => {
