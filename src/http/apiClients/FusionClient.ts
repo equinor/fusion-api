@@ -4,6 +4,8 @@ import AppManifest from './models/fusion/apps/AppManifest';
 import { FeatureLogBatch } from './models/fusion/FeatureLogEntryRequest';
 import getScript from '../../utils/getScript';
 import { SignalRNegotiation } from './models/fusion/SignalRNegotiation';
+import { DataExportRequest } from './models/fusion/dataExport/DataExportRequest';
+import { DataExportResponse } from './models/fusion/dataExport/DataExportResponse';
 
 export default class FusionClient extends BaseApiClient {
     protected getBaseUrl() {
@@ -53,5 +55,14 @@ export default class FusionClient extends BaseApiClient {
             SignalRNegotiation,
             FusionApiHttpErrorResponse
         >(url, undefined);
+    }
+
+    public createExcelFile(excelData: DataExportRequest) {
+        const url = this.resourceCollections.fusion.exportExcel();
+        return this.httpClient.postAsync<
+            DataExportRequest,
+            DataExportResponse,
+            FusionApiHttpErrorResponse
+        >(url, excelData);
     }
 }

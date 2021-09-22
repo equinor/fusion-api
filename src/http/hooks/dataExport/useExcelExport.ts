@@ -1,7 +1,7 @@
 import useApiClients from '../useApiClients';
 import { useCallback, useEffect, useState } from 'react';
-import { Sheet } from '../../../http/apiClients/models/dataExport/Sheet';
 import { useFusionContext } from '../../../core/FusionContext';
+import { Sheet } from '../../../http/apiClients/models/fusion/dataExport/Sheet';
 
 /**
  * A hook that will return a client function that can be used to create Excel documents.
@@ -43,7 +43,7 @@ export const useTableExport = (props: { fileName: string; dataSetName: string })
                     dataSetName,
                     sheets: data.sheets,
                 });
-                setUrl(`${resourceCollections.dataExport.download(tempId)}.xlsx`);
+                setUrl(`${resourceCollections.fusion.downloadExcel(tempId)}.xlsx`);
             } catch (err) {
                 console.error(err);
             }

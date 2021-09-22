@@ -47,6 +47,14 @@ export default class FusionResourceCollection extends BaseResourceCollection {
         return combineUrls(this.getBaseUrl(), 'signalr', 'hubs', hubName);
     }
 
+    exportExcel() {
+        return combineUrls(this.getBaseUrl(), 'api', 'data-exports');
+    }
+
+    downloadExcel(id: string) {
+        return combineUrls(this.getBaseUrl(), 'api', 'data-exports', id);
+    }
+
     private getBundlesPath() {
         return this.options && this.options.loadBundlesFromDisk ? 'js' : 'bundles';
     }
