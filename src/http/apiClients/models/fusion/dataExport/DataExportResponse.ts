@@ -1,4 +1,5 @@
 export type DataExportResponse = {
-    tempId: string;
-    expires: Date;
+    tempKey: string;
+    expireDate: Date;
+    exportState: 'New' | 'Complete';
 };
