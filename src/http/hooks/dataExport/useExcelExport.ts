@@ -1,12 +1,11 @@
 import useApiClients from '../useApiClients';
-import { useCallback, useEffect, useState } from 'react';
-import { useFusionContext } from '../../../core/FusionContext';
+import { useCallback } from 'react';
 import { Sheet } from '../../../http/apiClients/models/fusion/dataExport/Sheet';
 
 /**
  * A hook that will return a client function that can be used to create Excel documents.
  * The hook will send a `POST` request to the data export API and receive a URL where the generated
- * Excel file can be downloaded. After receiving the URL, an anchor tag will be added and the download will start.
+ * Excel file can be downloaded. 
  * @param props Name of the file and the name of the Excel sheet
  * @returns A client that accepts the table data as parameters and send a request to the data export API
  * @example
@@ -17,8 +16,8 @@ import { Sheet } from '../../../http/apiClients/models/fusion/dataExport/Sheet';
  *
  *  return (
  *      <Table
-            options={{ columns: columns, data: data }}
-            slots={{ Toolbar: <Toolbar excel={{ client }} /> }}
+            options={{ columns: columns, data: data, exportFn: client }}
+            slots={{ Toolbar: <Toolbar hideExcelBtn={false} /> }}
         />
  *
  *  )
@@ -27,42 +26,18 @@ import { Sheet } from '../../../http/apiClients/models/fusion/dataExport/Sheet';
  */
 export const useTableExport = (props: { fileName: string; dataSetName: string }) => {
     const { fusion } = useApiClients();
-    const {
-        http: { resourceCollections },
-    } = useFusionContext();
-    const [url, setUrl] = useState<string>('');
-    const { fileName, dataSetName } = props;
 
+    const { fileName, dataSetName } = props;
     const client = useCallback(
         async (data: { sheets: Sheet[] }) => {
-            try {
-                const {
-                    data: { tempId },
-                } = await fusion.createExcelFile({
-                    fileName,
-                    dataSetName,
-                    sheets: data.sheets,
-                });
-                setUrl(`${resourceCollections.fusion.downloadExcel(tempId)}.xlsx`);
-            } catch (err) {
-                console.error(err);
-            }
+            return await fusion.getExcelStatusInterval({
+                fileName,
+                dataSetName,
+                sheets: data.sheets,
+            });
         },
-        [fusion, fileName]
+        [fusion, fileName, dataSetName]
     );
-
-    useEffect(() => {
-        if (!url) return;
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = url;
-        a.download = fileName + '.xlsx';
-        document.body.appendChild(a);
-        a.click();
-        return () => {
-            a.remove();
-        };
-    }, [url]);
 
     return { client };
 };
