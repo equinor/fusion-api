@@ -65,4 +65,50 @@ export default class FusionClient extends BaseApiClient {
             FusionApiHttpErrorResponse
         >(url, excelData);
     }
+
+    public getExcelStatus(id: string) {
+        const url = this.resourceCollections.fusion.downloadExcel(id);
+        return this.httpClient.getAsync<DataExportResponse, FusionApiHttpErrorResponse>(url);
+    }
+
+    /**
+     * Method for sending requests to the export data service until the export state is completed.
+     * Will timeout after 10 retries and go on for 500 ms
+     * @param excelData Data which is to be put in the exported file
+     * @returns A promise with either a valid url and filename or an error after timeout.
+     */
+    public getExcelStatusInterval(
+        excelData: DataExportRequest
+    ): Promise<{ url: string; fileName: string }> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const {
+                    data: { tempKey },
+                } = await this.createExcelFile(excelData);
+                let retryCount = 0;
+                const interval = (setInterval(async () => {
+                    const {
+                        data: { exportState },
+                    } = await this.getExcelStatus(tempKey);
+                    retryCount++;
+                    if (retryCount > 10) {
+                        clearInterval(interval);
+                        const err = new Error('Timeout error');
+                        reject(err);
+                        throw err;
+                    }
+                    if (exportState === 'Complete') {
+                        clearInterval(interval);
+                        resolve({
+                            url: `${this.resourceCollections.fusion.downloadExcel(tempKey)}.xlsx`,
+                            fileName: excelData.fileName,
+                        });
+                    }
+                }, 500) as unknown) as number;
+            } catch (err) {
+                reject(err);
+                console.error(err);
+            }
+        });
+    }
 }
