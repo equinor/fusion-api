@@ -56,7 +56,12 @@ export default class FusionClient extends BaseApiClient {
             FusionApiHttpErrorResponse
         >(url, undefined);
     }
-
+    /**
+     * Method for sending post request to the data export service.
+     * Used for generating an excel file with the data passed as an argument.
+     * @param excelData The data which is to be put into the generated excel file.
+     * @returns A promise with a temporary id, status of the generating file, and expire date.
+     */
     public createExcelFile(excelData: DataExportRequest) {
         const url = this.resourceCollections.fusion.exportExcel();
         return this.httpClient.postAsync<
@@ -65,7 +70,13 @@ export default class FusionClient extends BaseApiClient {
             FusionApiHttpErrorResponse
         >(url, excelData);
     }
-
+    /**
+     * Method for sending get request to the data export service.
+     * Used for retrieving the status of the generating excel file.
+     * When the status is 'Complete', it is ready to be downloaded.
+     * @param id The temporary id of the generated excel file returned by the data export service.
+     * @returns A promise with the status of the generating file.
+     */
     public getExcelStatus(id: string) {
         const url = this.resourceCollections.fusion.downloadExcel(id);
         return this.httpClient.getAsync<DataExportResponse, FusionApiHttpErrorResponse>(url);
