@@ -26,11 +26,11 @@ import { Sheet } from '../../../http/apiClients/models/fusion/dataExport/Sheet';
  */
 export const useTableExport = (props: { fileName: string; dataSetName: string }) => {
     const { fusion } = useApiClients();
-
     const { fileName, dataSetName } = props;
+
     const client = useCallback(
-        async (data: { sheets: Sheet[] }) => {
-            return await fusion.getExcelStatusInterval({
+        (data: { sheets: Sheet[] }): Promise<{ url: string; fileName: string }> => {
+            return fusion.getExcelStatusInterval({
                 fileName,
                 dataSetName,
                 sheets: data.sheets,
