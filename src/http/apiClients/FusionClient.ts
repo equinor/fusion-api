@@ -91,6 +91,7 @@ export default class FusionClient extends BaseApiClient {
     public getExcelStatusInterval(
         excelData: DataExportRequest
     ): Promise<{ url: string; fileName: string }> {
+        //@eslint-disable no-async-promise-executor
         return new Promise(async (resolve, reject) => {
             try {
                 const {
