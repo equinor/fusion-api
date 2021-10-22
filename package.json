@@ -79,7 +79,7 @@
         "react": "17.x",
         "react-router": "^5.0.1",
         "react-router-dom": "^5.0.1",
-        "rxjs": "6.x",
+        "rxjs": ">=6.x",
         "uuid": "^8.3.2"
     },
     "files": [
