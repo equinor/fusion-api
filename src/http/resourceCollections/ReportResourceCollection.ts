@@ -75,4 +75,8 @@ export default class ReportResourceCollection extends BaseResourceCollection {
             'checkaccess'
         );
     }
+
+    validateRlsConfiguration() {
+        return combineUrls(this.getBaseUrl(), 'admin', 'test-rls-config');
+    }
 }

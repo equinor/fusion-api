@@ -1,90 +1,109 @@
-type BasePositionCondition = {
-    id: string;
-    name: string | null;
-};
+export type RlsMappingType =
+    | 'Unknown'
+    | 'AdGroup'
+    | 'ProjectMembership'
+    | 'AdvancedProjectMembership'
+    | 'ContractMembership'
+    | 'Positions';
 
-type UserTypes = 'Unknown' | 'PermanentEmployee' | 'ExtHire' | 'Consultant' | 'External';
+export type RlsNotFoundMode = 'UserEmail' | 'Null';
 
-type ConditionsMatch = 'Unknown' | 'All' | 'Any';
+export type RlsDelimiter = ';' | '|';
 
-type RoleMemberShipType = 'Unknown' | 'Department' | 'AdGroup' | 'DomainMembership' | 'Account';
+//Unkown is a "deliberate" spelling error. It is spelled like this in the rls-configuration schema.
+export type RlsMatch = 'Unkown' | 'All' | 'Any';
 
-type AccessITRole = {
+export type RlsUserTypes = 'Unknown' | 'PermanentEmployee' | 'ExtHire' | 'Consultant' | 'External';
+
+export type RlsMemberShipRequirementType =
+    | 'Unknown'
+    | 'Department'
+    | 'AdGroup'
+    | 'DomainMembership'
+    | 'Account';
+
+export type AccessITRole = {
     id: string;
     name: string | null;
     url: string | null;
 };
 
-type WorkspaceRole = {
-    requireMembership: boolean;
-    level: string | null;
-};
-
-type Conditions = {
-    role: string | null;
-    obs: string | null;
-    pmt: boolean | null;
-    basePositions: BasePositionCondition[] | null;
-    disciplines: string[] | null;
-    userTypes: UserTypes[] | null;
-};
-
-type ProjectMembershipConfig = {
-    match: ConditionsMatch;
-    conditions: Conditions[];
-};
-
-type RlsAdGroupMapping = {
+export type RlsAdGroupMapping = {
     groupId: string;
     groupName: string | null;
     identityName: string | null;
 };
 
-type RlsIdentityConfiguration = {
-    mappingType: string;
-    notFoundMode: string | null;
-    delimiter: string | null;
-    nameSelector: string | null;
-    adGroupMapping?: RlsAdGroupMapping | null;
-    projectMembershipConfig?: ProjectMembershipConfig | null;
+export type WorkspaceRole = {
+    requireMembership: boolean;
+    level: string | null;
 };
 
-type RlsGlobalAccessRequirement = {
+export type RlsGlobalAccessRequirement = {
     accessIT: AccessITRole | null;
     workspace: WorkspaceRole | null;
 };
 
-type RlsAdGroup = {
+export type RlsIdentityConfiguration = {
+    mappingType: RlsMappingType;
+    notFoundMode: RlsNotFoundMode;
+    delimiter: RlsDelimiter | null;
+    nameSelector: string | null;
+    adGroupMapping?: RlsAdGroupMapping[] | null;
+    projectMembershipConfig?: RlsIdentityProjectMembershipConfig;
+};
+
+export type RlsIdentityProjectMembershipConfig = {
+    match: RlsMatch;
+    conditions: RlsCondition[] | null;
+};
+
+export type RlsCondition = {
+    displayName: string;
+    role?: string | null;
+    obs?: string | null;
+    pmt?: boolean | null;
+    basePositions?: BasePositionCondition[] | null;
+    disciplines?: string[] | null;
+    userTypes?: RlsUserTypes[] | null;
+};
+
+export type BasePositionCondition = {
     id: string;
     name: string | null;
 };
 
-type RlsRoleDomainMembershipConfig = {
-    requiredPositionObs: string[] | null;
-};
-
-type RlsRoleMembershipRequirement = {
-    type: RoleMemberShipType;
-    identifiers: string[] | null;
-    userTypes: UserTypes[] | null;
-    allowExternals: boolean;
-    adGroups?: RlsAdGroup[] | null;
-    domaingConfig?: RlsRoleDomainMembershipConfig | null;
-};
-
-type RlsRoles = {
+export type RlsRoleConfiguration = {
     name: string | null;
-    descriptions: string | null;
+    description: string | null;
     pbiName: string | null;
     isAdminRole: boolean;
-    membership: RlsRoleMembershipRequirement[];
+    membership: RlsRoleMembershipRequirement[] | null;
+};
+
+export type RlsRoleMembershipRequirement = {
+    type: RlsMemberShipRequirementType;
+    identifiers: string[] | null;
+    userTypes: RlsUserTypes[] | null;
+    allowExternals: boolean;
+    adGroups?: RlsAdGroup[] | null;
+    domainConfig?: RlsRoleDomainMembershipConfig;
+};
+
+export type RlsAdGroup = {
+    id: string;
+    name: string | null;
+};
+
+export type RlsRoleDomainMembershipConfig = {
+    requiredPositionObs: string[] | null;
 };
 
 type RlsConfiguration = {
     version: number;
-    globalAccessRequirement: RlsGlobalAccessRequirement;
-    identity: RlsIdentityConfiguration;
-    roles: RlsRoles[];
+    globalAccessRequirement: RlsGlobalAccessRequirement | null;
+    identity: RlsIdentityConfiguration | null;
+    roles: RlsRoleConfiguration[] | null;
 };
 
 export default RlsConfiguration;
