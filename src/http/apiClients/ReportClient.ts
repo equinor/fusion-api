@@ -7,6 +7,8 @@ import ConfigValidation from './models/report/ConfigValidation';
 import BaseApiClient from './BaseApiClient';
 import UpdateMarkdown from './models/report/UpdateMarkdown';
 import { ContextTypes } from './models/context';
+import { RlsConfiguration } from './models/report';
+import RlsValidationError from './models/report/RlsValidationError';
 
 export default class ReportClient extends BaseApiClient {
     protected getBaseUrl() {
@@ -153,5 +155,14 @@ export default class ReportClient extends BaseApiClient {
         return await this.httpClient.optionsAsync<void, FusionApiHttpErrorResponse>(url, null, () =>
             Promise.resolve()
         );
+    }
+
+    async validateRlsConfiguration(rls: Partial<RlsConfiguration>) {
+        const url = this.resourceCollections.report.validateRlsConfiguration();
+        return await this.httpClient.postAsync<
+            Partial<RlsConfiguration>,
+            Partial<RlsConfiguration>,
+            RlsValidationError | ConfigValidation
+        >(url, rls);
     }
 }
