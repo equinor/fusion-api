@@ -2,38 +2,40 @@ import useApiClients from '../useApiClients';
 import { useCallback } from 'react';
 import { Sheet } from '../../../http/apiClients/models/fusion/dataExport/Sheet';
 import FusionClient from '../../../http/apiClients/FusionClient';
+
 /**
  * Type for the handlers argument for {@link useTableExport useTableExport} hook.
  * Pass this object to handle states of the export, for example handling errors.
  */
 export type TableExportHandlers = {
-    /**
-     * Method to handle errors when exporting.
-     */
+    /** Method to handle errors when exporting.*/
     onError?: (e: Error) => void;
-    /**
-     * Method to handle successful exports.
-     */
+
+    /** Method to handle successful exports.*/
     onSuccess?: (result: { url: string; fileName: string }) => void;
-    /**
-     * Method to handle a completed export.
-     */
+
+    /** Method to handle a completed export.*/
     onCompleted?: () => void;
 };
+
 /**
  * Type for pollingOptions argument for {@link useTableExport useTableExport} hook.
  * Use this to change default polling behavior which will be one request per second for 15 seconds.
  */
 export type PollingOptions = {
     /**
-     * How many retries the `GET` call should get before a timeout error occurs. Defaults to 15.
+     *  How many retries the `GET` call should get before a timeout error occurs.
+     * @defaultValue 15.
      */
     retries?: number;
+
     /**
-     * The interval between each `GET` call. Defaults to 1000ms.
+     * The interval between each `GET` call.
+     *  @defaultValue 1000ms
      */
     polling?: number;
 };
+
 /**
  * A hook that will return a client function that is to be used for creating Excel documents.
  * The hook will send a `POST` request to the data export API and receive a URL where the generated
@@ -61,7 +63,7 @@ export type PollingOptions = {
  *      retries: 20,
  *      polling: 2000,
  * };
- *  const {client} = useExcelExport({fileName: 'test', dataSetName: 'test-set'}, handlers, pollingOptions );
+ *  const {client} = useExcelExport({fileName: 'test', dataSetName: 'testSet'}, handlers, pollingOptions );
  *
  *  return (
  *      <Table
