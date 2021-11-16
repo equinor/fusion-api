@@ -4,6 +4,8 @@ import AppManifest from './models/fusion/apps/AppManifest';
 import { FeatureLogBatch } from './models/fusion/FeatureLogEntryRequest';
 import getScript from '../../utils/getScript';
 import { SignalRNegotiation } from './models/fusion/SignalRNegotiation';
+import { DataExportRequest } from './models/fusion/dataExport/DataExportRequest';
+import { DataExportResponse, TimeoutError } from './models/fusion/dataExport/DataExportResponse';
 
 export default class FusionClient extends BaseApiClient {
     protected getBaseUrl() {
@@ -53,5 +55,75 @@ export default class FusionClient extends BaseApiClient {
             SignalRNegotiation,
             FusionApiHttpErrorResponse
         >(url, undefined);
+    }
+    /**
+     * Method for sending post request to the data export service.
+     * Used for generating an excel file with the data passed as an argument.
+     * @param excelData The data which is to be put into the generated excel file.
+     * @returns A promise with a temporary id, status of the generating file, and expire date.
+     */
+    public createExcelFile(excelData: DataExportRequest) {
+        const url = this.resourceCollections.fusion.exportExcel();
+        return this.httpClient.postAsync<
+            DataExportRequest,
+            DataExportResponse,
+            FusionApiHttpErrorResponse
+        >(url, excelData);
+    }
+    /**
+     * Method for sending get request to the data export service.
+     * Used for retrieving the status of the generating excel file.
+     * When the status is 'Complete', it is ready to be downloaded.
+     * @param id The temporary id of the generated excel file returned by the data export service.
+     * @returns A promise with the status of the generating file.
+     */
+    public getExcelStatus(id: string) {
+        const url = this.resourceCollections.fusion.downloadExcel(id);
+        return this.httpClient.getAsync<DataExportResponse, FusionApiHttpErrorResponse>(url);
+    }
+
+    /**
+     * Method for sending requests to the export data service until the export state is completed.
+     * Will throw a timeout error after 15 retries that are sent every second by default.
+     * @param excelData - Data which is to be put in the exported file.
+     * @param options - Polling options if changing default behavior is needed.
+     * @returns A promise with the export url and filename.
+     */
+    public getExcelStatusInterval(
+        excelData: DataExportRequest,
+        options?: { retries?: number; polling?: number }
+    ): Promise<{ url: string; fileName: string }> {
+        //eslint-disable-next-line no-async-promise-executor
+        return new Promise(async (resolve, reject) => {
+            try {
+                const {
+                    data: { tempKey },
+                } = await this.createExcelFile(excelData);
+                let retryCount = options?.retries ?? 15;
+                const polling = options?.polling ?? 1000;
+                const interval = (setInterval(async () => {
+                    const {
+                        data: { exportState },
+                    } = await this.getExcelStatus(tempKey);
+                    retryCount--;
+                    if (retryCount < 0) {
+                        clearInterval(interval);
+                        const err = new TimeoutError();
+                        reject(err);
+                        throw err;
+                    }
+                    if (exportState === 'Complete') {
+                        clearInterval(interval);
+                        resolve({
+                            url: `${this.resourceCollections.fusion.downloadExcel(tempKey)}.xlsx`,
+                            fileName: excelData.fileName,
+                        });
+                    }
+                }, polling) as unknown) as number;
+            } catch (err) {
+                reject(err);
+                console.error(err);
+            }
+        });
     }
 }
