@@ -22,6 +22,13 @@ import CreateTransientSnapshotRequest from './CreateTransientSnapshotRequest';
 import OrgProjectDescription from './OrgProjectDescription';
 import OrgProjectLink from './OrgProjectLink';
 
+type OrgProjectProperties = {
+    pimsWriteSyncEnabled?: boolean;
+    disableSync?: boolean;
+    orgAdminEnabled?: boolean;
+    resourceOwnerRequestsEnabled?: boolean;
+};
+
 type OrgProject = {
     dates: OrgProjectDates;
     director: Position;
@@ -30,6 +37,7 @@ type OrgProject = {
     name: string;
     projectId: string;
     projectType: OrgProjectType;
+    properties: OrgProjectProperties | null;
     description?: OrgProjectDescription;
     links?: OrgProjectLink[];
 };
