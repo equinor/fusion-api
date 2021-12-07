@@ -10,7 +10,7 @@ type Position = {
     properties: {
         isSupport?: boolean;
         hideInTree?: boolean;
-        resourceType?: boolean;
+        resourceType?: string;
     };
     directChildCount: number;
     totalChildCount: number;
