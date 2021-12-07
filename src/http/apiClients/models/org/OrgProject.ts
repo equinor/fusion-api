@@ -4,7 +4,6 @@ import PositionInstance from './PositionInstance';
 import AssignedPerson from './AssignedPerson';
 import PositionLocation from './PositionLocation';
 import FusionProject from './FusionProject';
-import OrgProjectType from './OrgProjectType';
 import CreateOrgProject from './CreateOrgProject';
 import OrgProjectDates from './OrgProjectDates';
 import Contract from './Contract';
@@ -36,7 +35,7 @@ type OrgProject = {
     domainId: string;
     name: string;
     projectId: string;
-    projectType: OrgProjectType;
+    projectType: string;
     properties: OrgProjectProperties | null;
     description?: OrgProjectDescription;
     links?: OrgProjectLink[];
@@ -49,7 +48,6 @@ export {
     AssignedPerson,
     PositionLocation,
     FusionProject,
-    OrgProjectType,
     CreateOrgProject,
     OrgProjectDates,
     Contract,

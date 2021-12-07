@@ -120,7 +120,6 @@ export {
     AssignedPerson,
     PositionLocation,
     FusionProject,
-    OrgProjectType,
     CreateOrgProject,
     OrgProjectDates,
     Contract,
