@@ -10,7 +10,7 @@ type Position = {
     properties: {
         isSupport?: boolean;
         hideInTree?: boolean;
-        resourceType?: string;
+        resourceType?: 'normal' | 'jointVenture' | 'enterprise';
     };
     directChildCount: number;
     totalChildCount: number;
