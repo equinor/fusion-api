@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactNode } from 'react';
+import React, { useState, useEffect, ReactNode, useCallback } from 'react';
 import { v1 as uuidv1 } from 'uuid';
 import ReliableDictionary, { LocalStorageProvider } from '../utils/ReliableDictionary';
 import { useEventEmitterValue } from '../utils/EventEmitter';
@@ -409,9 +409,11 @@ export const useNotificationContext = () => React.useContext(NotificationContext
 export const useNotificationCenter = () => {
     const { notificationCenter } = useFusionContext();
     const notificationContext = React.useContext(NotificationContext);
-
-    return (notificationRequest: NotificationRequest) =>
-        notificationCenter.sendAsync(notificationRequest, notificationContext);
+    return useCallback(
+        (notificationRequest: NotificationRequest) =>
+            notificationCenter.sendAsync(notificationRequest, notificationContext),
+        [notificationCenter, notificationContext]
+    );
 };
 
 export const useNotificationCards = () => {
