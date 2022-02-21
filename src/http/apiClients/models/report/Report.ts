@@ -24,6 +24,7 @@ type Report = {
     securityRequirementCheck: SecurityRequirementsPolicy;
     securityRequirements?: SecurityRequirement[];
     reportType: ReportType;
+    isEditable?: boolean;
 };
 
 export default Report;
