@@ -33,7 +33,7 @@ export interface IAuthContainer {
      * @param clientId The AAD app client id
      * @param resources An array of resources that uses the specified client id
      */
-    registerAppAsync(clientId: string, resources: string[]): Promise<boolean>;
+    registerAppAsync(clientId: string, resources: string[], legacy?: boolean): Promise<boolean>;
 
     /**
      * Initiates the login process
@@ -179,7 +179,7 @@ export default class AuthContainer implements IAuthContainer {
         return null;
     }
 
-    async registerAppAsync(clientId: string, resources: string[]): Promise<boolean> {
+    async registerAppAsync(clientId: string, resources: string[], _legacy: boolean = true): Promise<boolean> {
         resources = resources.filter(Boolean);
         const existingApp = this.resolveApp(clientId);
 
