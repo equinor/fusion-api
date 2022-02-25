@@ -179,7 +179,11 @@ export default class AuthContainer implements IAuthContainer {
         return null;
     }
 
-    async registerAppAsync(clientId: string, resources: string[], _legacy: boolean = true): Promise<boolean> {
+    async registerAppAsync(
+        clientId: string,
+        resources: string[],
+        _legacy: boolean = true
+    ): Promise<boolean> {
         resources = resources.filter(Boolean);
         const existingApp = this.resolveApp(clientId);
 
