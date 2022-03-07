@@ -38,13 +38,13 @@ type ApiAppConfig<T> = {
     endpoints: Record<string, string>;
 };
 
-const compare  = (x:string[], y:string[]) => {
+const compare = (x: string[], y: string[]) => {
     if (x.length === y.length) {
-        return false
+        return false;
     }
 
     for (const tag in x) {
-        if(!y.includes(tag)) {
+        if (!y.includes(tag)) {
             return true;
         }
     }
