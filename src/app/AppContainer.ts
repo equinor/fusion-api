@@ -46,8 +46,8 @@ const compare  = (x:string[], y:string[]) => {
     for (const tag in x) {
         if(!y.includes(tag)) {
             return true;
+        }
     }
-
 };
 
 const compareApp = (a: AppManifest, b?: AppManifest) => {
