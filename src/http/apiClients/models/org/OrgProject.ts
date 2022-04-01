@@ -39,6 +39,17 @@ type OrgProject = {
     properties: OrgProjectProperties | null;
     description?: OrgProjectDescription;
     links?: OrgProjectLink[];
+    lineOrganisation?: {
+        task: {
+            id: string;
+            name: string;
+        };
+        orgUnit: {
+            sapId: string;
+            name: string;
+            fullDepartment: string;
+        };
+    };
 };
 
 export {

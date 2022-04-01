@@ -10,8 +10,10 @@ export default class OrgResourceCollection extends BaseResourceCollection {
         return combineUrls(this.getBaseUrl(), 'projects');
     }
 
-    project(projectId: string) {
-        return combineUrls(this.getBaseUrl(), 'projects', projectId);
+    project(projectId: string, expandProperties?: string[]) {
+        const url = combineUrls(this.getBaseUrl(), 'projects', projectId);
+        if (!expandProperties || !expandProperties.length) return url;
+        return `${url}?$expand=${expandProperties.join(',')}`;
     }
 
     projectQuery(query: string) {
@@ -28,7 +30,7 @@ export default class OrgResourceCollection extends BaseResourceCollection {
         return `${url}${query}`;
     }
 
-    position(projectId: string, positionId: string, expand: boolean = true) {
+    position(projectId: string, positionId: string, expand = true) {
         const url = combineUrls(this.positions(projectId), positionId);
 
         if (!expand) {
@@ -153,8 +155,10 @@ export default class OrgResourceCollection extends BaseResourceCollection {
     snapshotBase(snapshotId: string) {
         return combineUrls(this.getBaseUrl(), 'snapshots', snapshotId);
     }
-    snapshotProject(snapshotId: string) {
-        return combineUrls(this.snapshotBase(snapshotId), 'project');
+    snapshotProject(snapshotId: string, expandProperties?: string[]) {
+        const url = combineUrls(this.snapshotBase(snapshotId), 'project');
+        if (!expandProperties || !expandProperties.length) return url;
+        return `${url}?$expand=${expandProperties.join(',')}`;
     }
     snapshotPositions(snapshotId: string, expandProperties?: string[]) {
         const url = combineUrls(this.snapshotBase(snapshotId), 'positions');
