@@ -1,5 +1,6 @@
 import PositionLocation from './PositionLocation';
 import AssignedPerson from './AssignedPerson';
+import { Organisation } from './Organisation';
 
 type PositionInstanceType = 'Normal' | 'Rotation';
 
@@ -26,6 +27,7 @@ type PositionInstance = {
     externalId: string;
     parentPositionId: string | null;
     hasChangesInDraft?: boolean;
+    organisation?: Organisation | null;
 };
 
 export default PositionInstance;
