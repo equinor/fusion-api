@@ -84,4 +84,17 @@ export default abstract class BaseApiClient {
             responseParser
         );
     }
+
+    public async optionsAsync<TResponse>(
+        path: string,
+        init?: RequestInit,
+        responseParser?: ResponseParser<TResponse>
+    ) {
+        const url = combineUrls(this.getBaseUrl(), path);
+        return await this.httpClient.optionsAsync<TResponse, FusionApiHttpErrorResponse>(
+            url,
+            init,
+            responseParser
+        );
+    }
 }
