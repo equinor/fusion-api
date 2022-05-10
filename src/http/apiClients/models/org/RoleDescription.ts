@@ -1,6 +1,6 @@
 import AssignedPerson from './AssignedPerson';
 
-type RoleDescriptionContent = {
+export type RoleDescriptionContent = {
     lastUpdated: Date | null;
     lastUpdatedBy: AssignedPerson | null;
     content: string | null;
