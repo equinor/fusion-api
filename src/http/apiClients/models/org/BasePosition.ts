@@ -1,3 +1,5 @@
+import { RoleDescriptionContent } from './RoleDescription';
+
 export type BasePositionSettings = {
     directAssignmentEnabled: boolean | null;
     isDefaultTaskOwner: boolean;
@@ -11,7 +13,8 @@ type BasePosition = {
     projectType: string;
     subDiscipline: string | null;
     settings?: BasePositionSettings;
-    roleDescription?: string; // likely not supplied by initial API call, must do second call to separate endpoint look it up
+    roleDescription?: RoleDescriptionContent;
+    inactive: boolean;
 };
 
 export default BasePosition;
