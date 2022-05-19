@@ -1,4 +1,4 @@
-import { withAbortController } from '@equinor/fusion';
+import { withAbortController } from '../utils/AbortControllerManager';
 import { useCallback, useEffect, useRef } from 'react';
 
 /**
@@ -12,16 +12,16 @@ import { useCallback, useEffect, useRef } from 'react';
 export const useAbortableRequest = <T extends Array<unknown>>(
     cb: (...args: T) => void,
     onAbort?: ((this: AbortSignal, ev: Event) => any) | null
-) => {
+): ((...args: T) => void) => {
     const abortable = withAbortController();
     const ref = useRef<VoidFunction>();
     const abortableRequest = useCallback(
-        (...argss: T) => {
+        (...args: T) => {
             ref.current && ref.current();
             ref.current = abortable(async (signal: AbortSignal) => {
                 onAbort && (signal.onabort = onAbort);
                 if (signal.aborted) return;
-                return cb(...argss);
+                return cb(...args);
             });
         },
         [cb, ref]
