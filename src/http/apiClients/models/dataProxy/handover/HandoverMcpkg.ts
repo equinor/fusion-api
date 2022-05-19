@@ -12,4 +12,6 @@ export type HandoverMcpkg = {
     rfccIsShipped: boolean;
     rfccIsAccepted: boolean;
     rfccIsRejected: boolean;
+    rfccPlannedDate: string;
+    rfocPlannedDate: string;
 } & HandoverChild;

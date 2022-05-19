@@ -8,4 +8,6 @@ export type HandoverWorkOrder = {
     materialStatus: string;
     materialStatusDescription: string;
     projectProgress: string;
+    plannedStartDate: string;
+    plannedCompletionDate: string;
 } & HandoverChild;
