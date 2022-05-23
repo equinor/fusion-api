@@ -55,6 +55,7 @@ const compareApp = (a: AppManifest, b?: AppManifest) => {
             case 'auth':
             //@todo maybe?!?!
             case 'context':
+                return false;
             case 'tags':
                 return compare(a.tags, b.tags);
 
