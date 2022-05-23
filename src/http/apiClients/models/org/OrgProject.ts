@@ -20,6 +20,7 @@ import CreateSnapshotRequest from './CreateSnapshotRequest';
 import CreateTransientSnapshotRequest from './CreateTransientSnapshotRequest';
 import OrgProjectDescription from './OrgProjectDescription';
 import OrgProjectLink from './OrgProjectLink';
+import { Organisation, OrganisationsRespose } from './Organisation';
 
 type OrgProjectProperties = {
     pimsWriteSyncEnabled?: boolean;
@@ -39,6 +40,17 @@ type OrgProject = {
     properties: OrgProjectProperties | null;
     description?: OrgProjectDescription;
     links?: OrgProjectLink[];
+    lineOrganisation?: {
+        task: {
+            id: string;
+            name: string;
+        };
+        orgUnit: {
+            sapId: string;
+            name: string;
+            fullDepartment: string;
+        };
+    };
 };
 
 export {
@@ -63,6 +75,8 @@ export {
     OrgSnapshotStatusProgress,
     OrgProjectDescription,
     OrgProjectLink,
+    Organisation,
+    OrganisationsRespose,
 };
 
 export default OrgProject;

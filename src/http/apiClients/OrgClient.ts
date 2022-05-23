@@ -24,12 +24,13 @@ export default class OrgClient extends BaseApiClient {
 
     public async getProjectAsync(
         projectId: string,
-        snapshotId?: string
+        snapshotId?: string,
+        expand?: [keyof OrgProject]
     ): Promise<HttpResponse<OrgProject>> {
         const orgResources = this.resourceCollections.org;
         const url = snapshotId
-            ? orgResources.snapshotProject(snapshotId)
-            : orgResources.project(projectId);
+            ? orgResources.snapshotProject(snapshotId, expand)
+            : orgResources.project(projectId, expand);
         return this.httpClient.getAsync<OrgProject, FusionApiHttpErrorResponse>(url, {
             headers: {
                 'api-version': '2.0',
