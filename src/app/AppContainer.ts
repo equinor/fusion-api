@@ -38,6 +38,15 @@ type ApiAppConfig<T> = {
     endpoints: Record<string, string>;
 };
 
+const compare = (x: string[], y: string[]): boolean => {
+    for (const tag of x) {
+        if (y.includes(tag)) {
+            return true;
+        }
+    }
+    return false;
+};
+
 const compareApp = (a: AppManifest, b?: AppManifest) => {
     if (!b) return true;
     const attr = Object.keys(a) as Array<keyof AppManifest>;
@@ -46,8 +55,9 @@ const compareApp = (a: AppManifest, b?: AppManifest) => {
             case 'auth':
             //@todo maybe?!?!
             case 'context':
-            case 'tags':
                 return false;
+            case 'tags':
+                return compare(a.tags, b.tags);
 
             case 'category':
                 return a.category?.id !== b.category?.id;
