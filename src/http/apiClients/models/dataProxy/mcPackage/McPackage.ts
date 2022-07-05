@@ -53,4 +53,5 @@ export type McPackage = {
     rfccIsAccepded: boolean;
     rfccIsRejected: boolean;
     searchableValues: string;
+    mccrOutstandingOrSignedAfterFinalPunchActualDateCount: number;
 };
