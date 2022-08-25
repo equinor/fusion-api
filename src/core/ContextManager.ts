@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useReducer } from 'react';
 import ApiClients from '../http/apiClients';
 import ContextClient from '../http/apiClients/ContextClient';
 import { useFusionContext } from './FusionContext';
@@ -22,7 +22,7 @@ type ContextCache = {
 
 export default class ContextManager extends ReliableDictionary<ContextCache> {
     private readonly contextClient: ContextClient;
-    private isSettingFromRoute: boolean = false;
+    private isSettingFromRoute = false;
 
     constructor(
         apiClients: ApiClients,
@@ -136,32 +136,30 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
     }
 
     async setCurrentContextAsync(context: Context | null) {
-        const buildUrl = this.appContainer.currentApp?.context?.buildUrl;
+        /** fetch context of current state */
         const currentContext = await this.getAsync('current');
 
-        if (currentContext?.id === context?.id) {
-            return this.ensureCurrentContextExistsInUrl();
-        }
+        await this.setAsync('current', context);
+        await this.validateContext(context);
 
-        const appPath = `/apps/${this.appContainer.currentApp?.key}`;
-        const hasAppPath = this.history.location.pathname.indexOf(appPath) !== -1;
-        const scopedPath = this.history.location.pathname.replace(appPath, '');
-
+        const buildUrl = this.appContainer.currentApp?.context?.buildUrl;
         if (buildUrl) {
+            const appPath = `/apps/${this.appContainer.currentApp?.key}`;
+            const hasAppPath = this.history.location.pathname.indexOf(appPath) !== -1;
+            const scopedPath = this.history.location.pathname.replace(appPath, '');
             const newUrl = combineUrls(
                 hasAppPath ? appPath : '',
                 buildUrl(context, scopedPath + this.history.location.search)
             );
-            if (this.history.location.pathname.indexOf(newUrl) !== 0) this.history.replace(newUrl);
+            if (this.history.location.pathname !== newUrl) {
+                this.history.replace(newUrl);
+            }
         }
 
-        await this.setAsync('current', context);
-        this.validateContext(context);
-
-        if (!currentContext) {
-            return;
-        }
         try {
+            if (!currentContext) {
+                return;
+            }
             const previousContext = await this.contextClient.getContextAsync(currentContext.id);
             if (!previousContext) return;
 
@@ -348,26 +346,17 @@ const useContextHistory = () => {
     return history;
 };
 
-const useCurrentContext = () => {
+const useCurrentContext = (): Context | null => {
     const contextManager = useContextManager();
-    const [currentContext, setCurrentContext] = useState(contextManager.getCurrentContext());
-
-    const setContext = useCallback(
-        (contextCache: ContextCache) => {
-            if (contextCache.current !== currentContext) {
-                setCurrentContext(contextCache.current);
-            }
-        },
-        [currentContext]
+    const [currentContext, setCurrentContext] = useReducer(
+        (cur: Context | null, next: Context | null) => (cur === next ? cur : next),
+        contextManager.getCurrentContext()
     );
-
     useEffect(() => {
-        contextManager.toObjectAsync().then(setContext);
+        return contextManager.on('change', (e) => setCurrentContext(e.current));
+    }, [contextManager]);
 
-        return contextManager.on('change', setContext);
-    }, []);
-
-    return currentContext || null;
+    return currentContext ?? null;
 };
 
 const useContextQuery = (): {
