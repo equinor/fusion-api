@@ -117,10 +117,10 @@ export default class AuthContainer implements IAuthContainer {
                 AuthContainer.getResourceOrigin(redirectUrl) === window.location.origin
             ) {
                 window.history.replaceState(null, '', redirectUrl);
-                window.location.reload(true);
+                window.location.reload();
             }
         } catch (e) {
-            this.logError(e);
+            this.logError(e as Error);
             throw new FusionAuthLoginError();
         }
     }
@@ -182,7 +182,7 @@ export default class AuthContainer implements IAuthContainer {
     async registerAppAsync(
         clientId: string,
         resources: string[],
-        _legacy: boolean = true
+        _legacy = true
     ): Promise<boolean> {
         resources = resources.filter(Boolean);
         const existingApp = this.resolveApp(clientId);
@@ -229,7 +229,7 @@ export default class AuthContainer implements IAuthContainer {
         getTopLevelWindow(window).location.href = await this.buildLoginUrlAsync(app, nonce);
     }
 
-    async logoutAsync(clientId?: string) {
+    async logoutAsync(clientId?: string): Promise<void> {
         if (clientId) {
             const app = this.resolveApp(clientId);
 

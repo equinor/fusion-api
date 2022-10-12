@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { IHttpClient } from '../HttpClient';
 import ResourceCollections from '../resourceCollections';
 import { combineUrls } from '../../utils/url';

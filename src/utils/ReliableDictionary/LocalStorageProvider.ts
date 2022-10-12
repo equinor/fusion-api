@@ -6,11 +6,12 @@ import DistributedState, { IDistributedState } from '../DistributedState';
 import { IEventHub } from '../EventHub';
 import EventEmitter from '../EventEmitter';
 
-type LocalCache = { [key: string]: any };
+type LocalCache = { [key: string]: unknown };
 
 export default class LocalStorageProvider
     extends EventEmitter<ReliableDictionaryStorageProviderEvents>
-    implements IReliableDictionaryStorageProvider {
+    implements IReliableDictionaryStorageProvider
+{
     private baseKey: string;
     private localCache: IDistributedState<LocalCache | null>;
 

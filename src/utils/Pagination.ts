@@ -286,7 +286,7 @@ export const useAsyncPagination = <T>(
                 );
                 setError(null);
             } catch (e) {
-                setError(e);
+                setError(e as Error);
             }
 
             setIsFetching(false);

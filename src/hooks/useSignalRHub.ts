@@ -31,7 +31,7 @@ export default (hubName: string) => {
             await hubConnect.start();
             setHubConnection(hubConnect);
         } catch (e) {
-            setHubConnectionError(e);
+            setHubConnectionError(e as Error);
         } finally {
             setIsEstablishingHubConnection(false);
         }

@@ -133,7 +133,7 @@ const usePersonDetails = (personId: string) => {
     const peopleContainer = usePeopleContainer();
 
     const [isFetching, setFetching] = React.useState<boolean>(false);
-    const [error, setError] = React.useState(null);
+    const [error, setError] = React.useState<Error | null>(null);
     const [personDetails, setPersonDetails] = React.useState<PersonDetails | null>(
         peopleContainer.getPersonDetails(personId)
     );
@@ -151,7 +151,7 @@ const usePersonDetails = (personId: string) => {
             setPersonDetails(personDetails);
             setFetching(false);
         } catch (error) {
-            setError(error);
+            setError(error as Error);
             setPersonDetails(null);
             setFetching(false);
         }
@@ -189,7 +189,7 @@ const usePersonImageUrl = (personId: string) => {
     }, []);
 
     const [isFetching, setFetching] = React.useState<boolean>(false);
-    const [error, setError] = React.useState(null);
+    const [error, setError] = React.useState<Error | null>(null);
     const [imageUrl, setImageUrl] = React.useState<string>(getCachedPersonImageUrl(personId));
 
     const getImageAsync = async (personId: string) => {
@@ -213,7 +213,7 @@ const usePersonImageUrl = (personId: string) => {
             setFetching(false);
         } catch (error) {
             setFetching(false);
-            setError(error);
+            setError(error as Error);
             setImageUrl('');
         }
     };

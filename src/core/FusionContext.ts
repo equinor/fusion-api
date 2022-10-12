@@ -1,7 +1,6 @@
-import { createContext, useContext, MutableRefObject, useRef } from 'react';
+import { createContext, useContext, MutableRefObject } from 'react';
 import { History, createBrowserHistory } from 'history';
 import { IAuthContainer } from '../auth/AuthContainer';
-import { matchPath } from 'react-router';
 import ResourceCollections, { createResourceCollections } from '../http/resourceCollections';
 import ApiClients, { createApiClients } from '../http/apiClients';
 import HttpClient, { IHttpClient } from '../http/HttpClient';
@@ -90,10 +89,6 @@ export const defaultSettings: CoreSettings = {
     componentDisplayType: ComponentDisplayType.Comfortable,
 };
 
-type ContextRouteMatch = {
-    contextId: string;
-};
-
 export type FusionEnvironment = {
     env: string;
     pullRequest?: string;
@@ -110,7 +105,12 @@ export type FusionContextOptions = {
 };
 
 const globalEquinorFusionContextKey = '74b1613f-f22a-451b-a5c3-1c9391e91e68';
-const win = window as any;
+
+declare global {
+    interface Window {
+        [globalEquinorFusionContextKey]?: IFusionContext;
+    }
+}
 
 const ensureFusionEnvironment = (options?: FusionContextOptions): FusionEnvironment => {
     if (options && options.environment) {
@@ -181,7 +181,7 @@ export const createFusionContext = (
     const userMenuSectionsContainer = new UserMenuContainer(new EventHub());
     const environment = ensureFusionEnvironment(options);
 
-    const fusionContext = {
+    const fusionContext: IFusionContext = {
         auth: { container: authContainer },
         http: {
             client: httpClient,
@@ -212,17 +212,18 @@ export const createFusionContext = (
         },
         options,
     };
-    if (!win[globalEquinorFusionContextKey]) {
-        win[globalEquinorFusionContextKey] = fusionContext;
+    if (!window[globalEquinorFusionContextKey]) {
+        window[globalEquinorFusionContextKey] = fusionContext;
     }
     return fusionContext;
 };
 
 const ensureGlobalFusionContextType = () => {
-    if (!win[globalEquinorFusionContextKey]) {
+    if (!window[globalEquinorFusionContextKey]) {
         return createContext<IFusionContext>({} as IFusionContext);
     }
-    const existingFusionContext = win[globalEquinorFusionContextKey] as IFusionContext;
+
+    const existingFusionContext = window[globalEquinorFusionContextKey];
 
     return createContext<IFusionContext>(
         createFusionContext(
@@ -237,6 +238,6 @@ const ensureGlobalFusionContextType = () => {
 
 const FusionContext = ensureGlobalFusionContextType();
 
-export const useFusionContext = () => useContext(FusionContext);
+export const useFusionContext = (): IFusionContext => useContext(FusionContext);
 
 export default FusionContext;

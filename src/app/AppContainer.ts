@@ -15,7 +15,7 @@ import { AppAuth } from '../http/apiClients/models/fusion/apps/AppManifest';
 type AppRegistration = {
     AppComponent: React.ComponentType;
     // TODO - WIP: workaround while having fusion API and Fusion Framework
-    render?: (fusion: any, env: AppManifest) => React.LazyExoticComponent<React.ComponentType>;
+    render?: (fusion: unknown, env: AppManifest) => React.LazyExoticComponent<React.ComponentType>;
     name?: string;
     shortName?: string;
     description?: string;
@@ -72,7 +72,7 @@ const compareApp = (a: AppManifest, b?: AppManifest) => {
 };
 
 const compareApps = (a: Record<string, AppManifest>, b: Record<string, AppManifest>): boolean => {
-    if (!a || !b) return (a as any) === (b as any);
+    if (!a || !b) return a === b;
     if (Object.keys(a).length !== Object.keys(b).length) return true;
     return Object.keys(a).some((key) => compareApp(a[key], b[key]));
 };
@@ -88,7 +88,7 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
     }
 
     private _lastUpdated?: number;
-    get lastUpdated() {
+    get lastUpdated(): number | undefined {
         return this._lastUpdated;
     }
 
@@ -97,15 +97,15 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
     }
 
     private _updatePromise: Promise<void> = Promise.resolve();
-    get updateComplete() {
+    get updateComplete(): Promise<void> {
         return this._updatePromise;
     }
 
-    get currentApp() {
+    get currentApp(): AppManifest | null {
         return this._currentApp.state;
     }
 
-    get allApps() {
+    get allApps(): Record<string, AppManifest> {
         return this.apps.state;
     }
 
@@ -150,11 +150,11 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
         this.addOrUpdate({ [manifest.key]: manifest });
     }
 
-    get(appKey: string | null) {
-        return appKey && this.apps.state[appKey];
+    get(appKey: string): AppManifest {
+        return this.apps.state[appKey];
     }
 
-    getAll() {
+    getAll(): Array<AppManifest> {
         return Object.values(this.apps.state);
     }
 
@@ -231,7 +231,7 @@ export default class AppContainer extends EventEmitter<AppContainerEvents> {
         this.emit('change', app);
     }
 
-    async getAllAsync() {
+    async getAllAsync(): Promise<Record<string, AppManifest>> {
         await this.requestUpdate();
         return this.allApps;
     }
@@ -314,7 +314,7 @@ let appContainerInstance: AppContainer | null = null;
 
 let appContainerPromise: Promise<AppContainer> | null = null;
 let setAppContainerSingleton: ((appContainer: AppContainer) => void) | null;
-const appContainerFactory = (appContainer: AppContainer) => {
+const appContainerFactory = (appContainer: AppContainer): void => {
     appContainerInstance = appContainer;
 
     if (setAppContainerSingleton) {
@@ -345,7 +345,7 @@ const registerApp = (key: string, manifest: AppRegistration): void => {
     );
 };
 
-const useCurrentApp = () => {
+const useCurrentApp = (): AppManifest | null => {
     const { app } = useFusionContext();
     useEventEmitterValue(app.container, 'change', (app) => app, app.container.currentApp);
 
@@ -373,7 +373,8 @@ const useApps = (
     );
     const [error, setError] = useState<Error | null>(null);
 
-    useEffect(() => container.on('fetch', (status) => setIsFetching(status)), []);
+    useEffect(() => container.on('fetch', (status) => setIsFetching(status)), [container]);
+
     useEffect(() => {
         !initialized &&
             container
@@ -381,7 +382,7 @@ const useApps = (
                 .then(() => setInitialized(true))
                 .catch(setError);
         return container.on('update', setApps);
-    }, []);
+    }, [container, initialized]);
 
     return { error, initialized, isFetching, apps };
 };

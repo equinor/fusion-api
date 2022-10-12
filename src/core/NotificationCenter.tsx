@@ -171,12 +171,15 @@ export default class NotificationCenter extends ReliableDictionary<
         notificationCard: NotificationCard,
         notificationContext?: INotificationContext,
         silent?: boolean
-    ) {
+    ): void {
         this.mergeNotificationCards([notificationCard]);
         !silent && this.presentCardAsync(notificationCard, notificationContext);
     }
 
-    presentCardAsync(notification: NotificationCard, notificationContext?: INotificationContext) {
+    presentCardAsync(
+        notification: NotificationCard,
+        notificationContext?: INotificationContext
+    ): void {
         const presenter = this.getCardPresenter(notificationContext);
         if (!presenter) {
             throw new Error('No presenter for notification cards ');
@@ -184,7 +187,7 @@ export default class NotificationCenter extends ReliableDictionary<
         presenter.present(notification);
     }
 
-    async getNotificationCardsAsync(filter?: string) {
+    async getNotificationCardsAsync(filter?: string): Promise<NotificationCard[]> {
         const response = await this.notificationClient.getPersonNotificationsAsync('me', filter);
         this.mergeNotificationCards(response.data.value);
         return response.data.value;
@@ -210,11 +213,11 @@ export default class NotificationCenter extends ReliableDictionary<
         this.emit('notification-cards-updated', this.notificationCards.state);
     }
 
-    getNotificationCards() {
+    getNotificationCards(): NotificationCard[] {
         return [...this.notificationCards.state];
     }
 
-    registerCardPresenter(present: NotificationCardPresenter) {
+    registerCardPresenter(present: NotificationCardPresenter): CallableFunction {
         const notificationPresenter = {
             present,
         };
@@ -224,7 +227,9 @@ export default class NotificationCenter extends ReliableDictionary<
         };
     }
 
-    async markNotificationCardAsSeenAsync(notificationCard: NotificationCard) {
+    async markNotificationCardAsSeenAsync(
+        notificationCard: NotificationCard
+    ): Promise<NotificationCard> {
         const payload = {
             seenByUser: true,
         };
@@ -235,13 +240,14 @@ export default class NotificationCenter extends ReliableDictionary<
         this.mergeNotificationCards([response.data]);
         return response.data;
     }
-    async deleteNotificationCardAsync(notificationCard: NotificationCard) {
+
+    async deleteNotificationCardAsync(notificationCard: NotificationCard): Promise<void> {
         await this.notificationClient.deleteNotificationAsync(notificationCard.id);
         this.deleteNotificationCards([notificationCard]);
         return;
     }
 
-    registerPresenter(level: NotificationLevel, present: NotificationPresenter) {
+    registerPresenter(level: NotificationLevel, present: NotificationPresenter): CallableFunction {
         const notificationPresenter = {
             level,
             present,
@@ -255,7 +261,7 @@ export default class NotificationCenter extends ReliableDictionary<
         };
     }
 
-    async getAllNotificationsAsync() {
+    async getAllNotificationsAsync(): Promise<Array<Notification>> {
         const notifications = await this.getAsync('notifications');
         return notifications || [];
     }
@@ -364,9 +370,8 @@ const NotificationContext = React.createContext<INotificationContext>({} as INot
 // eslint-disable-next-line react/prop-types
 export const NotificationContextProvider: React.FC = ({ children }) => {
     const [presenters, setPresenters] = React.useState<NotificationPresenterRegistration[]>([]);
-    const [cardPresenter, setCardPresenter] = React.useState<NotificationCardPresenterRegistration>(
-        null
-    );
+    const [cardPresenter, setCardPresenter] =
+        React.useState<NotificationCardPresenterRegistration>(null);
 
     const registerPresenter = React.useCallback(
         (level: NotificationLevel, present: NotificationPresenter) => {
@@ -404,9 +409,10 @@ export const NotificationContextProvider: React.FC = ({ children }) => {
     );
 };
 
-export const useNotificationContext = () => React.useContext(NotificationContext);
+export const useNotificationContext = (): INotificationContext =>
+    React.useContext(NotificationContext);
 
-export const useNotificationCenter = () => {
+export const useNotificationCenter = (): CallableFunction => {
     const { notificationCenter } = useFusionContext();
     const notificationContext = React.useContext(NotificationContext);
     return useCallback(
@@ -416,13 +422,14 @@ export const useNotificationCenter = () => {
     );
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const useNotificationCards = () => {
     const { notificationCenter } = useFusionContext();
     const defaultData = notificationCenter.getNotificationCards();
 
     const { hubConnection } = useSignalRHub('notifications');
 
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<Error | null>(null);
     const [isFetchingUnRead, setIsFetchingUnRead] = useState(false);
     const [isFetchingRead, setIsFetchingRead] = useState(false);
     const [notificationCards, setNotificationCards] = useEventEmitterValue(
@@ -452,7 +459,7 @@ export const useNotificationCards = () => {
             const data = await notificationCenter.getNotificationCardsAsync(filter);
             setNotificationCards(data);
         } catch (e) {
-            setError(e);
+            setError(e as Error);
         }
 
         setIsFetchingUnRead(false);
@@ -465,7 +472,7 @@ export const useNotificationCards = () => {
             const data = await notificationCenter.getNotificationCardsAsync('seenByUser eq true');
             setNotificationCards(data);
         } catch (e) {
-            setError(e);
+            setError(e as Error);
         }
 
         setIsFetchingRead(false);
@@ -473,14 +480,14 @@ export const useNotificationCards = () => {
 
     useEffect(() => {
         getUnReadNotificationCardsAsync();
-    }, []);
+    });
 
     useEffect(() => {
         if (hubConnection) {
             hubConnection.on('notifications', sendNotification);
             return () => hubConnection.off('notifications', sendNotification);
         }
-    }, [hubConnection]);
+    }, [hubConnection, sendNotification]);
 
     return {
         notificationCards,
@@ -507,7 +514,7 @@ export const useGlobalNotificationCardsActions = () => {
                 );
                 await Promise.all(response);
             } catch (e) {
-                setMarkError(e);
+                setMarkError(e as Error);
             } finally {
                 setIsMarkingNotifications(false);
             }
@@ -538,7 +545,7 @@ export const useNotificationCardActions = (notificationCard: NotificationCard) =
         try {
             await notificationCenter.markNotificationCardAsSeenAsync(notificationCard);
         } catch (e) {
-            setMarkError(e);
+            setMarkError(e as Error);
         } finally {
             setIsMarkingNotification(false);
         }
@@ -550,7 +557,7 @@ export const useNotificationCardActions = (notificationCard: NotificationCard) =
         try {
             await notificationCenter.deleteNotificationCardAsync(notificationCard);
         } catch (e) {
-            setDeleteError(e);
+            setDeleteError(e as Error);
         } finally {
             setIsDeletingNotification(false);
         }

@@ -21,7 +21,7 @@ export default <T>(
             setData(result);
             setError(null);
         } catch (error) {
-            setError(error);
+            setError(error as Error);
         }
 
         setIsFetching(false);

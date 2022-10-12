@@ -35,7 +35,7 @@ export const applySorting = <T>(
     data: T[],
     sortBy: PropertyAccessor<T> | null = null,
     direction: SortDirection | null = null
-) => {
+): T[] => {
     if (!sortBy || !direction) {
         return data;
     }
@@ -83,15 +83,14 @@ export const useSorting = <T>(
     data: T[],
     defaultSortBy: PropertyAccessor<T> | null = null,
     defaultDirection: SortDirection | null = null
-) => {
+): Record<string, T[] | PropertyAccessor<T> | SortDirection | null | CallableFunction> => {
     const [sortBy, setSortBy] = useState<PropertyAccessor<T> | null>(defaultSortBy);
     const [direction, setDirection] = useState<SortDirection | null>(defaultDirection);
 
-    const sortedData = useMemo(() => applySorting(data, sortBy, direction), [
-        data,
-        sortBy,
-        direction,
-    ]);
+    const sortedData: T[] = useMemo(
+        () => applySorting(data, sortBy, direction),
+        [data, sortBy, direction]
+    );
 
     const resetSorting = () => {
         setSortBy(null);

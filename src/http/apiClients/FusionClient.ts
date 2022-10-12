@@ -1,33 +1,34 @@
 import BaseApiClient from './BaseApiClient';
-import { FusionApiHttpErrorResponse } from './models/common/FusionApiHttpErrorResponse';
 import AppManifest from './models/fusion/apps/AppManifest';
 import { FeatureLogBatch } from './models/fusion/FeatureLogEntryRequest';
 import getScript from '../../utils/getScript';
 import { SignalRNegotiation } from './models/fusion/SignalRNegotiation';
 import { DataExportRequest } from './models/fusion/dataExport/DataExportRequest';
 import { DataExportResponse, TimeoutError } from './models/fusion/dataExport/DataExportResponse';
+import { FusionApiHttpErrorResponse } from './models/common/FusionApiHttpErrorResponse';
+import { HttpResponse } from '../HttpClient';
 
 export default class FusionClient extends BaseApiClient {
-    protected getBaseUrl() {
+    protected getBaseUrl(): string {
         return this.serviceResolver.getFusionBaseUrl();
     }
 
-    async getAppsAsync() {
+    async getAppsAsync(): Promise<HttpResponse<AppManifest[]>> {
         const url = this.resourceCollections.fusion.apps();
         return await this.httpClient.getAsync<AppManifest[], FusionApiHttpErrorResponse>(url);
     }
 
-    async getAppManifestAsync(appKey: string) {
+    async getAppManifestAsync(appKey: string): Promise<HttpResponse<AppManifest>> {
         const url = this.resourceCollections.fusion.appManifest(appKey);
         return await this.httpClient.getAsync<AppManifest, FusionApiHttpErrorResponse>(url);
     }
 
-    async loadAppScriptAsync(appKey: string) {
+    async loadAppScriptAsync(appKey: string): Promise<void> {
         const url = this.resourceCollections.fusion.appScript(appKey);
         return await getScript(url);
     }
 
-    async logFeaturesAsync(batch: FeatureLogBatch) {
+    async logFeaturesAsync(batch: FeatureLogBatch): Promise<HttpResponse<unknown>> {
         const url = this.resourceCollections.fusion.featureLog();
         return await this.httpClient.postAsync<FeatureLogBatch, void, FusionApiHttpErrorResponse>(
             url,
@@ -37,9 +38,9 @@ export default class FusionClient extends BaseApiClient {
         );
     }
 
-    async getAppIconAsync(appKey: string) {
+    async getAppIconAsync(appKey: string): Promise<HttpResponse<string>> {
         const url = this.resourceCollections.fusion.appIcon(appKey);
-        return await this.httpClient.getAsync<string, Error>(
+        return await this.httpClient.getAsync<string, FusionApiHttpErrorResponse>(
             url,
             { credentials: 'include' },
             async (response: Response) => {
@@ -48,7 +49,7 @@ export default class FusionClient extends BaseApiClient {
         );
     }
 
-    async negotiateSignalRHub(hubName: string) {
+    async negotiateSignalRHub(hubName: string): Promise<HttpResponse<unknown>> {
         const url = this.resourceCollections.fusion.signalRHub(hubName);
         return await this.httpClient.postAsync<
             void,
@@ -62,7 +63,9 @@ export default class FusionClient extends BaseApiClient {
      * @param excelData The data which is to be put into the generated excel file.
      * @returns A promise with a temporary id, status of the generating file, and expire date.
      */
-    public createExcelFile(excelData: DataExportRequest) {
+    public createExcelFile(
+        excelData: DataExportRequest
+    ): Promise<HttpResponse<DataExportResponse>> {
         const url = this.resourceCollections.fusion.exportExcel();
         return this.httpClient.postAsync<
             DataExportRequest,
@@ -77,7 +80,7 @@ export default class FusionClient extends BaseApiClient {
      * @param id The temporary id of the generated excel file returned by the data export service.
      * @returns A promise with the status of the generating file.
      */
-    public getExcelStatus(id: string) {
+    public getExcelStatus(id: string): Promise<HttpResponse<DataExportResponse>> {
         const url = this.resourceCollections.fusion.downloadExcel(id);
         return this.httpClient.getAsync<DataExportResponse, FusionApiHttpErrorResponse>(url);
     }
@@ -101,7 +104,7 @@ export default class FusionClient extends BaseApiClient {
                 } = await this.createExcelFile(excelData);
                 let retryCount = options?.retries ?? 15;
                 const polling = options?.polling ?? 1000;
-                const interval = (setInterval(async () => {
+                const interval = setInterval(async () => {
                     const {
                         data: { exportState },
                     } = await this.getExcelStatus(tempKey);
@@ -119,7 +122,7 @@ export default class FusionClient extends BaseApiClient {
                             fileName: excelData.fileName,
                         });
                     }
-                }, polling) as unknown) as number;
+                }, polling) as unknown as number;
             } catch (err) {
                 reject(err);
                 console.error(err);

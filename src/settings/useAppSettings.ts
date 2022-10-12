@@ -10,7 +10,7 @@ import UserSettingsClient from '../http/apiClients/UserSettingsClient';
 type SetAppSetting = <T>(key: string, value: T) => void;
 type AppSettingsHook<T> = [T, SetAppSetting];
 
-export const useSettingSelector = <T extends ReadonlySettings, K extends any>(
+export const useSettingSelector = <T extends ReadonlySettings, K extends unknown>(
     selector: (state: T) => K | null,
     state: T
 ): K | null => {
@@ -21,7 +21,7 @@ export const useSettingSelector = <T extends ReadonlySettings, K extends any>(
         if (nextValue !== userSettings) {
             setUserSettings(nextValue);
         }
-    }, [selector]);
+    }, [selector, state, userSettings]);
 
     return userSettings;
 };
@@ -32,7 +32,8 @@ const ensureAppSettings = <T extends ReadonlySettings, K extends ReadonlySetting
     userSettingsClient: UserSettingsClient,
     defaultSettings?: K
 ) => {
-    if (typeof settings.apps[appKey] === 'undefined') {
+    // eslint-disable-next-line prettier/prettier
+    if ( settings?.app[appKey] ) {
         const appSettings = new AppSettingsContainer(
             appKey,
             new EventHub(),
@@ -121,10 +122,10 @@ export const useAppContextSettings = <T extends ReadonlySettings>(
     defaultSettings?: T
 ): [T | null, (settings: T) => void] => {
     const currentContext = useCurrentContext();
-    const contextId = useMemo(() => context || currentContext?.id || 'global', [
-        currentContext,
-        context,
-    ]);
+    const contextId = useMemo(
+        () => context || currentContext?.id || 'global',
+        [currentContext, context]
+    );
 
     const [appSettings, setAppSettings] = useAppSettings<AppContextSetting<T>>({
         context: {
@@ -140,7 +141,7 @@ export const useAppContextSettings = <T extends ReadonlySettings>(
         (value: T) => {
             setAppSettings('context', { ...appSettings.context, [contextId]: value });
         },
-        [contextId, appSettings]
+        [setAppSettings, appSettings.context, contextId]
     );
 
     return [contextSettings, setContextSetting];

@@ -17,7 +17,6 @@ import JSON from '../../utils/JSON';
 import { TelemetryLogger } from '../../utils/telemetry';
 import DistributedState, { IDistributedState } from '../../utils/DistributedState';
 import { IEventHub } from '../../utils/EventHub';
-import { FusionApiHttpErrorResponse } from '../apiClients';
 
 // Export interface, response and error types
 export {
@@ -410,7 +409,7 @@ export default class HttpClient implements IHttpClient {
                 throw error;
             }
 
-            this.telemetryLogger.trackException({ exception: error });
+            this.telemetryLogger.trackException({ exception: error as Error });
 
             // Add more info
             throw error as HttpClientError;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { HttpResponse } from './HttpResponse';
 import RequestBody from '../models/RequestBody';
 import BlobContainer from '../models/BlobContainer';
