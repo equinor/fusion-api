@@ -37,7 +37,8 @@ export interface IResourceCache {
 
 export default class ResourceCache
     extends EventEmitter<ResourceCacheEvents>
-    implements IResourceCache {
+    implements IResourceCache
+{
     private cachedResources: IDistributedState<CachedResources>;
 
     constructor(eventHub: IEventHub) {

@@ -11,7 +11,8 @@ export type DistributedStateEvents<T> = {
 
 class DistributedState<T>
     extends EventEmitter<DistributedStateEvents<T>>
-    implements IDistributedState<T> {
+    implements IDistributedState<T>
+{
     private _state: T;
     private readonly _key: string;
     private readonly _eventHub: IEventHub;

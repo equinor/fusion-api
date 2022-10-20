@@ -13,6 +13,7 @@ import { History } from 'history';
 import { combineUrls } from '../utils/url';
 import FeatureLogger from '../utils/FeatureLogger';
 import { TelemetryLogger } from '../utils/telemetry';
+import { IExceptionTelemetry } from '@microsoft/applicationinsights-web';
 
 type ContextCache = {
     current: Context | null;
@@ -181,7 +182,7 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
             const response = await this.contextClient.getContextAsync(id);
             await this.setCurrentContextAsync(response.data);
         } catch (e) {
-            this.telemetryLogger.trackException(e);
+            this.telemetryLogger.trackException(e as IExceptionTelemetry);
             await this.setCurrentContextAsync(null);
         }
     }
@@ -398,13 +399,13 @@ const useContextQuery = (): {
                     setContexts(filterContexts?.(response.data) || response.data);
                     setIsQuerying(false);
                 } catch (e) {
-                    setError(e);
+                    setError(e as Error | null);
                     setContexts([]);
                     setIsQuerying(false);
                 }
             }
         },
-        [currentTypes, filterContexts]
+        [apiClients.context, currentTypes, filterContexts]
     );
 
     useDebouncedAbortable(fetchContexts, queryText);

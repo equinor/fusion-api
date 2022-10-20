@@ -29,7 +29,8 @@ export default abstract class ReliableDictionary<
         TEvents extends Events = ReliableDictionaryEvents<TCacheType> & TAdditionalEvents
     >
     extends EventEmitter<TEvents>
-    implements IReliableDictionary<TCacheType> {
+    implements IReliableDictionary<TCacheType>
+{
     protected provider: IReliableDictionaryStorageProvider;
 
     constructor(provider: IReliableDictionaryStorageProvider) {

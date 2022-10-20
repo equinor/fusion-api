@@ -147,8 +147,8 @@ export const applyPagination = <T>(data: T[], { perPage, currentPage }: Paginati
 export const createPagination = (
     totalCount: number,
     perPage: number,
-    currentPageIndex: number = 0,
-    padding: number = 3
+    currentPageIndex = 0,
+    padding = 3
 ): Pagination => {
     // Calculate and create all pages needed
     const pageCount = Math.ceil(totalCount / perPage);
@@ -201,9 +201,9 @@ export type PaginationHook<T> = {
  */
 export const usePagination = <T>(
     data: T[],
-    initialPerPage: number = 20,
-    initialCurrentPageIndex: number = 0,
-    padding: number = 3
+    initialPerPage = 20,
+    initialCurrentPageIndex = 0,
+    padding = 3
 ): PaginationHook<T> => {
     const [currentPageIndex, setCurrentPageIndex] = useState(initialCurrentPageIndex);
     const [perPage, setPerPage] = useState(initialPerPage);
@@ -252,8 +252,8 @@ export type AsyncPaginationHook<T> = PaginationHook<T> & {
 export const useAsyncPagination = <T>(
     applyAsync: (pagination: Pagination) => Promise<PagedResult<T>>,
     initialPerPage: number,
-    initialCurrentPageIndex: number = 0,
-    padding: number = 3,
+    initialCurrentPageIndex = 0,
+    padding = 3,
     deps: readonly any[] = []
 ): AsyncPaginationHook<T> => {
     const [currentPageIndex, setCurrentPageIndex] = useState(initialCurrentPageIndex);
@@ -266,34 +266,34 @@ export const useAsyncPagination = <T>(
     );
 
     const abortable = withAbortController();
-    const applyPaginationAsync = (pagination: Pagination) => {
-        setIsFetching(true);
-
-        // Wrap the applyAsync function in abortable to allow the pagination to be changed
-        // while the fetch is in progress
-        return abortable(async (signal) => {
-            try {
-                const result = await applyAsync(pagination);
-
-                // Don't use the paginated data if the action has been aborted (e.g. the user switched to another page)
-                if (signal.aborted) {
-                    return;
-                }
-
-                setPagedData(result.items);
-                setPagination(
-                    createPagination(result.totalCount, perPage, currentPageIndex, padding)
-                );
-                setError(null);
-            } catch (e) {
-                setError(e);
-            }
-
-            setIsFetching(false);
-        });
-    };
 
     useEffect(() => {
+        const applyPaginationAsync = (pagination: Pagination) => {
+            setIsFetching(true);
+
+            // Wrap the applyAsync function in abortable to allow the pagination to be changed
+            // while the fetch is in progress
+            return abortable(async (signal) => {
+                try {
+                    const result = await applyAsync(pagination);
+
+                    // Don't use the paginated data if the action has been aborted (e.g. the user switched to another page)
+                    if (signal.aborted) {
+                        return;
+                    }
+
+                    setPagedData(result.items);
+                    setPagination(
+                        createPagination(result.totalCount, perPage, currentPageIndex, padding)
+                    );
+                    setError(null);
+                } catch (e) {
+                    setError(e as Error);
+                }
+
+                setIsFetching(false);
+            });
+        };
         setPagedData([]);
         const newPagination = createPagination(
             pagination.totalCount,
@@ -304,7 +304,7 @@ export const useAsyncPagination = <T>(
         setPagination(newPagination);
 
         return applyPaginationAsync(newPagination);
-    }, [currentPageIndex, perPage, ...deps]);
+    }, [abortable, applyAsync, currentPageIndex, padding, pagination.totalCount, perPage]);
 
     const setCurrentPage = useCallback((index: number, perPage: number) => {
         setCurrentPageIndex(index);

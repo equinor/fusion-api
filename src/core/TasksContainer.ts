@@ -164,7 +164,7 @@ const useTasksData = <
     defaultData: TData
 ): [Error | null, boolean, TData] => {
     const tasksContainer = useTasksContainer();
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<Error | null>(null);
     const [isFetching, setIsFetching] = useState(false);
     const [defaultDataState] = useState<TData>(defaultData);
 
@@ -177,7 +177,7 @@ const useTasksData = <
             const data = await fetchAsync(tasksContainer);
             setData(data);
         } catch (e) {
-            setError(e);
+            setError(e as Error);
         }
 
         setIsFetching(false);

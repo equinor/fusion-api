@@ -133,33 +133,29 @@ const usePersonDetails = (personId: string) => {
     const peopleContainer = usePeopleContainer();
 
     const [isFetching, setFetching] = React.useState<boolean>(false);
-    const [error, setError] = React.useState(null);
+    const [error, setError] = React.useState<Error | null>(null);
     const [personDetails, setPersonDetails] = React.useState<PersonDetails | null>(
         peopleContainer.getPersonDetails(personId)
     );
 
-    const getPersonAsync = async (personId: string) => {
-        if (!personId) {
-            return;
-        }
-
-        try {
-            setFetching(true);
-
-            const personDetails = await peopleContainer.getPersonDetailsAsync(personId);
-
-            setPersonDetails(personDetails);
-            setFetching(false);
-        } catch (error) {
-            setError(error);
-            setPersonDetails(null);
-            setFetching(false);
-        }
-    };
-
     React.useEffect(() => {
+        const getPersonAsync = async (personId: string) => {
+            if (!personId) {
+                return;
+            }
+            try {
+                setFetching(true);
+                const personDetails = await peopleContainer.getPersonDetailsAsync(personId);
+                setPersonDetails(personDetails);
+                setFetching(false);
+            } catch (error) {
+                setError(error as Error);
+                setPersonDetails(null);
+                setFetching(false);
+            }
+        };
         getPersonAsync(personId);
-    }, [personId]);
+    }, [peopleContainer, personId]);
 
     const updatedPersonHandler = React.useCallback(
         (updatedPerson: PersonDetails) => {
@@ -178,49 +174,51 @@ const usePersonDetails = (personId: string) => {
 const usePersonImageUrl = (personId: string) => {
     const peopleContainer = usePeopleContainer();
 
-    const getCachedPersonImageUrl = React.useCallback((personId: string) => {
-        const personImage = peopleContainer.getPersonImage(personId);
+    const getCachedPersonImageUrl = React.useCallback(
+        (personId: string) => {
+            const personImage = peopleContainer.getPersonImage(personId);
 
-        if (personImage) {
-            return personImage.src;
-        }
+            if (personImage) {
+                return personImage.src;
+            }
 
-        return '';
-    }, []);
+            return '';
+        },
+        [peopleContainer]
+    );
 
     const [isFetching, setFetching] = React.useState<boolean>(false);
-    const [error, setError] = React.useState(null);
+    const [error, setError] = React.useState<Error | null>(null);
     const [imageUrl, setImageUrl] = React.useState<string>(getCachedPersonImageUrl(personId));
 
-    const getImageAsync = async (personId: string) => {
-        if (!personId) {
-            return;
-        }
-
-        const cachedImageUrl = getCachedPersonImageUrl(personId);
-
-        if (cachedImageUrl !== '') {
-            setImageUrl(cachedImageUrl);
-            return;
-        }
-
-        try {
-            setFetching(true);
-
-            const image = await peopleContainer.getPersonImageAsync(personId);
-
-            setImageUrl(image.src);
-            setFetching(false);
-        } catch (error) {
-            setFetching(false);
-            setError(error);
-            setImageUrl('');
-        }
-    };
-
     React.useEffect(() => {
+        const getImageAsync = async (personId: string) => {
+            if (!personId) {
+                return;
+            }
+
+            const cachedImageUrl = getCachedPersonImageUrl(personId);
+
+            if (cachedImageUrl !== '') {
+                setImageUrl(cachedImageUrl);
+                return;
+            }
+
+            try {
+                setFetching(true);
+
+                const image = await peopleContainer.getPersonImageAsync(personId);
+
+                setImageUrl(image.src);
+                setFetching(false);
+            } catch (error) {
+                setFetching(false);
+                setError(error as Error);
+                setImageUrl('');
+            }
+        };
         getImageAsync(personId);
-    }, [personId]);
+    }, [getCachedPersonImageUrl, peopleContainer, personId]);
 
     return { isFetching, error, imageUrl };
 };
