@@ -92,7 +92,7 @@ export default class AuthContainer implements IAuthContainer {
 
         if (error) {
             const authError = new FusionAuthLoginError(error);
-            this.logError(authError);
+            this.logError(authError as Error);
             throw authError;
         }
 

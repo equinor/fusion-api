@@ -16,7 +16,7 @@ const getValue = <T>(item: T | null, accessor: PropertyAccessor<T>) => {
     }
 
     if (typeof accessor === 'string') {
-        const value = item[accessor] as T;
+        const value = item[accessor] as any;
         return value !== null && typeof value !== 'undefined' ? value.toString() : null;
     }
 
