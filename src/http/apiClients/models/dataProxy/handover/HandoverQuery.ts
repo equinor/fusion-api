@@ -5,4 +5,5 @@ export type HandoverQuery = {
     title: string;
     status: string;
     nextToSign: string;
+    type: string;
 } & HandoverChild;
