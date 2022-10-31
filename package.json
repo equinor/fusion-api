@@ -42,7 +42,7 @@
         "@microsoft/signalr": "^5.0.6",
         "jwt-decode": "^3.1.2",
         "odata-query": "^6.7.0",
-        "uuid": "^8.3.2"
+        "uuid": "^9.0.0"
     },
     "devDependencies": {
         "@microsoft/tsdoc": "^0.13.2",
@@ -80,7 +80,7 @@
         "react-router": "^5.0.1",
         "react-router-dom": "^5.0.1",
         "rxjs": ">=6.x",
-        "uuid": "^8.3.2"
+        "uuid": "^9.0.0"
     },
     "files": [
         "/lib"
