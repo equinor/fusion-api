@@ -410,7 +410,7 @@ export default class HttpClient implements IHttpClient {
                 throw error;
             }
 
-            this.telemetryLogger.trackException({ exception: error });
+            this.telemetryLogger.trackException({ exception: error as Error });
 
             // Add more info
             throw error as HttpClientError;

@@ -10,7 +10,8 @@ type LocalCache = { [key: string]: any };
 
 export default class LocalStorageProvider
     extends EventEmitter<ReliableDictionaryStorageProviderEvents>
-    implements IReliableDictionaryStorageProvider {
+    implements IReliableDictionaryStorageProvider
+{
     private baseKey: string;
     private localCache: IDistributedState<LocalCache | null>;
 

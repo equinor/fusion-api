@@ -11,7 +11,8 @@ import { Settings } from './SettingsContainer';
 
 export default class AppStorageProvider<T extends Settings = any>
     extends EventEmitter<ReliableDictionaryStorageProviderEvents>
-    implements IReliableDictionaryStorageProvider {
+    implements IReliableDictionaryStorageProvider
+{
     private appKey: string;
     private baseKey: string;
     private userSettingsClient: UserSettingsClient;

@@ -24,7 +24,8 @@ export interface ISettingsContainer<T = ReadonlySettings>
 
 export default class SettingsContainer<T = ReadonlySettings>
     extends ReliableDictionary<T>
-    implements ISettingsContainer<T> {
+    implements ISettingsContainer<T>
+{
     constructor(
         baseKey: string,
         user: AuthUser | null,
@@ -43,7 +44,8 @@ export default class SettingsContainer<T = ReadonlySettings>
 
 export class AppSettingsContainer<T = ReadonlySettings>
     extends ReliableDictionary<T>
-    implements ISettingsContainer<T> {
+    implements ISettingsContainer<T>
+{
     constructor(
         appKey: string,
         eventHub: IEventHub,
