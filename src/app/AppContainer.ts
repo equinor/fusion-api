@@ -15,7 +15,7 @@ import { AppAuth } from '../http/apiClients/models/fusion/apps/AppManifest';
 type AppRegistration = {
     AppComponent: React.ComponentType;
     // TODO - WIP: workaround while having fusion API and Fusion Framework
-    render?: (fusion: any, env: AppManifest) => React.LazyExoticComponent<React.ComponentType>;
+    render?: (fusion: any, env: any) => React.LazyExoticComponent<React.ComponentType>;
     name?: string;
     shortName?: string;
     description?: string;
