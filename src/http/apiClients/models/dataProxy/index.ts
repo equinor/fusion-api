@@ -13,6 +13,7 @@ export { AccumulatedContainer } from './AccumulatedContainer';
 export { WorkOrder } from './workorder/WorkOrder';
 export { WorkOrderMaterial } from './workorder/WorkOrderMaterial';
 export { WorkOrderMccr } from './workorder/WorkOrderMccr';
+export { WorkOrderQueryAndNotification } from './workorder/WorkOrderQueryAndNotification';
 export { Milestone } from './milestone/Milestone';
 export { McPackage } from './mcPackage/McPackage';
 export { McNcr } from './mcPackage/McNcr';
