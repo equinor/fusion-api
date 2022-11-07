@@ -27,7 +27,8 @@ export class EpicReducer<
     A extends Action = any,
     R extends Reducer<S, A> = Reducer<S, A>,
     D = any
-> implements Subscribable<S>, Unsubscribable {
+> implements Subscribable<S>, Unsubscribable
+{
     private readonly _state$: BehaviorSubject<S>;
     private readonly _action$: Subject<A>;
     private readonly _subscription: Subscription;

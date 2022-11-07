@@ -10,7 +10,7 @@ import UserSettingsClient from '../http/apiClients/UserSettingsClient';
 type SetAppSetting = <T>(key: string, value: T) => void;
 type AppSettingsHook<T> = [T, SetAppSetting];
 
-export const useSettingSelector = <T extends ReadonlySettings, K extends any>(
+export const useSettingSelector = <T extends ReadonlySettings, K extends unknown>(
     selector: (state: T) => K | null,
     state: T
 ): K | null => {
@@ -21,7 +21,7 @@ export const useSettingSelector = <T extends ReadonlySettings, K extends any>(
         if (nextValue !== userSettings) {
             setUserSettings(nextValue);
         }
-    }, [selector]);
+    }, [selector, state, userSettings]);
 
     return userSettings;
 };
@@ -121,10 +121,10 @@ export const useAppContextSettings = <T extends ReadonlySettings>(
     defaultSettings?: T
 ): [T | null, (settings: T) => void] => {
     const currentContext = useCurrentContext();
-    const contextId = useMemo(() => context || currentContext?.id || 'global', [
-        currentContext,
-        context,
-    ]);
+    const contextId = useMemo(
+        () => context || currentContext?.id || 'global',
+        [currentContext, context]
+    );
 
     const [appSettings, setAppSettings] = useAppSettings<AppContextSetting<T>>({
         context: {

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 
 export type PropertyAccessorFunction<T> = (item: T) => string | null;
 export type PropertyAccessor<T> = keyof T | PropertyAccessorFunction<T>;
@@ -87,11 +87,10 @@ export const useSorting = <T>(
     const [sortBy, setSortBy] = useState<PropertyAccessor<T> | null>(defaultSortBy);
     const [direction, setDirection] = useState<SortDirection | null>(defaultDirection);
 
-    const sortedData = useMemo(() => applySorting(data, sortBy, direction), [
-        data,
-        sortBy,
-        direction,
-    ]);
+    const sortedData = useMemo(
+        () => applySorting(data, sortBy, direction),
+        [data, sortBy, direction]
+    );
 
     const resetSorting = () => {
         setSortBy(null);

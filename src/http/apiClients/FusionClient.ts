@@ -101,7 +101,7 @@ export default class FusionClient extends BaseApiClient {
                 } = await this.createExcelFile(excelData);
                 let retryCount = options?.retries ?? 15;
                 const polling = options?.polling ?? 1000;
-                const interval = (setInterval(async () => {
+                const interval = setInterval(async () => {
                     const {
                         data: { exportState },
                     } = await this.getExcelStatus(tempKey);
@@ -119,7 +119,7 @@ export default class FusionClient extends BaseApiClient {
                             fileName: excelData.fileName,
                         });
                     }
-                }, polling) as unknown) as number;
+                }, polling) as unknown as number;
             } catch (err) {
                 reject(err);
                 console.error(err);

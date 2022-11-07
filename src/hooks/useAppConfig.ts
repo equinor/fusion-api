@@ -57,13 +57,15 @@ export const useAppConfig = <T>(tag?: string | null): AppConfig<T> => {
                 setConfig(config as AppEnvironmentConfig<T>);
             } catch (err) {
                 // Track error
-                fusion.logging.telemetry.trackException({ exception: err });
+                fusion.logging.telemetry.trackException({ exception: err as Error });
                 fusion.logging.telemetry.trackTrace({
-                    message: `Could not load config for app ${fusion.app.container.currentApp?.key} @ tag ${tag}: ${err.message}`,
+                    message: `Could not load config for app ${
+                        fusion.app.container.currentApp?.key
+                    } @ tag ${tag}: ${(err as Error).message}`,
                 });
 
                 setConfig(null);
-                setError(err);
+                setError(err as Error);
             } finally {
                 setIsFetching(false);
             }

@@ -92,7 +92,7 @@ export default class AuthContainer implements IAuthContainer {
 
         if (error) {
             const authError = new FusionAuthLoginError(error);
-            this.logError(authError);
+            this.logError(authError as Error);
             throw authError;
         }
 
@@ -117,10 +117,10 @@ export default class AuthContainer implements IAuthContainer {
                 AuthContainer.getResourceOrigin(redirectUrl) === window.location.origin
             ) {
                 window.history.replaceState(null, '', redirectUrl);
-                window.location.reload(true);
+                window.location.reload();
             }
         } catch (e) {
-            this.logError(e);
+            this.logError(e as Error);
             throw new FusionAuthLoginError();
         }
     }

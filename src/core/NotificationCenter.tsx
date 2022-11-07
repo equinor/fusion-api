@@ -364,9 +364,8 @@ const NotificationContext = React.createContext<INotificationContext>({} as INot
 // eslint-disable-next-line react/prop-types
 export const NotificationContextProvider: React.FC = ({ children }) => {
     const [presenters, setPresenters] = React.useState<NotificationPresenterRegistration[]>([]);
-    const [cardPresenter, setCardPresenter] = React.useState<NotificationCardPresenterRegistration>(
-        null
-    );
+    const [cardPresenter, setCardPresenter] =
+        React.useState<NotificationCardPresenterRegistration>(null);
 
     const registerPresenter = React.useCallback(
         (level: NotificationLevel, present: NotificationPresenter) => {
@@ -422,7 +421,7 @@ export const useNotificationCards = () => {
 
     const { hubConnection } = useSignalRHub('notifications');
 
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<Error | null>(null);
     const [isFetchingUnRead, setIsFetchingUnRead] = useState(false);
     const [isFetchingRead, setIsFetchingRead] = useState(false);
     const [notificationCards, setNotificationCards] = useEventEmitterValue(
@@ -452,7 +451,7 @@ export const useNotificationCards = () => {
             const data = await notificationCenter.getNotificationCardsAsync(filter);
             setNotificationCards(data);
         } catch (e) {
-            setError(e);
+            setError(e as Error);
         }
 
         setIsFetchingUnRead(false);
@@ -465,7 +464,7 @@ export const useNotificationCards = () => {
             const data = await notificationCenter.getNotificationCardsAsync('seenByUser eq true');
             setNotificationCards(data);
         } catch (e) {
-            setError(e);
+            setError(e as Error);
         }
 
         setIsFetchingRead(false);
@@ -480,7 +479,7 @@ export const useNotificationCards = () => {
             hubConnection.on('notifications', sendNotification);
             return () => hubConnection.off('notifications', sendNotification);
         }
-    }, [hubConnection]);
+    }, [hubConnection, sendNotification]);
 
     return {
         notificationCards,
@@ -507,7 +506,7 @@ export const useGlobalNotificationCardsActions = () => {
                 );
                 await Promise.all(response);
             } catch (e) {
-                setMarkError(e);
+                setMarkError(e as Error);
             } finally {
                 setIsMarkingNotifications(false);
             }
@@ -538,7 +537,7 @@ export const useNotificationCardActions = (notificationCard: NotificationCard) =
         try {
             await notificationCenter.markNotificationCardAsSeenAsync(notificationCard);
         } catch (e) {
-            setMarkError(e);
+            setMarkError(e as Error);
         } finally {
             setIsMarkingNotification(false);
         }
@@ -550,7 +549,7 @@ export const useNotificationCardActions = (notificationCard: NotificationCard) =
         try {
             await notificationCenter.deleteNotificationCardAsync(notificationCard);
         } catch (e) {
-            setDeleteError(e);
+            setDeleteError(e as Error);
         } finally {
             setIsDeletingNotification(false);
         }
@@ -570,7 +569,7 @@ export const useNotificationCardActions = (notificationCard: NotificationCard) =
         if (response.confirmed) {
             await deleteNotificationAsync();
         }
-    }, [notificationContext, notificationCenter]);
+    }, [notificationCenter, notificationContext, deleteNotificationAsync]);
 
     return {
         markNotificationsAsSeenAsync,
