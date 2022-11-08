@@ -23,6 +23,7 @@ import {
     OperationItem,
     SwcrPackage,
     SwcrSignature,
+    WorkOrderQueryAndNotification,
 } from './models/dataProxy';
 import {
     HandoverActions,
@@ -122,6 +123,17 @@ export default class DataProxyClient extends BaseApiClient {
     async getWorkOrderMccrAsync(contextId: string, workOrderId: string) {
         const url = this.resourceCollections.dataProxy.workOrdersMccr(contextId, workOrderId);
         return await this.httpClient.getAsync<WorkOrderMccr[], FusionApiHttpErrorResponse>(url);
+    }
+
+    async getWorkOrderQueryAndNotificationAsync(contextId: string, workOrderId: string) {
+        const url = this.resourceCollections.dataProxy.workOrdersQueryAndNotification(
+            contextId,
+            workOrderId
+        );
+        return await this.httpClient.getAsync<
+            WorkOrderQueryAndNotification[],
+            FusionApiHttpErrorResponse
+        >(url);
     }
 
     async getMcPackageAsync(context: string, invalidateCache: boolean) {

@@ -85,6 +85,13 @@ export default class DataProxyResourceCollection extends BaseResourceCollection 
         );
     }
 
+    workOrdersQueryAndNotification(contextId: string, workOrderId: string): string {
+        return combineUrls(
+            this.getBaseUrl(),
+            `api/contexts/${contextId}/work-orders/${workOrderId}/query`
+        );
+    }
+
     public mcPackages(contextId: string) {
         return combineUrls(this.getBaseUrl(), 'api', 'contexts', contextId, 'mc-pkgs');
     }
