@@ -264,7 +264,7 @@ export { useEpic, useSelector, useObservableSelector, combineEpics } from './epi
 
 export { IResourceCache, default as ResourceCache } from './http/ResourceCache';
 export { default as AbortControllerManager } from './utils/AbortControllerManager';
-export { default as ReliableDictionary } from './utils/ReliableDictionary';
+export { default as ReliableDictionary, LocalStorageProvider } from './utils/ReliableDictionary';
 export { AppSettingsContainer, default as SettingsContainer } from './settings/SettingsContainer';
 export { default as ContextManager } from './core/ContextManager';
 export { default as AppContainer } from './app/AppContainer';

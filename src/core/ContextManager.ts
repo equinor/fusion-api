@@ -15,7 +15,7 @@ import FeatureLogger from '../utils/FeatureLogger';
 import { TelemetryLogger } from '../utils/telemetry';
 import { IExceptionTelemetry } from '@microsoft/applicationinsights-web';
 
-type ContextCache = {
+export type ContextCache = {
     current: Context | null;
     history: Context[] | null;
     links: { [key: string]: string };
