@@ -127,7 +127,8 @@ export const createFusionContext = (
     serviceResolver: ServiceResolver,
     refs: Refs,
     options?: FusionContextOptions,
-    browserHistory?: History
+    browserHistory?: History,
+    args?: { appContainer: AppContainer }
 ): IFusionContext => {
     const telemetryLogger = new TelemetryLogger(
         options && options.telemetry ? options.telemetry.instrumentationKey : '',
@@ -160,12 +161,10 @@ export const createFusionContext = (
         defaultSettings
     );
 
-    const appContainer = new AppContainer(
-        apiClients,
-        telemetryLogger,
-        featureLogger,
-        new EventHub()
-    );
+    const appContainer =
+        args?.appContainer ??
+        new AppContainer(apiClients, telemetryLogger, featureLogger, new EventHub());
+
     appContainerFactory(appContainer);
 
     const contextManager = new ContextManager(
@@ -230,7 +229,10 @@ const ensureGlobalFusionContextType = () => {
             existingFusionContext.http.serviceResolver,
             existingFusionContext.refs,
             existingFusionContext.options,
-            existingFusionContext.history
+            existingFusionContext.history,
+            {
+                appContainer: existingFusionContext.app.container,
+            }
         )
     );
 };

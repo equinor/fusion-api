@@ -27,6 +27,7 @@ export {
     useFusionContext,
     createFusionContext,
     FusionEnvironment,
+    Refs as FusionContextRefs,
 } from './core/FusionContext';
 
 export { default as ServiceResolver } from './http/resourceCollections/ServiceResolver';
@@ -260,3 +261,12 @@ export { default as EventHub, IEventHub } from './utils/EventHub';
 export { default as DistributedState, IDistributedState } from './utils/DistributedState';
 
 export { useEpic, useSelector, useObservableSelector, combineEpics } from './epic';
+
+export { IResourceCache, default as ResourceCache } from './http/ResourceCache';
+export { default as AbortControllerManager } from './utils/AbortControllerManager';
+export { default as ReliableDictionary, LocalStorageProvider } from './utils/ReliableDictionary';
+export { AppSettingsContainer, default as SettingsContainer } from './settings/SettingsContainer';
+export { default as ContextManager } from './core/ContextManager';
+export { default as AppContainer } from './app/AppContainer';
+export { default as TasksContainer } from './core/TasksContainer';
+export { default as PeopleContainer } from './core/PeopleContainer';
