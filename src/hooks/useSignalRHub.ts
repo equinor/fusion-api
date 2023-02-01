@@ -16,34 +16,44 @@ export default (hubName: string) => {
 
     const signalRHubUrl = useMemo(() => fusion.signalRHub(hubName), [hubName, fusion]);
 
-    const createHubConnectionAsync = useCallback(async () => {
-        setHubConnectionError(null);
-        const hubConnect = new HubConnectionBuilder()
-            .withAutomaticReconnect()
-            .withUrl(signalRHubUrl, {
-                accessTokenFactory: async () => {
-                    const token = await auth.container.acquireTokenAsync(signalRHubUrl);
-                    return token || '';
-                },
-            })
-            .build();
-        try {
-            await hubConnect.start();
-            setHubConnection(hubConnect);
-        } catch (e) {
-            setHubConnectionError(e as Error);
-        } finally {
-            setIsEstablishingHubConnection(false);
-        }
-    }, [signalRHubUrl, auth]);
+    const createHubConnectionAsync = useCallback(
+        async (signal: AbortSignal) => {
+            setHubConnectionError(null);
+            const hubConnect = new HubConnectionBuilder()
+                .withAutomaticReconnect()
+                .withUrl(signalRHubUrl, {
+                    accessTokenFactory: async () => {
+                        const token = await auth.container.acquireTokenAsync(signalRHubUrl);
+                        return token || '';
+                    },
+                })
+                .build();
+
+            signal.addEventListener('abort', () => {
+                hubConnect?.stop();
+                setHubConnection(null);
+            });
+
+            try {
+                await hubConnect.start();
+                setHubConnection(hubConnect);
+            } catch (e) {
+                setHubConnectionError(e as Error);
+            } finally {
+                setIsEstablishingHubConnection(false);
+            }
+        },
+        [signalRHubUrl, auth]
+    );
 
     useEffect(() => {
-        createHubConnectionAsync();
+        const abortController = new AbortController();
+        createHubConnectionAsync(abortController.signal);
 
         return () => {
-            hubConnection?.stop();
+            abortController.abort();
         };
-    }, [createHubConnectionAsync, hubConnection]);
+    }, [createHubConnectionAsync]);
 
     return { hubConnection, hubConnectionError, isEstablishingHubConnection };
 };
