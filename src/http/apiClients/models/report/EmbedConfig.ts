@@ -13,7 +13,7 @@ type EmbedConfig = {
     reportId?: string;
     tileId?: string;
     rlsConfiguration?: RlsConfiguration | null;
-    contrastMode?: number
+    contrastMode?: number;
 };
 
 export default EmbedConfig;
