@@ -3,6 +3,7 @@ import { RoleDescriptionContent } from './RoleDescription';
 export type BasePositionSettings = {
     directAssignmentEnabled: boolean | null;
     isDefaultTaskOwner: boolean;
+    requireDirectRequest?: boolean;
 };
 
 type BasePosition = {
