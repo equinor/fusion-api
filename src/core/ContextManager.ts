@@ -136,9 +136,13 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         }
     }
 
-    async setCurrentContextAsync(context: Context | null) {
+    async setCurrentContextAsync(context: Context | null): Promise<void> {
         /** fetch context of current state */
         const currentContext = await this.getAsync('current');
+
+        if (currentContext?.id === context?.id) {
+            return this.ensureCurrentContextExistsInUrl();
+        }
 
         await this.setAsync('current', context);
         await this.validateContext(context);
