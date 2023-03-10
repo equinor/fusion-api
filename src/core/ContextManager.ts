@@ -21,6 +21,12 @@ export type ContextCache = {
     links: { [key: string]: string };
 };
 
+declare global {
+    interface Window {
+        __FUSION_CONTEXT_ENSURE__CONTEXT__: Promise<void> | undefined;
+    }
+}
+
 export default class ContextManager extends ReliableDictionary<ContextCache> {
     private readonly contextClient: ContextClient;
     private isSettingFromRoute = false;
@@ -141,7 +147,18 @@ export default class ContextManager extends ReliableDictionary<ContextCache> {
         const currentContext = await this.getAsync('current');
 
         if (currentContext?.id === context?.id) {
-            return this.ensureCurrentContextExistsInUrl();
+            if (!window.__FUSION_CONTEXT_ENSURE__CONTEXT__) {
+                window.__FUSION_CONTEXT_ENSURE__CONTEXT__ = new Promise((resolve) => {
+                    window.requestAnimationFrame(() =>
+                        this.ensureCurrentContextExistsInUrl()
+                            .then(resolve)
+                            .finally(() => {
+                                window.__FUSION_CONTEXT_ENSURE__CONTEXT__ = undefined;
+                            })
+                    );
+                });
+            }
+            return await window.__FUSION_CONTEXT_ENSURE__CONTEXT__;
         }
 
         await this.setAsync('current', context);
