@@ -39,7 +39,7 @@
     "dependencies": {
         "@equinor/eslint-config-fusion": "^0.1.2",
         "@microsoft/applicationinsights-web": "^2.4.3",
-        "@microsoft/signalr": "^5.0.6",
+        "@microsoft/signalr": "^7.0.5",
         "jwt-decode": "^3.1.2",
         "odata-query": "^6.7.0",
         "uuid": "^8.3.2"
