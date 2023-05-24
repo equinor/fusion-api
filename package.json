@@ -38,7 +38,7 @@
     },
     "dependencies": {
         "@equinor/eslint-config-fusion": "^0.1.2",
-        "@microsoft/applicationinsights-web": "^2.4.3",
+        "@microsoft/applicationinsights-web": "^3.0.2",
         "@microsoft/signalr": "^5.0.6",
         "jwt-decode": "^3.1.2",
         "odata-query": "^6.7.0",
