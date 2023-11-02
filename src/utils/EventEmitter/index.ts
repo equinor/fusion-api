@@ -71,6 +71,7 @@ export const useEventEmitterValue = <
     defaultData: TData | null = null
 ): [TData | null, Dispatch<SetStateAction<TData | null>>] => {
     const [value, setValue] = useState<TData | null>(defaultData);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, forceUpdate] = useState<null>(null);
 
     useEffect(() => {

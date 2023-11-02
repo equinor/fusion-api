@@ -1,7 +1,6 @@
-import { createContext, useContext, MutableRefObject, useRef } from 'react';
+import { createContext, useContext, MutableRefObject } from 'react';
 import { History, createBrowserHistory } from 'history';
 import { IAuthContainer } from '../auth/AuthContainer';
-import { matchPath } from 'react-router';
 import ResourceCollections, { createResourceCollections } from '../http/resourceCollections';
 import ApiClients, { createApiClients } from '../http/apiClients';
 import HttpClient, { IHttpClient } from '../http/HttpClient';
@@ -88,10 +87,6 @@ export type CoreSettings = {
 
 export const defaultSettings: CoreSettings = {
     componentDisplayType: ComponentDisplayType.Comfortable,
-};
-
-type ContextRouteMatch = {
-    contextId: string;
 };
 
 export type FusionEnvironment = {

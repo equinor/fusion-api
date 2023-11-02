@@ -56,7 +56,6 @@ type AbortableAction = (signal: AbortSignal) => Promise<void>;
  * Returns a function to be called if the request(s) performed within the passed function should be aborted
  */
 const withAbortController = (): ((abortableAction: AbortableAction) => AbortDispatcher) => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const abortControllerManager = useAbortControllerManager();
 
     return (abortableAction: AbortableAction): AbortDispatcher => {

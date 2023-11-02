@@ -10,7 +10,7 @@ const ensureGlobalFusionHistoryContextType = () => {
     const win = window as any;
     const key = 'EQUINOR_FUSION_HISTORY_CONTEXT';
 
-    if (typeof win[key] !== undefined && win[key]) {
+    if (key in win && win[key]) {
         return win[key] as React.Context<IHistoryContext>;
     }
 
@@ -27,6 +27,7 @@ export default (): History => {
 
     const history = historyContext.history || fusionContext.history;
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, forceUpdate] = useState(null);
     useEffect(() => {
         const listner = history.listen(() => forceUpdate(null));

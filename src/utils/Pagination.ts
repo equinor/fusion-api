@@ -247,14 +247,14 @@ export type AsyncPaginationHook<T> = PaginationHook<T> & {
  * @param initialPerPage Initial number of items per page
  * @param initialCurrentPageIndex Initial current page index
  * @param padding How much padding do you want in the pagination buttons?
- * @param deps Other external dependencies that might trigger the pagination (e.g. sorting changed)
+ * @param _deps Other external dependencies that might trigger the pagination (e.g. sorting changed)
  */
 export const useAsyncPagination = <T>(
     applyAsync: (pagination: Pagination) => Promise<PagedResult<T>>,
     initialPerPage: number,
     initialCurrentPageIndex = 0,
     padding = 3,
-    deps: readonly any[] = []
+    _deps: readonly any[] = []
 ): AsyncPaginationHook<T> => {
     const [currentPageIndex, setCurrentPageIndex] = useState(initialCurrentPageIndex);
     const [perPage, setPerPage] = useState(initialPerPage);

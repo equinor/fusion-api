@@ -17,7 +17,6 @@ import JSON from '../../utils/JSON';
 import { TelemetryLogger } from '../../utils/telemetry';
 import DistributedState, { IDistributedState } from '../../utils/DistributedState';
 import { IEventHub } from '../../utils/EventHub';
-import { FusionApiHttpErrorResponse } from '../apiClients';
 
 // Export interface, response and error types
 export {
@@ -479,6 +478,7 @@ export default class HttpClient implements IHttpClient {
         );
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     private createHttpResponse<TResponse, TExpectedErrorResponse>(
         request: RequestInit,
         response: Response,
