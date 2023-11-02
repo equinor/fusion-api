@@ -10,7 +10,7 @@ import UserSettingsClient from '../http/apiClients/UserSettingsClient';
 type SetAppSetting = <T>(key: string, value: T) => void;
 type AppSettingsHook<T> = [T, SetAppSetting];
 
-export const useSettingSelector = <T extends ReadonlySettings, K extends unknown>(
+export const useSettingSelector = <T extends ReadonlySettings, K>(
     selector: (state: T) => K | null,
     state: T
 ): K | null => {

@@ -1,4 +1,4 @@
-import { useLayoutEffect, useMemo, useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import { Observable } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 
