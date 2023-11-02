@@ -30,6 +30,7 @@ type CachedResources = {
 };
 
 export interface IResourceCache {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     setIsFetchingAsync<T>(resource: string): Promise<void>;
     updateAsync<T>(resource: string, response: HttpResponse<T>): Promise<void>;
     getAsync<T>(resource: string): Promise<ReadonlyCachedResource<T>>;

@@ -1,6 +1,5 @@
 import BaseApiClient from './BaseApiClient';
-import ResourceCollections from '../resourceCollections';
-import { IHttpClient, voidResponseParser } from '../HttpClient';
+import { voidResponseParser } from '../HttpClient';
 import PersonDetails, {
     PersonAccountType,
     PersonRole,
@@ -16,8 +15,6 @@ import { FusionApiHttpErrorResponse } from './models/common/FusionApiHttpErrorRe
 import { PersonODataExpand } from '../resourceCollections/PeopleResourceCollection';
 import GroupRoleMapping from './models/people/GroupRoleMapping';
 import RoleStatus from './models/people/RoleStatus';
-import ServiceResolver from '../resourceCollections/ServiceResolver';
-import fusionConsole from '../../utils/fusionConsole';
 
 export {
     PersonDetails,
