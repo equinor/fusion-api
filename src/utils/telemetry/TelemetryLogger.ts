@@ -13,8 +13,13 @@ import { IAuthContainer } from '../../auth/AuthContainer';
 export type TelemetryInitializer = (item: ITelemetryItem) => void | boolean;
 
 export class TelemetryLogger {
-    private isInitialized: boolean = false;
+    private isInitialized = false;
     private readonly internalAppInsights: ApplicationInsights;
+
+    get telemetry(): ApplicationInsights {
+        return this.internalAppInsights;
+    }
+
     private initializers: TelemetryInitializer[] = [];
 
     constructor(instrumentationKey: string, authContainer: IAuthContainer) {
