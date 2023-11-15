@@ -13,11 +13,19 @@ import { IAuthContainer } from '../../auth/AuthContainer';
 export type TelemetryInitializer = (item: ITelemetryItem) => void | boolean;
 
 export class TelemetryLogger {
-    private isInitialized = false;
+    private initializing: Promise<void>;
+    private _isInitialized = false;
     private readonly internalAppInsights: ApplicationInsights;
 
-    get telemetry(): ApplicationInsights {
-        return this.internalAppInsights;
+    get isInitialized(): boolean {
+        return this._isInitialized;
+    }
+
+    get telemetry(): Promise<ApplicationInsights | undefined> {
+        if (!this._isInitialized) {
+            return this.initializing.then(() => this.internalAppInsights);
+        }
+        return Promise.resolve(this.internalAppInsights);
     }
 
     private initializers: TelemetryInitializer[] = [];
@@ -29,74 +37,77 @@ export class TelemetryLogger {
             },
         });
 
-        this.initializeAppInsights(instrumentationKey, authContainer);
+        this.initializing = this.initializeAppInsights(instrumentationKey, authContainer);
     }
 
-    registerInitializer(initializer: TelemetryInitializer) {
+    registerInitializer(initializer: TelemetryInitializer): VoidFunction {
         this.initializers = [...this.initializers, initializer];
         return () => {
             this.initializers = this.initializers.filter((i) => i !== initializer);
         };
     }
 
-    trackEvent(event: IEventTelemetry) {
-        if (!this.isInitialized) {
+    trackEvent(event: IEventTelemetry): void {
+        if (!this._isInitialized) {
             return;
         }
 
         this.internalAppInsights.trackEvent(event);
     }
 
-    trackException(exception: IExceptionTelemetry) {
-        if (!this.isInitialized) {
+    trackException(exception: IExceptionTelemetry): void {
+        if (!this._isInitialized) {
             return;
         }
 
         this.internalAppInsights.trackException(exception);
     }
 
-    trackPageView(pageView?: IPageViewTelemetry) {
-        if (!this.isInitialized) {
+    trackPageView(pageView?: IPageViewTelemetry): void {
+        if (!this._isInitialized) {
             return;
         }
 
         this.internalAppInsights.trackPageView(pageView);
     }
 
-    trackTrace(trace: ITraceTelemetry) {
-        if (!this.isInitialized) {
+    trackTrace(trace: ITraceTelemetry): void {
+        if (!this._isInitialized) {
             return;
         }
 
         this.internalAppInsights.trackTrace(trace);
     }
 
-    trackMetric(metrics: IMetricTelemetry) {
-        if (!this.isInitialized) {
+    trackMetric(metrics: IMetricTelemetry): void {
+        if (!this._isInitialized) {
             return;
         }
 
         this.internalAppInsights.trackMetric(metrics);
     }
 
-    trackDependency(dependency: IDependencyTelemetry) {
-        if (!this.isInitialized) {
+    trackDependency(dependency: IDependencyTelemetry): void {
+        if (!this._isInitialized) {
             return;
         }
 
         this.internalAppInsights.trackDependencyData(dependency);
     }
 
-    private initializeAppInsights(instrumentationKey: string, authContainer: IAuthContainer) {
+    private async initializeAppInsights(
+        instrumentationKey: string,
+        authContainer: IAuthContainer
+    ): Promise<void> {
         if (!instrumentationKey) {
             return;
         }
 
         this.internalAppInsights.loadAppInsights();
         this.internalAppInsights.addTelemetryInitializer(this.telemetryInitializer);
-        this.setAuthUserContextAsync(authContainer);
+        await this.setAuthUserContextAsync(authContainer);
         this.trackPageView();
-        this.isInitialized = true;
+        this._isInitialized = true;
     }
 
     private telemetryInitializer = (item: ITelemetryItem) => {
@@ -110,7 +121,7 @@ export class TelemetryLogger {
         this.runDefaultInitializers(item);
     };
 
-    private async setAuthUserContextAsync(authContainer: IAuthContainer) {
+    private async setAuthUserContextAsync(authContainer: IAuthContainer): Promise<void> {
         const currentUser = await authContainer.getCachedUserAsync();
 
         if (currentUser) {
