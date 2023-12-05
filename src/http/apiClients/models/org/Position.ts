@@ -17,6 +17,7 @@ type Position = {
     projectId: string;
     contractId: string | null;
     isTaskOwner: boolean;
+    isProjectManagementTeam: boolean;
     hasChangesInDraft?: boolean;
 };
 
