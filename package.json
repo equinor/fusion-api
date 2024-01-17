@@ -38,7 +38,7 @@
     },
     "dependencies": {
         "@microsoft/applicationinsights-web": "^2.4.3",
-        "@microsoft/signalr": "^5.0.6",
+        "@microsoft/signalr": "^8.0.0",
         "jwt-decode": "^3.1.2"
     },
     "devDependencies": {
