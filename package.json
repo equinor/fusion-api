@@ -42,8 +42,7 @@
         "jwt-decode": "^3.1.2"
     },
     "devDependencies": {
-        "@equinor/eslint-config-fusion": "^2.1.4",
-        "@equinor/eslint-config-fusion-react": "^2.0.1",
+        "@equinor/eslint-config-fusion": "^2.2.0",
         "@microsoft/tsdoc": "^0.13.2",
         "@types/history": "^4.7.3",
         "@types/node": "^14.0.1",
